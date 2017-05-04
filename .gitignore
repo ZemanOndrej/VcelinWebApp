@@ -6,6 +6,7 @@
 .idea
 *.iml
 .idea/vcs.xml
+node_modules
 out
 gen### Go template
 # Binaries for programs and plugins
@@ -66,3 +67,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+/client/node_modules/
+client/node_modules/
+/client/src/js/scripts.min.js
+client/src/js/scripts.min.js
+!/client/package.json
