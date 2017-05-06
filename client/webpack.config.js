@@ -1,30 +1,31 @@
-var debug = process.env.NODE_ENV !== "production";
-var webpack = require('webpack');
-var path = require("path");
+let debug = process.env.NODE_ENV !== "production";
+let webpack = require('webpack');
+let path = require("path");
 
 
 
-var APP_DIR = path.join(__dirname,"/src");
+let APP_DIR = path.join(__dirname, "/src");
 
-var config = {
+let config = {
 
-        context: APP_DIR,
-        devtool: debug ? "inline-sourcemap" : null,
-        entry: "./js/scripts.js",
-        output: {
-            path: APP_DIR +"/js",
-            filename: "scripts.min.js"
-        },
-        plugins: debug ? [] : [
-            new webpack.optimize.DedupePlugin(),
-            new webpack.optimize.OccurenceOrderPlugin(),
-            new webpack.optimize.UglifyJsPlugin({ mangle: false, sourcemap: false }),
-        ],
-    module : {
-        loaders : [
+    context: APP_DIR,
+    devtool: debug ? "inline-sourcemap" : null,
+    entry: "./js/scripts.js",
+    watch: true,
+    output: {
+        path: APP_DIR + "/js",
+        filename: "scripts.min.js"
+    },
+    plugins: debug ? [] : [
+        new webpack.optimize.DedupePlugin(),
+        new webpack.optimize.OccurenceOrderPlugin(),
+        new webpack.optimize.UglifyJsPlugin({mangle: false, sourcemap: false}),
+    ],
+    module: {
+        loaders: [
             {
                 test: /\.jsx?$/,
-                exclude: /(node_modules|bower_components)/,
+                exclude: /node_modules/,
                 loader: 'babel-loader',
                 query: {
                     presets: ['react', 'es2015', 'stage-0'],
@@ -33,7 +34,7 @@ var config = {
             }
         ]
     }
-}
+};
 
 
 module.exports= config;

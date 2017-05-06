@@ -70,5 +70,6 @@ fabric.properties
 /client/node_modules/
 client/node_modules/
 /client/src/js/scripts.min.js
-client/src/js/scripts.min.js
+/client/src/css/bootstrap.min.css
 !/client/package.json
+/npm-debug.log

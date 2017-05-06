@@ -133,7 +133,14 @@ func AuthRequired() gin.HandlerFunc {
 
 func Login(c *gin.Context) {
 	var loginModel LoginModel
-	if c.Bind(&loginModel) == nil {
+
+
+	//var decodedBody map[string]string
+	//err := json.NewDecoder(c.Request.Body).Decode(&decodedBody)
+	//fmt.Printf(fmt.Sprint(decodedBody )+"   "+ fmt.Sprint(err) )
+
+
+	if i:=c.Bind(&loginModel);i == nil {
 		context := db.Database()
 		var foundUser db.User
 
@@ -163,8 +170,8 @@ func Login(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "wrong arguments"})
-		fmt.Print("could not bind")
+		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind" , "error":i})
+		fmt.Println("could not bind   err:" + fmt.Sprint(i))
 	}
 }
 

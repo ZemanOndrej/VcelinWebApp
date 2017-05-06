@@ -1,6 +1,6 @@
 import React from "react";
 
-export default class Login extends React.Component{
+export default class LoginControl extends React.Component{
 
 
     constructor(props) {
@@ -12,6 +12,8 @@ export default class Login extends React.Component{
 
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
+        this.handleLogoutClick = this.handleLogoutClick.bind(this);
+        this.handleLoginClick = this.handleLoginClick.bind(this);
     }
 
     handleChangeEmail(event){
@@ -23,21 +25,38 @@ export default class Login extends React.Component{
     }
 
     render(){
-        return (
-            <div>
-                <form onSubmit={this.handleCreate.bind(this)}>
-                    <input type="text" value={this.state.email} placeholder="Email" onChange={this.handleChangeEmail}  />
-                    <input type="password" value={this.state.password}  placeholder="Password" onChange={this.handleChangePassword}  />
 
-                    <button>Login</button>
+        const isAuthorized = this.state.isAuthorized;
+        if(isAuthorized){
+            return (
+                <div style={{float:"right"}}>
+                    <form className="navbar-form" onSubmit={this.handleLogoutClick.bind(this)}>
+                        <button className="btn btn-default">
+                            Logout
+                        </button>
+                    </form>
+                </div>
+            )
+        }
+
+
+        return (
+            <div style={{float:"right"}}>
+                <form className="navbar-form" onSubmit={this.handleLoginClick.bind(this)}>
+                    <div className="input-group">
+                        <input className="form-control" type="text" value={this.state.email} placeholder="Email" onChange={this.handleChangeEmail}  />
+                    </div>
+                    <div className="input-group">
+                        <input className="form-control" type="password" value={this.state.password}  placeholder="Password" onChange={this.handleChangePassword}  />
+                    </div>
+                    <button className="btn btn-primary">Login</button>
+                    {this.renderError()}
                 </form>
             </div>
-
         )
     }
 
-
-    handleCreate(event) {
+    handleLoginClick(event) {
         event.preventDefault();
 
         let data = JSON.stringify({
@@ -54,15 +73,18 @@ export default class Login extends React.Component{
         })
             .then((response)=>{
             if (response.ok){
-                this.setState({"authorized":true});
+                this.setState({"isAuthorized":true, error:null});
                 return response.json().then((json)=>{
                     this.setState({login:json});
                 });
             }
+
+            this.setState({error:"Email or Password are wrong"})
         });
+    }
 
-
-        console.log(this.state.authorized);
+    handleLogoutClick() {
+        this.setState({isAuthorized: false , login:null});
     }
 
     renderError() {
@@ -70,6 +92,6 @@ export default class Login extends React.Component{
 
         return <div style={{ color: 'red' }}>{this.state.error}</div>;
     }
-
-
 }
+
+

@@ -5,12 +5,14 @@ import (
 	"vcelin/server/api"
 	_ "vcelin/server/db"
 	"vcelin/server/db"
+	"gopkg.in/gin-contrib/cors.v1"
 )
 
 func main() {
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	router.Use(cors.Default())
 
 	api.InitKeys()
 	db.InitDb()

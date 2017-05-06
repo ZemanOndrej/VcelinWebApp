@@ -2,16 +2,21 @@
  * Created by zeman on 05-May-17.
  */
 
-import * as React from "react";
-export default class Login extends React.Component {
+import React from "react";
+import LoginControl from "./Login";
+export default class Layout extends React.Component {
 
     render(){
         return (
             <div>
-                <header >
-                    <h1>Hello man</h1>
-                    <Login/>
-                </header>
+                <nav className="navbar navbar-default">
+                    <div className="container-fluid">
+                        <div className="navbar-header">
+                            <a className="navbar-brand" href="#">Vcelin</a>
+                        </div>
+                        <LoginControl/>
+                    </div>
+                </nav>
 
                 <div>
 
