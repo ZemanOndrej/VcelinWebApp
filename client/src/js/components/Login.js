@@ -1,35 +1,35 @@
 import React from "react";
 
-export default class LoginControl extends React.Component{
-
-
+export default class Login extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            error: null
-        };
+        let authorized = localStorage.getItem("isAuthorized");
 
+        this.state = {
+            error: null,
+            isAuthorized: authorized
+        };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleLogoutClick = this.handleLogoutClick.bind(this);
         this.handleLoginClick = this.handleLoginClick.bind(this);
     }
 
-    handleChangeEmail(event){
+    handleChangeEmail(event) {
         this.setState({email: event.target.value})
     }
 
-    handleChangePassword(event){
+    handleChangePassword(event) {
         this.setState({password: event.target.value})
     }
 
-    render(){
+    render() {
 
         const isAuthorized = this.state.isAuthorized;
-        if(isAuthorized){
+        if (isAuthorized) {
             return (
-                <div style={{float:"right"}}>
+                <div style={{float: "right"}}>
                     <form className="navbar-form" onSubmit={this.handleLogoutClick.bind(this)}>
                         <button className="btn btn-default">
                             Logout
@@ -41,13 +41,15 @@ export default class LoginControl extends React.Component{
 
 
         return (
-            <div style={{float:"right"}}>
+            <div style={{float: "right"}}>
                 <form className="navbar-form" onSubmit={this.handleLoginClick.bind(this)}>
                     <div className="input-group">
-                        <input className="form-control" type="text" value={this.state.email} placeholder="Email" onChange={this.handleChangeEmail}  />
+                        <input className="form-control" type="text" value={this.state.email} placeholder="Email"
+                               onChange={this.handleChangeEmail}/>
                     </div>
                     <div className="input-group">
-                        <input className="form-control" type="password" value={this.state.password}  placeholder="Password" onChange={this.handleChangePassword}  />
+                        <input className="form-control" type="password" value={this.state.password}
+                               placeholder="Password" onChange={this.handleChangePassword}/>
                     </div>
                     <button className="btn btn-primary">Login</button>
                     {this.renderError()}
@@ -64,33 +66,38 @@ export default class LoginControl extends React.Component{
             "Email": this.state.email
         });
 
-        fetch("http://localhost:1337/vcelin/api/login",{
+        fetch("http://localhost:1337/vcelin/api/login", {
             method: "POST",
             body: data,
             mode: "cors",
             cache: "default",
             headers: {"Content-type": "application/json"}
         })
-            .then((response)=>{
-            if (response.ok){
-                this.setState({"isAuthorized":true, error:null});
-                return response.json().then((json)=>{
-                    this.setState({login:json});
-                });
-            }
+            .then((response) => {
+                if (response.ok) {
+                    return response.json().then((json) => {
+                        this.setState({"loginInfo": json,"isAuthorized": true, error: null});
+                        localStorage.setItem("token", json.token);
+                        localStorage.setItem("isAuthorized", true);
+                    });
+                }
 
-            this.setState({error:"Email or Password are wrong"})
-        });
+                this.setState({error: "Email or Password are wrong"})
+            });
     }
 
     handleLogoutClick() {
-        this.setState({isAuthorized: false , login:null});
+        localStorage.removeItem("token");
+        localStorage.removeItem("isAuthorized");
+        this.setState({isAuthorized: false, loginInfo: null});
     }
 
     renderError() {
-        if (!this.state.error) { return null; }
+        if (!this.state.error) {
+            return null;
+        }
 
-        return <div style={{ color: 'red' }}>{this.state.error}</div>;
+        return <div style={{color: 'red'}}>{this.state.error}</div>;
     }
 }
 
