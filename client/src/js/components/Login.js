@@ -38,8 +38,6 @@ export default class Login extends React.Component {
                 </div>
             )
         }
-
-
         return (
             <div style={{float: "right"}}>
                 <form className="navbar-form" onSubmit={this.handleLoginClick.bind(this)}>

@@ -3,11 +3,13 @@
  */
 import React from "react";
 import Post from "./Post";
+import PostForm from "./PostForm";
 export default class PostList extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {};
+        this.newPostHandler = this.newPostHandler.bind(this);
 
         let token = localStorage.getItem("token");
         if (token) {
@@ -24,23 +26,33 @@ export default class PostList extends React.Component {
                     }
                 });
         }
+
+
     }
 
+    newPostHandler(e) {
+        this.setState({data: this.state.data.concat([e])});
+    }
+
+
     render() {
+
+        let posts=null;
+
         if (!this.state.data) {
-            return (<div>
-                No posts ;(
-            </div>)
+            posts= <div>No posts ;(</div>
+        }else {
+            posts=this.state.data.map((object, i)=>{
+                return <Post data={object} key={i} />;
+            })
         }
         return (
             <div>
                 <h2>Posts</h2>
-                {this.state.data.map((object, i)=>{
-                    return <Post data={object} key={i} />;
-                })}
+                <PostForm newPostHandler = {this.newPostHandler}/>
+
+                {posts}
             </div>
         )
     }
-
-
 }

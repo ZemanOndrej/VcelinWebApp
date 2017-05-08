@@ -2,8 +2,7 @@
  * Created by zeman on 04-May-17.
  */
 
-import { createBrowserHistory } from 'history';
-const history = createBrowserHistory();
+// import { createBrowserHistory } from 'history';
 import  ReactDOM from "react-dom";
 import  React from "react";
 import {
@@ -12,7 +11,6 @@ import {
     BrowserRouter as Router
 } from 'react-router-dom';
 import PostList from "./components/Posts";
-import Login from "./components/Login";
 import Home from "./components/Home";
 import Header from "./components/Header";
 import Comments from "./components/Comments";
@@ -20,14 +18,13 @@ import Comments from "./components/Comments";
 class App extends React.Component{
     render(){
         return(
-            <Router  history={ history }>
+            <Router>
                 <div>
-                    <Header history={history}/>
+                    <Header/>
 
                     <Route path={"/posts"} component={PostList} />
                     <Route exact path="/" component={Home}/>
-                    <Route path={"/login"} component={Login}/>
-                    <Route path={"/post/:id"} component={Comments}/>
+                    <Route path={"/post/:postId"} component={Comments}/>
                 </div>
 
             </Router>

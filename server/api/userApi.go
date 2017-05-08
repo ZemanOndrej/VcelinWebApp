@@ -42,9 +42,6 @@ func GetUsers(c *gin.Context) {
 	context.Find(&users)
 	context.Close()
 
-	if (len(users) <= 0) {
-		c.JSON(http.StatusNotFound, gin.H{"status" : http.StatusNotFound, "message" : "No users found!"})
-	}
 
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : users})
 

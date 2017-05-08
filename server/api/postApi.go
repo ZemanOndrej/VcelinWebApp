@@ -12,8 +12,6 @@ type PostModel struct {
 	Message string `json:"message" binding:"required"`
 }
 
-
-
 func CreatePost(c *gin.Context) {
 	user, err := c.Get("User")
 	var postModel PostModel
@@ -27,7 +25,9 @@ func CreatePost(c *gin.Context) {
 				defer context.Close()
 				post := db.Post{Message: postModel.Message, User:user.(db.User)};
 				context.Create(&post)
-				c.JSON(http.StatusCreated, gin.H{"message" : "Post item created successfully!", "id": post.ID})
+				post.User.Password=""
+				post.User.Email=""
+				c.JSON(http.StatusCreated, gin.H{"message" : "Post item created successfully!", "post": post})
 			} else {
 				c.JSON(http.StatusBadRequest, gin.H{"message" : "Post was not created, Post message is empty"})
 
@@ -50,10 +50,6 @@ func FetchAllPosts(c *gin.Context) {
 	context := db.Database()
 	context.Find(&posts)
 	context.Close()
-
-	if (len(posts) <= 0) {
-		c.JSON(http.StatusNotFound, gin.H{"status" : http.StatusNotFound, "message" : "No posts found!"})
-	}
 
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
 }

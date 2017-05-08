@@ -87,7 +87,6 @@ func AuthRequired() gin.HandlerFunc {
 		raw := c.Request.Header.Get("token")
 
 		token, err := jwt.Parse(raw, func(token *jwt.Token) (interface{}, error) {
-			// Don't forget to validate the alg is what you expect:
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
@@ -98,27 +97,17 @@ func AuthRequired() gin.HandlerFunc {
 			if token.Valid {
 				var foundUser db.User
 				claims := token.Claims.(jwt.MapClaims)
-
-
-				//fmt.Printf("\n<"+claims["userId"].(string)+">\n")
 				if s, ok := strconv.ParseUint(claims["userId"].(string), 10, 32); ok == nil {
-					//fmt.Printf("%s, %v\n", fmt.Sprint(claims["userId"]), s)
-
-
 					foundUser.ID = uint(s)
 					context := db.Database()
 					defer context.Close()
-
 					context.First(&foundUser)
-					//fmt.Printf(fmt.Sprint(foundUser))
 					c.Set("User", foundUser)
 					c.Next()
 				} else {
-					c.AbortWithError(http.StatusUnauthorized, ok)
+					c.AbortWithError(http.StatusUnauthorized, err)
 
 				}
-
-
 
 			} else {
 				fmt.Print("Token is not valid \n")
@@ -140,7 +129,7 @@ func Login(c *gin.Context) {
 	//fmt.Printf(fmt.Sprint(decodedBody )+"   "+ fmt.Sprint(err) )
 
 
-	if i:=c.Bind(&loginModel);i == nil {
+	if i := c.Bind(&loginModel); i == nil {
 		context := db.Database()
 		var foundUser db.User
 
@@ -170,7 +159,7 @@ func Login(c *gin.Context) {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind" , "error":i})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind", "error":i})
 		fmt.Println("could not bind   err:" + fmt.Sprint(i))
 	}
 }

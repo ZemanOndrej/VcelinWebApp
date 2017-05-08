@@ -4,18 +4,26 @@ import (
 	"github.com/gin-gonic/gin"
 	"vcelin/server/api"
 	_ "vcelin/server/db"
-	"vcelin/server/db"
 	"gopkg.in/gin-contrib/cors.v1"
+	"time"
 )
 
 func main() {
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
-	router.Use(cors.Default())
+
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:true,
+		AllowMethods:     []string{"PUT", "POST","GET","DELETE"},
+		AllowHeaders:     []string{"token","cache-control" ,"Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+		MaxAge: 12 * time.Hour,
+	}))
 
 	api.InitKeys()
-	db.InitDb()
+	//db.InitDb()
 
 	authorized := router.Group("/vcelin")
 	authorized.Use(api.AuthRequired())
@@ -25,13 +33,18 @@ func main() {
 		authorized.GET("/api/posts/:id", api.FetchSinglePost)
 		authorized.PUT("/api/posts/:id", api.UpdatePost)
 		authorized.DELETE("/api/posts/:id", api.DeletePost)
+
 		authorized.POST("/api/users", api.PostUser)
 		authorized.GET("/api/users", api.GetUsers)
 		authorized.GET("/api/users/:id", api.GetUser)
 		authorized.PUT("/api/users/:id", api.UpdateUser)
 		authorized.DELETE("/api/users/:id", api.DeleteUser)
+
 		authorized.POST("/api/comments", api.CreateComment)
 		authorized.GET("/api/comments", api.FetchAllComments)
+
+		authorized.GET("/api/post/:id/comments", api.FetchCommentsForPost)
+
 		authorized.GET("/api/comments/:id", api.FetchSingleComment)
 		authorized.PUT("/api/comments/:id", api.UpdateComment)
 		authorized.DELETE("/api/comments/:id", api.DeleteComment)
@@ -44,7 +57,6 @@ func main() {
 	}
 	router.Run(":1337")
 }
-
 
 
 

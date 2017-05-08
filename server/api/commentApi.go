@@ -9,7 +9,7 @@ import (
 
 type CommentModel struct {
 	Message string `json:"message" binding:"required"`
-	PostId  uint `json:"postId" binding:"required"`
+	PostId  string`json:"postId" binding:"required"`
 }
 
 func CreateComment(c *gin.Context) {
@@ -18,19 +18,27 @@ func CreateComment(c *gin.Context) {
 
 	if err {
 		if c.Bind(&CommentModel) == nil {
-			if len(CommentModel.Message) > 0 {
 
-				context := db.Database()
-				defer context.Close()
-				post := db.Post{}
-				post.ID = CommentModel.PostId
-				context.Find(&post)
+			if s, ok := strconv.ParseUint(CommentModel.PostId, 10, 32); ok == nil {
+				if len(CommentModel.Message) > 0 &&s > 0 {
 
-				Comment := db.Comment{Message: CommentModel.Message, User:user.(db.User), Post:post};
-				context.Create(&Comment)
-				c.JSON(http.StatusCreated, gin.H{"message" : "Comment item created successfully!", "id": Comment.ID})
+					context := db.Database()
+					defer context.Close()
+					post := db.Post{}
+					post.ID = uint(s)
+					context.Find(&post)
+
+					Comment := db.Comment{Message: CommentModel.Message, User:user.(db.User), Post:post};
+					context.Create(&Comment)
+					Comment.User.Email = ""
+					Comment.User.Password = ""
+					c.JSON(http.StatusCreated, gin.H{"message" : "Comment item created successfully!", "comment": Comment})
+				} else {
+					c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created, Comment message is empty"})
+
+				}
 			} else {
-				c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created, Comment message is empty"})
+				c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created PostId is not valid"})
 
 			}
 
@@ -44,6 +52,23 @@ func CreateComment(c *gin.Context) {
 
 }
 
+func FetchCommentsForPost(c *gin.Context) {
+
+	id := c.Params.ByName("id")
+	var Comments [] db.Comment
+
+	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+
+		context := db.Database()
+		context.Where("post_id = ?", postId).Find(&Comments)
+
+		context.Close()
+
+		c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : Comments, "postId":postId})
+	}
+
+}
+
 func FetchAllComments(c *gin.Context) {
 
 	var Comments [] db.Comment
@@ -52,10 +77,6 @@ func FetchAllComments(c *gin.Context) {
 	context.Find(&Comments)
 	context.Close()
 
-	if (len(Comments) <= 0) {
-		c.JSON(http.StatusNotFound, gin.H{"status" : http.StatusNotFound, "message" : "No Comments found!"})
-	}
-
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : Comments})
 }
 
@@ -63,15 +84,11 @@ func FetchSingleComment(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var Comment db.Comment
 
-	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if len(Comment.Message) > 0 {
-			Comment.ID = uint(userId)
-			context := db.Database()
-			context.Find(&Comment)
-			c.JSON(http.StatusOK, gin.H{"Comment" : Comment})
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{})
-		}
+	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		Comment.ID = uint(commentId)
+		context := db.Database()
+		context.Find(&Comment)
+		c.JSON(http.StatusOK, gin.H{"Comment" : Comment})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}

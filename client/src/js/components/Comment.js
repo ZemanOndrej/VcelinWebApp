@@ -1,9 +1,8 @@
 /**
- * Created by zeman on 07-May-17.
+ * Created by zeman on 08-May-17.
  */
 import React from "react";
-import Link from "react-router-dom/es/Link";
-export default class Post extends React.Component {
+export default class Comment extends React.Component {
 
     constructor(props){
         super(props)
@@ -13,7 +12,7 @@ export default class Post extends React.Component {
         return(
             <div style={{padding:"10px 20px 10px 20px"}}>
                 <h3>
-                {data.message}
+                    {data.message}
                 </h3>
 
                 <span>
@@ -22,8 +21,8 @@ export default class Post extends React.Component {
                 <span>sent:
                     {data.User.name}
                 </span>
-                <Link to={"/post/"+data.ID}>Comments</Link>
             </div>
         )
     }
+
 }

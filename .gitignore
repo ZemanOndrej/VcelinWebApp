@@ -73,3 +73,4 @@ client/node_modules/
 /client/src/css/bootstrap.min.css
 !/client/package.json
 /npm-debug.log
+/client/npm-debug.log
