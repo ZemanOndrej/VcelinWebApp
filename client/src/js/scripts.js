@@ -1,15 +1,11 @@
 /**
  * Created by zeman on 04-May-17.
  */
-
 // import { createBrowserHistory } from 'history';
-import  ReactDOM from "react-dom";
-import  React from "react";
-import {
-    Route,
-    Link,
-    BrowserRouter as Router
-} from 'react-router-dom';
+import ReactDOM from "react-dom";
+import React from "react";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+
 import PostList from "./components/Posts";
 import Home from "./components/Home";
 import Header from "./components/Header";
@@ -20,11 +16,13 @@ class App extends React.Component{
         return(
             <Router>
                 <div>
-                    <Header/>
+                    <Header />
 
-                    <Route path={"/posts"} component={PostList} />
-                    <Route exact path="/" component={Home}/>
-                    <Route path={"/post/:postId"} component={Comments}/>
+                    <Switch>
+                        <Route path={"/posts"} component={PostList} exact/>
+                        <Route exact path="/" component={Home}/>
+                        <Route path={"/posts/:postId"} component={Comments}/>
+                    </Switch>
                 </div>
 
             </Router>

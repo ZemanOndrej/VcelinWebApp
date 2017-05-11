@@ -10,6 +10,12 @@ export default class Post extends React.Component {
     }
     render(){
         let data = this.props.data;
+
+
+        let link = null;
+        if (this.props.link) {
+            link = <Link to={"/posts/" + data.ID}>Comments</Link>
+        }
         return(
             <div style={{padding:"10px 20px 10px 20px"}}>
                 <h3>
@@ -22,7 +28,7 @@ export default class Post extends React.Component {
                 <span>sent:
                     {data.User.name}
                 </span>
-                <Link to={"/post/"+data.ID}>Comments</Link>
+                {link}
             </div>
         )
     }

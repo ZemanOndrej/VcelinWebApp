@@ -1,6 +1,7 @@
 import React from "react";
+import {withRouter} from "react-router-dom";
 
-export default class Login extends React.Component {
+class Login extends React.Component {
     constructor(props) {
         super(props);
 
@@ -24,38 +25,6 @@ export default class Login extends React.Component {
         this.setState({password: event.target.value})
     }
 
-    render() {
-
-        const isAuthorized = this.state.isAuthorized;
-        if (isAuthorized) {
-            return (
-                <div style={{float: "right"}}>
-                    <form className="navbar-form" onSubmit={this.handleLogoutClick.bind(this)}>
-                        <button className="btn btn-default">
-                            Logout
-                        </button>
-                    </form>
-                </div>
-            )
-        }
-        return (
-            <div style={{float: "right"}}>
-                <form className="navbar-form" onSubmit={this.handleLoginClick.bind(this)}>
-                    <div className="input-group">
-                        <input className="form-control" type="text" value={this.state.email} placeholder="Email"
-                               onChange={this.handleChangeEmail}/>
-                    </div>
-                    <div className="input-group">
-                        <input className="form-control" type="password" value={this.state.password}
-                               placeholder="Password" onChange={this.handleChangePassword}/>
-                    </div>
-                    <button className="btn btn-primary">Login</button>
-                    {this.renderError()}
-                </form>
-            </div>
-        )
-    }
-
     handleLoginClick(event) {
         event.preventDefault();
 
@@ -64,7 +33,7 @@ export default class Login extends React.Component {
             "Email": this.state.email
         });
 
-        fetch("http://localhost:1337/vcelin/api/login", {
+        fetch("http://localhost:5513/vcelin/api/login", {
             method: "POST",
             body: data,
             mode: "cors",
@@ -74,9 +43,11 @@ export default class Login extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then((json) => {
-                        this.setState({"loginInfo": json,"isAuthorized": true, error: null});
+                        this.setState({"loginInfo": json, "isAuthorized": true, error: null});
                         localStorage.setItem("token", json.token);
                         localStorage.setItem("isAuthorized", true);
+                        localStorage.setItem("userName", json.user.name);
+                        this.props.updateHeader();
                     });
                 }
 
@@ -85,9 +56,12 @@ export default class Login extends React.Component {
     }
 
     handleLogoutClick() {
+
         localStorage.removeItem("token");
         localStorage.removeItem("isAuthorized");
-        this.setState({isAuthorized: false, loginInfo: null});
+        this.props.history.push("/");
+        this.setState({isAuthorized: false})
+
     }
 
     renderError() {
@@ -97,6 +71,47 @@ export default class Login extends React.Component {
 
         return <div style={{color: 'red'}}>{this.state.error}</div>;
     }
+
+    render() {
+
+        const isAuthorized = this.state.isAuthorized;
+        if (isAuthorized) {
+            return (
+                <div style={{float: "right"}}>
+
+                    <ul className="nav navbar-nav">
+                        <li style={{paddingTop: "15px", fontSize: "22px", marginRight: "20px"}}>
+                            <span>Welcome {localStorage.getItem("userName")}</span>
+                        </li>
+                        <li style={{paddingTop: "10px"}}>
+                            <button className="btn btn-default" onClick={this.handleLogoutClick}>
+                                Logout
+                            </button>
+
+                        </li>
+                    </ul>
+                </div>
+            )
+        }
+        return (
+            <div style={{float: "right"}}>
+                <form className="navbar-form">
+                    <div className="input-group">
+                        <input className="form-control" type="text" value={this.state.email} placeholder="Email"
+                               onChange={this.handleChangeEmail}/>
+                    </div>
+                    <div className="input-group">
+                        <input className="form-control" type="password" value={this.state.password}
+                               placeholder="Password" onChange={this.handleChangePassword}/>
+                    </div>
+                    <button className="btn btn-primary" onClick={this.handleLoginClick}>Login</button>
+                    {this.renderError()}
+                </form>
+            </div>
+        )
+    }
+
 }
+export default withRouter(Login);
 
 

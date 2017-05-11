@@ -139,7 +139,7 @@ func Login(c *gin.Context) {
 		if foundUser.ID > 0 && err == nil {
 
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-				"exp": time.Now().Add(time.Minute * 30).Unix(),
+				"exp": time.Now().Add(time.Minute * 120).Unix(),
 				"iat": time.Now().Unix(),
 				"iss":"admin",
 				"alg":"hs256",
@@ -153,8 +153,9 @@ func Login(c *gin.Context) {
 				log.Printf("Error signing token: %v\n", err)
 				return
 			}
+			foundUser.Password = ""
 
-			c.JSON(http.StatusOK, gin.H{"status": "you are logged in", "email":loginModel.Email, "token":tokenString})
+			c.JSON(http.StatusOK, gin.H{"status": "you are logged in", "user":foundUser, "token":tokenString})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
 		}

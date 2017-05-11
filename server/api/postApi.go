@@ -6,6 +6,7 @@ import (
 	"vcelin/server/db"
 	"fmt"
 	"strconv"
+	"github.com/jinzhu/gorm"
 )
 
 type PostModel struct {
@@ -48,7 +49,7 @@ func FetchAllPosts(c *gin.Context) {
 	var posts [] db.Post
 
 	context := db.Database()
-	context.Find(&posts)
+	context.Order("created_at desc").Preload("User").Find(&posts)
 	context.Close()
 
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
@@ -58,15 +59,20 @@ func FetchSinglePost(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var Post db.Post
 
-	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if len(Post.Message) > 0 {
-			Post.ID = uint(userId)
-			context := db.Database()
-			context.Find(&Post)
-			c.JSON(http.StatusOK, gin.H{"Post" : Post})
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{})
+	fmt.Println(id)
+	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		Post.ID = uint(postId)
+		context := db.Database()
+		context.Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
+			return db.Order("comments.created_at desc")
+		}).Preload("Comments.User").Find(&Post)
+		Post.User.Email = ""
+		Post.User.Password = ""
+		for i := range Post.Comments {
+			Post.Comments[i].User.Password = ""
+			Post.Comments[i].User.Email = ""
 		}
+		c.JSON(http.StatusOK, gin.H{"Post" : Post})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}

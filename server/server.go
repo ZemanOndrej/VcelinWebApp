@@ -55,7 +55,7 @@ func main() {
 		v1.POST("/api/login", api.Login)
 		v1.POST("/api/register", api.Register)
 	}
-	router.Run(":1337")
+	router.Run(":5513")
 }
 
 

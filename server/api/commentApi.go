@@ -60,7 +60,7 @@ func FetchCommentsForPost(c *gin.Context) {
 	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
 		context := db.Database()
-		context.Where("post_id = ?", postId).Find(&Comments)
+		context.Where("post_id = ?", postId).Order("created_at desc").Preload("User").Find(&Comments)
 
 		context.Close()
 
@@ -74,7 +74,7 @@ func FetchAllComments(c *gin.Context) {
 	var Comments [] db.Comment
 
 	context := db.Database()
-	context.Find(&Comments)
+	context.Order("created_at desc").Find(&Comments)
 	context.Close()
 
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : Comments})

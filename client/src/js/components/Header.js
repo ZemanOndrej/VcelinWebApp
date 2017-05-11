@@ -6,7 +6,13 @@ import * as React from "react";
 import Link from "react-router-dom/es/Link";
 import Login from "./Login";
 export default class Header extends React.Component {
+    constructor(props) {
+        super(props);
+    }
     render(){
+
+
+        let token = localStorage.getItem("token");
         return(
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
@@ -16,10 +22,10 @@ export default class Header extends React.Component {
 
                     <ul className="nav navbar-nav">
                         <li><Link to="/">Home</Link></li>
-                        <li><Link to="/posts">Posts</Link></li>
-
+                        { token && token.length > 0 ? (
+                            <li><Link to="/posts">Posts</Link></li>) : ("")}
                     </ul>
-                    <Login history={this.props.history}/>
+                    <Login history={this.props.history} updateHeader={(p) => this.setState({isAuthorized: p})}/>
                 </div>
             </nav>
         )

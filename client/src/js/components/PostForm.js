@@ -28,7 +28,7 @@ export default class PostForm extends React.Component {
             let data = JSON.stringify({
                 "Message":this.state.message
             });
-            fetch("http://localhost:1337/vcelin/api/posts", {
+            fetch("http://localhost:5513/vcelin/api/posts", {
                 method: "POST",
                 body: data,
                 mode: "cors",

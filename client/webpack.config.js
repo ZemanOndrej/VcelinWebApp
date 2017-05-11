@@ -8,11 +8,18 @@ let APP_DIR = path.join(__dirname, "/src");
 
 let config = {
 
+    devServer: {
+        publicPath: "/",
+        historyApiFallback: {
+            index: 'index.html',
+        }
+    },
     context: APP_DIR,
     devtool: debug ? "inline-sourcemap" : null,
     entry: "./js/scripts.js",
     watch: true,
     output: {
+        publicPath: "/",
         path: APP_DIR + "/js",
         filename: "scripts.min.js"
     },
