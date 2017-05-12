@@ -12,6 +12,10 @@ type CommentModel struct {
 	PostId  string`json:"postId" binding:"required"`
 }
 
+type UpdateCommentModel struct {
+	Message string `json:"message" binding:"required"`
+}
+
 func CreateComment(c *gin.Context) {
 	user, err := c.Get("User")
 	var CommentModel CommentModel
@@ -60,6 +64,7 @@ func FetchCommentsForPost(c *gin.Context) {
 	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
 		context := db.Database()
+		defer context.Close()
 		context.Where("post_id = ?", postId).Order("created_at desc").Preload("User").Find(&Comments)
 
 		context.Close()
@@ -74,8 +79,9 @@ func FetchAllComments(c *gin.Context) {
 	var Comments [] db.Comment
 
 	context := db.Database()
+	defer context.Close()
+
 	context.Order("created_at desc").Find(&Comments)
-	context.Close()
 
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : Comments})
 }
@@ -87,6 +93,7 @@ func FetchSingleComment(c *gin.Context) {
 	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		Comment.ID = uint(commentId)
 		context := db.Database()
+		defer context.Close()
 		context.Find(&Comment)
 		c.JSON(http.StatusOK, gin.H{"Comment" : Comment})
 	} else {
@@ -96,11 +103,11 @@ func FetchSingleComment(c *gin.Context) {
 
 func UpdateComment(c *gin.Context) {
 	id := c.Params.ByName("id")
-	user, err := c.Get("User")
-	var commentModel PostModel
+	user, okUser := c.Get("User")
+	var commentModel UpdateCommentModel
 
 	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if err {
+		if okUser {
 			if c.Bind(&commentModel) == nil {
 				if len(commentModel.Message) > 0 {
 
@@ -109,24 +116,22 @@ func UpdateComment(c *gin.Context) {
 					var foundComment db.Comment
 					foundComment.ID = uint(commentId)
 					context.Find(&foundComment)
-					if foundComment.UserId == user.(db.User).ID {
+					//admin comment edit with admin id 1
+					if foundComment.UserId == user.(db.User).ID || user.(db.User).ID == 1 {
 						foundComment.Message = commentModel.Message
 						context.Save(&foundComment)
 						c.JSON(http.StatusCreated, gin.H{"message" : "Comment updated successfully!", "id": foundComment.ID})
 
 					} else {
-						c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not updated, you cant edit others comment"})
+						c.JSON(http.StatusUnauthorized, gin.H{"message" : "Comment was not updated, you cant edit others comment"})
 					}
 
 				} else {
 					c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not updated, Comment message is empty"})
-
 				}
-
 			} else {
 				c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not updated"})
 			}
-
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created. Couldnt find user"})
 		}
@@ -140,14 +145,23 @@ func UpdateComment(c *gin.Context) {
 func DeleteComment(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var Comment db.Comment
+	user, okUser := c.Get("User")
 
 	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if commentId > 0 {
+
+		if okUser && commentId > 0 {
+
 			Comment.ID = uint(commentId)
 			context := db.Database()
-			context.Delete(&Comment)
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Comment deleted successfully!"})
-
+			defer context.Close()
+			context.Find(&Comment)
+			//admin user id is 1 he can delete what he wants
+			if user.(db.User).ID == Comment.UserId || user.(db.User).ID == 1 {
+				context.Delete(&Comment)
+				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Comment deleted successfully!"})
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"message":"You cannot delete this comment"})
+			}
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{})
 

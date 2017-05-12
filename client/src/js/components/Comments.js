@@ -7,15 +7,16 @@ import CommentForm from "./CommentForm";
 import Post from "./Post";
 export default class Comments extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
+        this.newCommentHandler = this.newCommentHandler.bind(this);
+        this.deleteCommentHandler = this.deleteCommentHandler.bind(this);
+        this.updateCommentHandler = this.updateCommentHandler.bind(this);
 
-        this.newCommentHandler=this.newCommentHandler.bind(this);
         let token = localStorage.getItem("token");
-        this.state = {data: [], token: token};
+        this.state = {data: {}, token: token};
 
-        console.log("constructor comments  ");
         if (token) {
             fetch("http://localhost:5513/vcelin/api/posts/" + this.props.match.params.postId, {
                 method: "GET",
@@ -38,10 +39,28 @@ export default class Comments extends React.Component {
 
     }
 
+    updateCommentHandler(event) {
+        let data = this.state.data;
+        for (let comment of this.state.data.Comments) {
+            if (comment.ID === event.ID) {
+                comment.message = event.Message;
+                break;
+            }
+        }
+        this.setState({data:data})
+    }
+
     newCommentHandler(e) {
 
         let data = this.state.data;
         data.Comments = [e, ...data.Comments];
+        this.setState({data: data});
+    }
+
+    deleteCommentHandler(commentId) {
+
+        let data = this.state.data;
+        data.Comments = data.Comments.filter(c => c.ID !== commentId);
         this.setState({data: data});
     }
 
@@ -50,16 +69,17 @@ export default class Comments extends React.Component {
             return (<div> Please Login</div>)
         }
 
-        let comments =null;
+        let comments = null;
         let post = null;
         if (!this.state.data.Comments) {
             post = <div>something went wrong ;(</div>;
-            comments=<div>No comments ;(</div>
+            comments = <div>No comments ;(</div>
         }
         else {
             post = <Post data={this.state.data} link={false}/>;
-            comments = this.state.data.Comments.map((object, i) => {
-                return <Comment data={object} key={i}/>;
+            comments = this.state.data.Comments.map((comment, key) => {
+                return <Comment data={comment} updateCommentHandler={this.updateCommentHandler}
+                                deleteCommentHandler={this.deleteCommentHandler} key={key}/>;
             })
         }
 
@@ -68,7 +88,7 @@ export default class Comments extends React.Component {
                 {post}
 
                 <h2>Comments</h2>
-                <CommentForm postId={this.props.match.params.postId}  newCommentHandler={this.newCommentHandler} />
+                <CommentForm postId={this.props.match.params.postId} newCommentHandler={this.newCommentHandler}/>
                 {comments}
             </div>
         )

@@ -34,7 +34,7 @@ func main() {
 		authorized.PUT("/api/posts/:id", api.UpdatePost)
 		authorized.DELETE("/api/posts/:id", api.DeletePost)
 
-		authorized.POST("/api/users", api.PostUser)
+		authorized.POST("/api/users", api.CreateUser)
 		authorized.GET("/api/users", api.GetUsers)
 		authorized.GET("/api/users/:id", api.GetUser)
 		authorized.PUT("/api/users/:id", api.UpdateUser)

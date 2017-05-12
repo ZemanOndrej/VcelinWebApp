@@ -5,9 +5,12 @@ import (
 	"net/http"
 	"vcelin/server/db"
 	"strconv"
+	"math"
 )
 
-func PostUser(c *gin.Context) {
+func CreateUser(c *gin.Context) {
+
+	c.JSON(http.StatusBadGateway, gin.H{})
 
 }
 
@@ -19,8 +22,12 @@ func GetUser(c *gin.Context) {
 		if len(User.Email) > 0 {
 			User.ID = uint(userId)
 			context := db.Database()
+			defer context.Close()
 			context.Find(&User)
-			c.JSON(http.StatusOK, gin.H{"Comment" : User})
+			User.Password = ""
+			User.Email = ""
+
+			c.JSON(http.StatusOK, gin.H{"User" : User})
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{})
 		}
@@ -32,17 +39,19 @@ func GetUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-
+	c.JSON(http.StatusBadGateway, gin.H{})
 }
 
 func GetUsers(c *gin.Context) {
 	var users [] db.User
 
 	context := db.Database()
+	defer context.Close()
 	context.Find(&users)
-	context.Close()
-
-
+	for i := range users {
+		users[i].Password = ""
+		users[i].Email = ""
+	}
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : users})
 
 }
@@ -50,15 +59,23 @@ func GetUsers(c *gin.Context) {
 func DeleteUser(c *gin.Context) {
 
 	id := c.Params.ByName("id")
-	var User db.User
+	var wantedUser db.User
+	currUser, okUser := c.Get("User")
 
 	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if userId > 0 {
-			User.ID = uint(userId)
+		if okUser && userId > 0 && userId != 1 {
+			wantedUser.ID = uint(userId)
 			context := db.Database()
-			context.Delete(&User)
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Comment deleted successfully!"})
+			defer context.Close()
+			context.Find(&wantedUser)
+			//only admin can delete other users than himself
+			if wantedUser.ID == currUser.(db.User).ID || currUser.(db.User).ID == 1 {
+				context.Delete(&wantedUser)
+				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Comment deleted successfully!"})
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"message":"you cannot delete this user"})
 
+			}
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{})
 

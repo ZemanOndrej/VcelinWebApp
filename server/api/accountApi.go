@@ -131,6 +131,7 @@ func Login(c *gin.Context) {
 
 	if i := c.Bind(&loginModel); i == nil {
 		context := db.Database()
+		defer context.Close()
 		var foundUser db.User
 
 		context.Where("email = ?", loginModel.Email).First(&foundUser)
@@ -169,6 +170,7 @@ func Register(c *gin.Context) {
 	var registerModel RegisterModel
 	if c.Bind(&registerModel) == nil {
 		context := db.Database()
+		defer context.Close()
 		var foundUser db.User
 		context.Where("email = ?", registerModel.Email).First(&foundUser)
 		if foundUser.ID <= 0 {

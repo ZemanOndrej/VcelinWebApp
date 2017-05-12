@@ -47,6 +47,7 @@ class Login extends React.Component {
                         localStorage.setItem("token", json.token);
                         localStorage.setItem("isAuthorized", true);
                         localStorage.setItem("userName", json.user.name);
+                        localStorage.setItem("userId", json.user.ID);
                         this.props.updateHeader();
                     });
                 }

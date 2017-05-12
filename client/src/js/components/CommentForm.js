@@ -38,7 +38,6 @@ export default class CommentForm extends React.Component {
                 .then((response) => {
                     if (response.ok) {
                         return response.json().then((json) => {
-                            console.log("fetch  ", json.comment);
                             this.props.newCommentHandler(json.comment)
                         });
                     }
@@ -62,13 +61,13 @@ export default class CommentForm extends React.Component {
         return(
             <div style={{padding:"10px 20px 10px 20px"}}>
 
-                <form onSubmit={this.handleSendComment.bind(this)}>
+                <form >
                     <div className="input-group">
                         <textarea className="form-control" type="text" placeholder="Message" rows="3"
                                   value={this.state.message}
                                   onChange={this.handleMessageChange}/>
                     </div>
-                    <button className="btn btn-primary">Send</button>
+                    <button className="btn btn-primary" onClick={this.handleSendComment}>Send</button>
                     {this.renderError()}
                 </form>
             </div>

@@ -26,8 +26,8 @@ func CreatePost(c *gin.Context) {
 				defer context.Close()
 				post := db.Post{Message: postModel.Message, User:user.(db.User)};
 				context.Create(&post)
-				post.User.Password=""
-				post.User.Email=""
+				post.User.Password = ""
+				post.User.Email = ""
 				c.JSON(http.StatusCreated, gin.H{"message" : "Post item created successfully!", "post": post})
 			} else {
 				c.JSON(http.StatusBadRequest, gin.H{"message" : "Post was not created, Post message is empty"})
@@ -49,9 +49,8 @@ func FetchAllPosts(c *gin.Context) {
 	var posts [] db.Post
 
 	context := db.Database()
+	defer context.Close()
 	context.Order("created_at desc").Preload("User").Find(&posts)
-	context.Close()
-
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
 }
 
@@ -63,6 +62,7 @@ func FetchSinglePost(c *gin.Context) {
 	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		Post.ID = uint(postId)
 		context := db.Database()
+		defer context.Close()
 		context.Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
 			return db.Order("comments.created_at desc")
 		}).Preload("Comments.User").Find(&Post)
@@ -94,13 +94,14 @@ func UpdatePost(c *gin.Context) {
 					var foundPost db.Post
 					foundPost.ID = uint(postId)
 					context.Find(&foundPost)
-					if foundPost.UserId == user.(db.User).ID {
+					//admin can edit post with id 1
+					if foundPost.UserId == user.(db.User).ID || user.(db.User).ID == 1 {
 						foundPost.Message = postModel.Message
 						context.Save(&foundPost)
 						c.JSON(http.StatusCreated, gin.H{"message" : "Post updated successfully!", "id": foundPost.ID})
 
 					} else {
-						c.JSON(http.StatusBadRequest, gin.H{"message" : "Post was not updated, you cant edit others posts"})
+						c.JSON(http.StatusUnauthorized, gin.H{"message" : "Post was not updated, you cant edit others posts"})
 					}
 
 				} else {
@@ -124,13 +125,21 @@ func UpdatePost(c *gin.Context) {
 func DeletePost(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var Post db.Post
+	user, okUser := c.Get("User")
 
 	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if postId > 0 {
+		if okUser && postId > 0 {
 			Post.ID = uint(postId)
 			context := db.Database()
-			context.Delete(&Post)
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Post deleted successfully!"})
+			defer context.Close()
+			context.Find(&Post)
+			//admin user id is 1 he can delete what he wants
+			if user.(db.User).ID == Post.UserId || user.(db.User).ID == 1 {
+				context.Delete(&Post)
+				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Post deleted successfully!"})
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"message":"You cannot delete this post"})
+			}
 
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{})

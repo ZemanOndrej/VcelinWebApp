@@ -11,6 +11,8 @@ export default class PostList extends React.Component {
     constructor(props) {
         super(props);
         this.newPostHandler = this.newPostHandler.bind(this);
+        this.deletePostHandler = this.deletePostHandler.bind(this);
+        this.updatePostHandler = this.updatePostHandler.bind(this);
 
         let token = localStorage.getItem("token");
         this.state = {token: token};
@@ -43,6 +45,24 @@ export default class PostList extends React.Component {
     }
 
 
+    deletePostHandler(postId) {
+
+        let data = this.state.data;
+        data = data.filter(c => c.ID !== postId);
+        this.setState({data: data});
+    }
+
+    updatePostHandler(event) {
+        let data = this.state.data;
+        for (let post of this.state.data) {
+            if (post.ID === event.ID) {
+                post.message = event.Message;
+                break;
+            }
+        }
+        this.setState({data:data})
+    }
+
     render() {
 
 
@@ -55,7 +75,9 @@ export default class PostList extends React.Component {
             posts= <div>No posts ;(</div>
         }else {
             posts=this.state.data.map((object, i)=>{
-                return <Post data={object} key={i} link={true}/>;
+                return <Post data={object} key={i}
+                             deletePostHandler={this.deletePostHandler}
+                             updatePostHandler={this.updatePostHandler} />;
             })
         }
         return (
