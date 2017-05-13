@@ -28,26 +28,32 @@ func main() {
 	authorized := router.Group("/vcelin")
 	authorized.Use(api.AuthRequired())
 	{
-		authorized.POST("/api/posts", api.CreatePost)
-		authorized.GET("/api/posts", api.FetchAllPosts)
-		authorized.GET("/api/posts/:id", api.FetchSinglePost)
-		authorized.PUT("/api/posts/:id", api.UpdatePost)
-		authorized.DELETE("/api/posts/:id", api.DeletePost)
-
 		authorized.POST("/api/users", api.CreateUser)
-		authorized.GET("/api/users", api.GetUsers)
-		authorized.GET("/api/users/:id", api.GetUser)
 		authorized.PUT("/api/users/:id", api.UpdateUser)
 		authorized.DELETE("/api/users/:id", api.DeleteUser)
 
+		authorized.GET("/api/users", api.GetUsers)
+		authorized.GET("/api/users/:id", api.GetUser)
+
+		authorized.POST("/api/posts", api.CreatePost)
+		authorized.PUT("/api/posts/:id", api.UpdatePost)
+		authorized.DELETE("/api/posts/:id", api.DeletePost)
+
+		authorized.GET("/api/posts/:id", api.FetchSinglePost)
+		authorized.GET("/api/posts", api.FetchAllPosts)
+		authorized.GET("/api/postspage/:id", api.FetchPostsOnPage)
+
+
+
 		authorized.POST("/api/comments", api.CreateComment)
-		authorized.GET("/api/comments", api.FetchAllComments)
-
-		authorized.GET("/api/post/:id/comments", api.FetchCommentsForPost)
-
-		authorized.GET("/api/comments/:id", api.FetchSingleComment)
 		authorized.PUT("/api/comments/:id", api.UpdateComment)
 		authorized.DELETE("/api/comments/:id", api.DeleteComment)
+
+		authorized.GET("/api/comments/:id", api.FetchSingleComment)
+		authorized.GET("/api/comments", api.FetchAllComments)
+		authorized.GET("/api/post/:id/comments", api.FetchCommentsForPost)
+		authorized.GET("/api/commentspage/:id", api.FetchCommentsOnPage)
+
 	}
 
 	v1 := router.Group("/vcelin")

@@ -4,36 +4,36 @@
 import React from "react";
 export default class PostForm extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
-        this.state={error:null, message:""};
+        this.state = {error: null, message: ""};
 
-        this.handleSendPost= this.handleSendPost.bind(this);
+        this.handleSendPost = this.handleSendPost.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
 
     }
 
-    handleMessageChange(event){
+    handleMessageChange(event) {
 
         this.setState({message: event.target.value})
     }
 
-    handleSendPost(event){
+    handleSendPost(event) {
 
         event.preventDefault();
-        console.log("message ",this.state.message);
+        console.log("message ", this.state.message);
 
-        if(this.state.message){
+        if (this.state.message) {
             let data = JSON.stringify({
-                "Message":this.state.message
+                "Message": this.state.message
             });
             fetch("http://localhost:5513/vcelin/api/posts", {
                 method: "POST",
                 body: data,
                 mode: "cors",
                 cache: "default",
-                headers: {"Content-type": "application/json", "token":localStorage.getItem("token")}
+                headers: {"Content-type": "application/json", "token": localStorage.getItem("token")}
             })
                 .then((response) => {
                     if (response.ok) {
@@ -46,11 +46,12 @@ export default class PostForm extends React.Component {
                     }
 
                 });
-        }else {
+        } else {
             this.setState({error: "Message is empty"});
         }
 
     }
+
     renderError() {
         if (!this.state.error) {
             return null;
@@ -59,9 +60,9 @@ export default class PostForm extends React.Component {
         return <div style={{color: 'red'}}>{this.state.error}</div>;
     }
 
-    render(){
-        return(
-            <div style={{padding:"10px 20px 10px 20px"}}>
+    render() {
+        return (
+            <div style={{padding: "10px 20px 10px 20px"}}>
 
                 <form onSubmit={this.handleSendPost.bind(this)}>
                     <div className="input-group">

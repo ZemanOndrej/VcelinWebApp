@@ -5,55 +5,14 @@ import (
 	"net/http"
 	"vcelin/server/db"
 	"strconv"
-	"math"
 )
 
 func CreateUser(c *gin.Context) {
-
 	c.JSON(http.StatusBadGateway, gin.H{})
-
-}
-
-func GetUser(c *gin.Context) {
-	id := c.Params.ByName("id")
-	var User db.User
-
-	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if len(User.Email) > 0 {
-			User.ID = uint(userId)
-			context := db.Database()
-			defer context.Close()
-			context.Find(&User)
-			User.Password = ""
-			User.Email = ""
-
-			c.JSON(http.StatusOK, gin.H{"User" : User})
-		} else {
-			c.JSON(http.StatusBadRequest, gin.H{})
-		}
-	} else {
-		c.JSON(http.StatusBadRequest, gin.H{})
-
-	}
-
 }
 
 func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusBadGateway, gin.H{})
-}
-
-func GetUsers(c *gin.Context) {
-	var users [] db.User
-
-	context := db.Database()
-	defer context.Close()
-	context.Find(&users)
-	for i := range users {
-		users[i].Password = ""
-		users[i].Email = ""
-	}
-	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : users})
-
 }
 
 func DeleteUser(c *gin.Context) {
@@ -86,6 +45,44 @@ func DeleteUser(c *gin.Context) {
 	}
 }
 
+
+func GetUsers(c *gin.Context) {
+	var users [] db.User
+
+	context := db.Database()
+	defer context.Close()
+	context.Find(&users)
+	for i := range users {
+		users[i].Password = ""
+		users[i].Email = ""
+	}
+	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : users})
+
+}
+
+func GetUser(c *gin.Context) {
+	id := c.Params.ByName("id")
+	var User db.User
+
+	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if len(User.Email) > 0 {
+			User.ID = uint(userId)
+			context := db.Database()
+			defer context.Close()
+			context.Find(&User)
+			User.Password = ""
+			User.Email = ""
+
+			c.JSON(http.StatusOK, gin.H{"User" : User})
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{})
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+
+	}
+
+}
 
 
 

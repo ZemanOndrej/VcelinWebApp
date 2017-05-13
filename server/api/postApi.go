@@ -44,41 +44,6 @@ func CreatePost(c *gin.Context) {
 
 }
 
-func FetchAllPosts(c *gin.Context) {
-
-	var posts [] db.Post
-
-	context := db.Database()
-	defer context.Close()
-	context.Order("created_at desc").Preload("User").Find(&posts)
-	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
-}
-
-func FetchSinglePost(c *gin.Context) {
-	id := c.Params.ByName("id")
-	var Post db.Post
-
-	fmt.Println(id)
-	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		Post.ID = uint(postId)
-		context := db.Database()
-		defer context.Close()
-		context.Preload("User").Preload("Comments", func(db *gorm.DB) *gorm.DB {
-			return db.Order("comments.created_at desc")
-		}).Preload("Comments.User").Find(&Post)
-		Post.User.Email = ""
-		Post.User.Password = ""
-		for i := range Post.Comments {
-			Post.Comments[i].User.Password = ""
-			Post.Comments[i].User.Email = ""
-		}
-		c.JSON(http.StatusOK, gin.H{"Post" : Post})
-	} else {
-		c.JSON(http.StatusBadRequest, gin.H{})
-	}
-
-}
-
 func UpdatePost(c *gin.Context) {
 	id := c.Params.ByName("id")
 	user, err := c.Get("User")
@@ -148,6 +113,71 @@ func DeletePost(c *gin.Context) {
 
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+
+}
+
+func FetchSinglePost(c *gin.Context) {
+	id := c.Params.ByName("id")
+	var Post db.Post
+
+	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		Post.ID = uint(postId)
+		context := db.Database()
+		defer context.Close()
+		context.Preload("User").Preload("CommentList", func(db *gorm.DB) *gorm.DB {
+			return db.Order("comments.created_at desc")
+		}).Preload("CommentList.User").Find(&Post)
+		Post.User.Email = ""
+		Post.User.Password = ""
+		for i := range Post.Comments {
+			Post.Comments[i].User.Password = ""
+			Post.Comments[i].User.Email = ""
+		}
+		c.JSON(http.StatusOK, gin.H{"Post" : Post})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+
+}
+
+func FetchAllPosts(c *gin.Context) {
+
+	var posts [] db.Post
+
+	context := db.Database()
+	defer context.Close()
+	context.Order("created_at desc").Preload("User").Find(&posts)
+	for y := range posts {
+		posts[y].User.Password = ""
+		posts[y].User.Email = ""
+	}
+	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
+}
+
+func FetchPostsOnPage(c *gin.Context) {
+
+	id := c.Params.ByName("id")
+	var posts [] db.Post
+
+	if pageNum, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+
+		context := db.Database()
+		defer context.Close()
+		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&posts)
+		for y := range posts {
+			posts[y].User.Password = ""
+			posts[y].User.Email = ""
+		}
+		if (len(posts) > 0) {
+			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
+
+		} else {
+			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more posts ;( "})
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message":"wrong page number"})
+
 	}
 
 }

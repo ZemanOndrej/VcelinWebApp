@@ -4,6 +4,9 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+const PageSize = 20
+
+
 type User struct {
 	gorm.Model
 	Name string `gorm:"not null" form:"name" json:"name"`
