@@ -15,8 +15,8 @@ func main() {
 
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins:true,
-		AllowMethods:     []string{"PUT", "POST","GET","DELETE"},
-		AllowHeaders:     []string{"token","cache-control" ,"Content-Type"},
+		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"token", "cache-control", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: false,
 		MaxAge: 12 * time.Hour,
@@ -43,16 +43,14 @@ func main() {
 		authorized.GET("/api/posts", api.FetchAllPosts)
 		authorized.GET("/api/postspage/:id", api.FetchPostsOnPage)
 
-
-
 		authorized.POST("/api/comments", api.CreateComment)
 		authorized.PUT("/api/comments/:id", api.UpdateComment)
 		authorized.DELETE("/api/comments/:id", api.DeleteComment)
 
 		authorized.GET("/api/comments/:id", api.FetchSingleComment)
 		authorized.GET("/api/comments", api.FetchAllComments)
-		authorized.GET("/api/post/:id/comments", api.FetchCommentsForPost)
-		authorized.GET("/api/commentspage/:id", api.FetchCommentsOnPage)
+		authorized.GET("/api/post/:id/comments", api.FetchAllCommentsForPost)
+		authorized.GET("/api/post/:id/commentspage/:pageId", api.FetchCommentsOnPage)
 
 	}
 

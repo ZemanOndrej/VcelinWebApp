@@ -6,23 +6,19 @@ export default class PostForm extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {error: null, message: ""};
-
         this.handleSendPost = this.handleSendPost.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
 
     }
 
     handleMessageChange(event) {
-
         this.setState({message: event.target.value})
     }
 
     handleSendPost(event) {
 
         event.preventDefault();
-        console.log("message ", this.state.message);
 
         if (this.state.message) {
             let data = JSON.stringify({
@@ -38,13 +34,9 @@ export default class PostForm extends React.Component {
                 .then((response) => {
                     if (response.ok) {
                         return response.json().then((json) => {
-
-                            console.log(json.post, json.message);
-
                             this.props.newPostHandler(json.post)
                         });
                     }
-
                 });
         } else {
             this.setState({error: "Message is empty"});

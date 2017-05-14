@@ -164,7 +164,7 @@ func FetchAllComments(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments})
 }
 
-func FetchCommentsForPost(c *gin.Context) {
+func FetchAllCommentsForPost(c *gin.Context) {
 
 	id := c.Params.ByName("id")
 	var comments [] db.Comment
@@ -187,27 +187,30 @@ func FetchCommentsForPost(c *gin.Context) {
 
 func FetchCommentsOnPage(c *gin.Context) {
 
-	id := c.Params.ByName("id")
+	pagePar := c.Params.ByName("pageId")
+	postPar := c.Params.ByName("id")
 	var comments [] db.Comment
 
-	if pageNum, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if pageNum, okPage := strconv.ParseUint(pagePar, 10, 32); okPage == nil {
+		if postId, okPost := strconv.ParseUint(postPar, 10, 32); okPost == nil {
+			context := db.Database()
+			defer context.Close()
+			context.Where("post_id = ?", postId).Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&comments)
+			for y := range comments {
+				comments[y].User.Password = ""
+				comments[y].User.Email = ""
+			}
+			if (len(comments) > 0) {
+				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments, "postId":postId})
 
-		context := db.Database()
-		defer context.Close()
-		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&comments)
-		for y := range comments {
-			comments[y].User.Password = ""
-			comments[y].User.Email = ""
-		}
-		if (len(comments) > 0) {
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments})
-
+			} else {
+				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more comments ;( "})
+			}
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more comments ;( "})
+			c.JSON(http.StatusBadRequest, gin.H{"message":"wrong post id"})
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message":"wrong page number"})
-
 	}
 
 }

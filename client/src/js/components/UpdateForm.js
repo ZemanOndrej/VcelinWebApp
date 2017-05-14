@@ -2,7 +2,7 @@
  * Created by zeman on 11-May-17.
  */
 
-import  React from "react";
+import React from "react";
 export default class UpdateForm extends React.Component {
 
 
@@ -29,9 +29,9 @@ export default class UpdateForm extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then((json) => {
-
-                        this.props.updateHandler({Message:this.state.message,ID:this.props.data.ID});
                         this.props.closeModal();
+                        this.props.updateHandler({Message: this.state.message, ID: this.props.data.ID});
+
                     });
                 }
 
@@ -55,9 +55,9 @@ export default class UpdateForm extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then((json) => {
-
-                        this.props.deleteHandler(this.props.data.ID);
                         this.props.closeModal();
+                        this.props.deleteHandler(this.props.data.ID);
+
                     });
                 }
 

@@ -45,7 +45,6 @@ func DeleteUser(c *gin.Context) {
 	}
 }
 
-
 func GetUsers(c *gin.Context) {
 	var users [] db.User
 

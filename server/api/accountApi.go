@@ -123,12 +123,6 @@ func AuthRequired() gin.HandlerFunc {
 func Login(c *gin.Context) {
 	var loginModel LoginModel
 
-
-	//var decodedBody map[string]string
-	//err := json.NewDecoder(c.Request.Body).Decode(&decodedBody)
-	//fmt.Printf(fmt.Sprint(decodedBody )+"   "+ fmt.Sprint(err) )
-
-
 	if i := c.Bind(&loginModel); i == nil {
 		context := db.Database()
 		defer context.Close()

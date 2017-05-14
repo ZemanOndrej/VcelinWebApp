@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"github.com/gin-gonic/gin"
 	"vcelin/server/db"
-	"fmt"
 	"strconv"
 	"github.com/jinzhu/gorm"
 )
@@ -19,7 +18,6 @@ func CreatePost(c *gin.Context) {
 
 	if err {
 		if c.Bind(&postModel) == nil {
-			fmt.Printf("\n< " + postModel.Message + "> \n")
 			if len(postModel.Message) > 0 {
 
 				context := db.Database()
@@ -125,9 +123,9 @@ func FetchSinglePost(c *gin.Context) {
 		Post.ID = uint(postId)
 		context := db.Database()
 		defer context.Close()
-		context.Preload("User").Preload("CommentList", func(db *gorm.DB) *gorm.DB {
-			return db.Order("comments.created_at desc")
-		}).Preload("CommentList.User").Find(&Post)
+		context.Preload("User").Preload("Comments", func(context *gorm.DB) *gorm.DB {
+			return context.Limit(db.PageSize).Order("comments.created_at desc")
+		}).Preload("Comments.User").Find(&Post)
 		Post.User.Email = ""
 		Post.User.Password = ""
 		for i := range Post.Comments {
@@ -173,7 +171,7 @@ func FetchPostsOnPage(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : posts})
 
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more posts ;( "})
+			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more posts ;( " })
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message":"wrong page number"})
