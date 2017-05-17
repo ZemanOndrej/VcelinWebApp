@@ -6,6 +6,7 @@ import (
 	_ "vcelin/server/db"
 	"gopkg.in/gin-contrib/cors.v1"
 	"time"
+	"vcelin/server/db"
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	}))
 
 	api.InitKeys()
-	//db.InitDb()
+	db.InitDb()
 
 	authorized := router.Group("/vcelin")
 	authorized.Use(api.AuthRequired())
@@ -54,12 +55,22 @@ func main() {
 
 	}
 
+	router.LoadHTMLFiles("./client/src/index.html")
+	router.Static("/css", "./client/src/css")
+	router.Static("/js", "./client/src/js")
+	router.NoRoute(index)
+
 	v1 := router.Group("/vcelin")
 	{
+		v1.GET("/", index)
 		v1.POST("/api/login", api.Login)
 		v1.POST("/api/register", api.Register)
 	}
 	router.Run(":5513")
+}
+
+func index(c *gin.Context) {
+	c.HTML(200, "index.html", gin.H{})
 }
 
 
