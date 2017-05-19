@@ -26,7 +26,7 @@ func main() {
 	api.InitKeys()
 	db.InitDb()
 
-	authorized := router.Group("/")
+	authorized := router.Group("/vcelin")
 	authorized.Use(api.AuthRequired())
 	{
 		authorized.POST("/api/users", api.CreateUser)
@@ -59,7 +59,7 @@ func main() {
 	router.LoadHTMLFiles("./client/src/index.html")
 	router.NoRoute(index)
 
-	r := router.Group("/")
+	r := router.Group("/vcelin")
 	{
 		r.GET("/", index)
 		r.POST("/api/login", api.Login)
