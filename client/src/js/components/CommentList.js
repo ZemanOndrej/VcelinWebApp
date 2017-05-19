@@ -26,7 +26,7 @@ export default class CommentList extends React.Component {
         this.state = {data: {}, token: token, page: 1};
 
         if (token) {
-            fetch("http://localhost:5513/api/posts/" + this.props.match.params.postId, {
+            fetch("http://ozeman.tk/vcelin/api/posts/" + this.props.match.params.postId, {
                 method: "GET",
                 headers: {"token": token}
             })
@@ -39,7 +39,7 @@ export default class CommentList extends React.Component {
                     } else if (response.status === 401) {
                         localStorage.removeItem("token");
                         localStorage.removeItem("isAuthorized");
-                        this.props.history.push("/")
+                        this.props.history.push("/vcelin")
 
                     }
                 });
@@ -50,7 +50,7 @@ export default class CommentList extends React.Component {
 
     loadMoreComments() {
         if (this.state.token) {
-            fetch(`http://localhost:5513/api/post/${this.props.match.params.postId}/commentspage/${this.state.page}`, {
+            fetch(`http://ozeman.tk/vcelin/api/post/${this.props.match.params.postId}/commentspage/${this.state.page}`, {
                 method: "GET",
                 headers: {"token": this.state.token}
             })
@@ -70,7 +70,7 @@ export default class CommentList extends React.Component {
                     else if (response.status === 401) {
                         localStorage.removeItem("token");
                         localStorage.removeItem("isAuthorized");
-                        this.props.history.push("/")
+                        this.props.history.push("/vcelin")
                     }
                 });
         }
@@ -101,7 +101,7 @@ export default class CommentList extends React.Component {
     }
 
     deletePostHandler() {
-        this.props.history.push("/posts")
+        this.props.history.push("/vcelin/posts")
     }
 
     updatePostHandler(event) {

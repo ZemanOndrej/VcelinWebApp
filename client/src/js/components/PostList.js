@@ -24,7 +24,7 @@ export default class PostList extends React.Component {
 
     loadPosts() {
         if (this.state.token) {
-            fetch("http://localhost:5513/api/postspage/" + this.state.page, {
+            fetch("http://ozeman.tk/vcelin/api/postspage/" + this.state.page, {
                 method: "GET",
                 headers: {"token": this.state.token}
             })
@@ -45,7 +45,7 @@ export default class PostList extends React.Component {
                     else if (response.status === 401) {
                         localStorage.removeItem("token");
                         localStorage.removeItem("isAuthorized");
-                        this.props.history.push("/")
+                        this.props.history.push("/vcelin")
                     }
                 });
         }

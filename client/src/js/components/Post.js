@@ -38,7 +38,7 @@ export default class Post extends React.Component {
                 <span>sent:
                     {data.User.name}
                 </span>
-                {this.props.link ? <Link to={"/posts/" + data.ID}>Comments</Link> : null}
+                {this.props.link ? <Link to={"/vcelin/posts/" + data.ID}>Comments</Link> : null}
                 {/*admin control with id 1 */}
                 {userId === data.User.ID || userId === 1 ?
                     <a onClick={this.editClickModal} >Edit </a>:null}

@@ -33,7 +33,7 @@ class Login extends React.Component {
             "Email": this.state.email
         });
 
-        fetch("http://localhost:5513/api/login", {
+        fetch("http://ozeman.tk/vcelin/api/login", {
             method: "POST",
             body: data,
             mode: "cors",
@@ -60,7 +60,7 @@ class Login extends React.Component {
 
         localStorage.removeItem("token");
         localStorage.removeItem("isAuthorized");
-        this.props.history.push("/");
+        this.props.history.push("/vcelin");
         this.setState({isAuthorized: false})
 
     }

@@ -17,13 +17,13 @@ export default class Header extends React.Component {
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
                     <div className="navbar-header">
-                        <Link className="navbar-brand" to="/">Vcelin</Link>
+                        <Link className="navbar-brand" to="/vcelin">Vcelin</Link>
                     </div>
 
                     <ul className="nav navbar-nav">
-                        <li><Link to="/">Home</Link></li>
+                        <li><Link to="/vcelin">Home</Link></li>
                         { token && token.length > 0 ? (
-                            <li><Link to="/posts">Posts</Link></li>) : ("")}
+                            <li><Link to="/vcelin/posts">Posts</Link></li>) : ("")}
                     </ul>
                     <Login history={this.props.history} updateHeader={(p) => this.setState({isAuthorized: p})}/>
                 </div>

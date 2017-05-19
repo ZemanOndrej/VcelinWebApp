@@ -20,9 +20,9 @@ class App extends React.Component{
                     <Header />
 
                     <Switch>
-                        <Route path={"/posts"} component={PostList} exact/>
-                        <Route exact path="/" component={Home}/>
-                        <Route path={"/posts/:postId"} component={CommentList}/>
+                        <Route path={"/vcelin/posts"} component={PostList} exact/>
+                        <Route exact path="/vcelin" component={Home}/>
+                        <Route path={"/vcelin/posts/:postId"} component={CommentList}/>
                     </Switch>
                 </div>
 

@@ -28,7 +28,7 @@ export default class CommentForm extends React.Component {
                 PostId:this.props.postId
 
             });
-            fetch("http://localhost:5513/api/comments", {
+            fetch("http://ozeman.tk/vcelin/api/comments", {
                 method: "POST",
                 body: data,
                 mode: "cors",
