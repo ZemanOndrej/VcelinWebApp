@@ -33,7 +33,7 @@ class Login extends React.Component {
             "Email": this.state.email
         });
 
-        fetch("http://localhost:5513/vcelin/api/login", {
+        fetch("http://localhost:5513/api/login", {
             method: "POST",
             body: data,
             mode: "cors",

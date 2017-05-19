@@ -26,7 +26,7 @@ func main() {
 	api.InitKeys()
 	db.InitDb()
 
-	authorized := router.Group("/vcelin")
+	authorized := router.Group("/")
 	authorized.Use(api.AuthRequired())
 	{
 		authorized.POST("/api/users", api.CreateUser)
@@ -55,16 +55,17 @@ func main() {
 
 	}
 
+
 	router.LoadHTMLFiles("./client/src/index.html")
-	router.Static("/css", "./client/src/css")
-	router.Static("/js", "./client/src/js")
 	router.NoRoute(index)
 
-	v1 := router.Group("/vcelin")
+	r := router.Group("/")
 	{
-		v1.GET("/", index)
-		v1.POST("/api/login", api.Login)
-		v1.POST("/api/register", api.Register)
+		r.GET("/", index)
+		r.POST("/api/login", api.Login)
+		r.POST("/api/register", api.Register)
+		r.Static("/css", "./client/src/css")
+		r.Static("/js", "./client/src/js")
 	}
 	router.Run(":5513")
 }
