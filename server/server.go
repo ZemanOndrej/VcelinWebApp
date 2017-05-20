@@ -55,8 +55,7 @@ func main() {
 
 	}
 
-
-	router.LoadHTMLFiles("../client/src/index.html")
+	router.LoadHTMLFiles("./client/src/index.html")
 	router.NoRoute(index)
 
 	r := router.Group("/vcelin")
@@ -64,8 +63,8 @@ func main() {
 		r.GET("/", index)
 		r.POST("/api/login", api.Login)
 		r.POST("/api/register", api.Register)
-		r.Static("/css", "../client/src/css")
-		r.Static("/js", "../client/src/js")
+		r.Static("/css", "./client/src/css")
+		r.Static("/js", "./client/src/js")
 	}
 	router.Run(":5513")
 }
