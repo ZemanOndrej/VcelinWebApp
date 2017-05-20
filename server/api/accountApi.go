@@ -134,7 +134,7 @@ func Login(c *gin.Context) {
 		if foundUser.ID > 0 && err == nil {
 
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-				"exp": time.Now().Add(time.Minute * 120).Unix(),
+				"exp": time.Now().Add(time.Hour * 24).Unix(),
 				"iat": time.Now().Unix(),
 				"iss":"admin",
 				"alg":"hs256",

@@ -43,8 +43,7 @@ export default class PostList extends React.Component {
                             });
                     }
                     else if (response.status === 401) {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("isAuthorized");
+                        localStorage.clear();
                         this.props.history.push("/vcelin")
                     }
                 });

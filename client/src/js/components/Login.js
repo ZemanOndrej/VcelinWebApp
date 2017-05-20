@@ -5,11 +5,9 @@ class Login extends React.Component {
     constructor(props) {
         super(props);
 
-        let authorized = localStorage.getItem("isAuthorized");
 
         this.state = {
-            error: null,
-            isAuthorized: authorized
+            error: null
         };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -43,12 +41,18 @@ class Login extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then((json) => {
-                        this.setState({"loginInfo": json, "isAuthorized": true, error: null});
+                        this.setState({"loginInfo": json, error: null});
+
+                        let time = new Date();
+                        time.setTime(time.getTime() + (24 * 60 * 60 * 1000));
                         localStorage.setItem("token", json.token);
                         localStorage.setItem("isAuthorized", true);
                         localStorage.setItem("userName", json.user.name);
                         localStorage.setItem("userId", json.user.ID);
+                        localStorage.setItem("expiration", time);
+                        console.log(localStorage.getItem("expiration"));
                         this.props.updateHeader();
+                        this.props.history.push("/vcelin/posts");
                     });
                 }
 
@@ -58,10 +62,8 @@ class Login extends React.Component {
 
     handleLogoutClick() {
 
-        localStorage.removeItem("token");
-        localStorage.removeItem("isAuthorized");
+        localStorage.clear();
         this.props.history.push("/vcelin");
-        this.setState({isAuthorized: false})
 
     }
 
@@ -75,8 +77,8 @@ class Login extends React.Component {
 
     render() {
 
-        const isAuthorized = this.state.isAuthorized;
-        if (isAuthorized) {
+
+        if (localStorage.getItem("isAuthorized")) {
             return (
                 <div style={{float: "right"}}>
 
