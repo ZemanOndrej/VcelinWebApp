@@ -1,6 +1,7 @@
 /**
  * Created by zeman on 08-May-17.
  */
+import {serverAddress} from "../serverConfig";
 import React from "react";
 export default class PostForm extends React.Component {
 
@@ -24,7 +25,7 @@ export default class PostForm extends React.Component {
             let data = JSON.stringify({
                 "Message": this.state.message
             });
-            fetch("http://ozeman.tk/vcelin/api/posts", {
+            fetch(`${serverAddress}/vcelin/api/posts`, {
                 method: "POST",
                 body: data,
                 mode: "cors",

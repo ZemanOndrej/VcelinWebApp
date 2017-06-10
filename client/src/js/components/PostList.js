@@ -5,6 +5,7 @@ import React from "react";
 import Post from "./Post";
 import PostForm from "./PostForm";
 import {removeDuplicates} from "../util";
+import {serverAddress} from "../serverConfig";
 
 export default class PostList extends React.Component {
 
@@ -24,7 +25,7 @@ export default class PostList extends React.Component {
 
     loadPosts() {
         if (this.state.token) {
-            fetch("http://ozeman.tk/vcelin/api/postspage/" + this.state.page, {
+            fetch(`${serverAddress}/vcelin/api/postspage/${this.state.page}` , {
                 method: "GET",
                 headers: {"token": this.state.token}
             })

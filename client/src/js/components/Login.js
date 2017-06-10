@@ -1,5 +1,6 @@
 import React from "react";
 import {withRouter} from "react-router-dom";
+import {serverAddress} from "../serverConfig";
 
 class Login extends React.Component {
     constructor(props) {
@@ -31,7 +32,7 @@ class Login extends React.Component {
             "Email": this.state.email
         });
 
-        fetch("http://ozeman.tk/vcelin/api/login", {
+        fetch(`${serverAddress}/vcelin/api/login`, {
             method: "POST",
             body: data,
             mode: "cors",

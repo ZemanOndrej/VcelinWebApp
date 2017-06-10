@@ -1,7 +1,7 @@
 /**
  * Created by zeman on 11-May-17.
  */
-
+import {serverAddress} from "../serverConfig";
 import React from "react";
 export default class UpdateForm extends React.Component {
 
@@ -19,7 +19,7 @@ export default class UpdateForm extends React.Component {
     handleUpdate(event){
 
         event.preventDefault();
-        fetch("http://ozeman.tk/vcelin/api/"+this.props.type+"s/"+this.props.data.ID, {
+        fetch(`${serverAddress}/vcelin/api/${this.props.type}s/${this.props.data.ID}`, {
             method: "PUT",
             mode: "cors",
             body:JSON.stringify({Message:this.state.message}),
@@ -46,7 +46,7 @@ export default class UpdateForm extends React.Component {
 
     handleDelete(event) {
         event.preventDefault();
-        fetch("http://ozeman.tk/vcelin/api/"+this.props.type+"s/"+this.props.data.ID, {
+        fetch(`${serverAddress}/vcelin/api/${this.props.type}s/${this.props.data.ID}`, {
             method: "DELETE",
             mode: "cors",
             cache: "default",

@@ -5,6 +5,7 @@ import React from "react";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
 import Post from "./Post";
+import {serverAddress} from "../serverConfig";
 import {removeDuplicates} from "../util";
 
 export default class CommentList extends React.Component {
@@ -26,7 +27,7 @@ export default class CommentList extends React.Component {
         this.state = {data: {}, token: token, page: 1};
 
         if (token) {
-            fetch("http://ozeman.tk/vcelin/api/posts/" + this.props.match.params.postId, {
+            fetch(`${serverAddress}/vcelin/api/posts/${this.props.match.params.postId}`  , {
                 method: "GET",
                 headers: {"token": token}
             })
@@ -50,7 +51,7 @@ export default class CommentList extends React.Component {
 
     loadMoreComments() {
         if (this.state.token) {
-            fetch(`http://ozeman.tk/vcelin/api/post/${this.props.match.params.postId}/commentspage/${this.state.page}`, {
+            fetch(`${serverAddress}/vcelin/api/post/${this.props.match.params.postId}/commentspage/${this.state.page}`, {
                 method: "GET",
                 headers: {"token": this.state.token}
             })

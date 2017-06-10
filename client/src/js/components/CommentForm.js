@@ -2,6 +2,7 @@
  * Created by zeman on 08-May-17.
  */
 import React from "react";
+import {serverAddress} from "../serverConfig";
 export default class CommentForm extends React.Component {
 
     constructor(props){
@@ -28,7 +29,7 @@ export default class CommentForm extends React.Component {
                 PostId:this.props.postId
 
             });
-            fetch("http://ozeman.tk/vcelin/api/comments", {
+            fetch(`${serverAddress}/vcelin/api/comments`, {
                 method: "POST",
                 body: data,
                 mode: "cors",
