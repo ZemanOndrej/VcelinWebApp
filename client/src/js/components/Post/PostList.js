@@ -4,8 +4,8 @@
 import React from "react";
 import Post from "./Post";
 import PostForm from "./PostForm";
-import {removeDuplicates} from "../util";
-import {serverAddress} from "../serverConfig";
+import {removeDuplicates} from "../../util";
+import {serverAddress} from "../../serverConfig";
 
 export default class PostList extends React.Component {
 

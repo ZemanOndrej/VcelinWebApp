@@ -4,9 +4,9 @@
 import React from "react";
 import Comment from "./Comment";
 import CommentForm from "./CommentForm";
-import Post from "./Post";
-import {serverAddress} from "../serverConfig";
-import {removeDuplicates} from "../util";
+import Post from "../Post/Post";
+import {serverAddress} from "../../serverConfig";
+import {removeDuplicates} from "../../util";
 
 export default class CommentList extends React.Component {
 

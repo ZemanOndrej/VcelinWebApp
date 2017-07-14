@@ -4,10 +4,11 @@
 import ReactDOM from "react-dom";
 import React from "react";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
-import PostList from "./components/PostList";
+import PostList from "./components/Post/PostList";
 import Home from "./components/Home";
 import Header from "./components/Header";
-import CommentList from "./components/CommentList";
+import CommentList from "./components/Comment/CommentList";
+import ArticleList from "./components/Article/ArticleList";
 
 
 const App = () => (
@@ -18,6 +19,7 @@ const App = () => (
                         <Route path={"/vcelin/posts"} component={PostList} exact/>
                         <Route exact path="/vcelin" component={Home}/>
                         <Route path={"/vcelin/posts/:postId"} component={CommentList}/>
+                        <Route path={"/vcelin/articles"} component={ArticleList}/>
                     </Switch>
                 </div>
             </Router>

@@ -5,7 +5,6 @@ import {serverAddress} from "../serverConfig";
 import React from "react";
 export default class UpdateForm extends React.Component {
 
-
     constructor(props) {
         super(props);
 
@@ -103,4 +102,5 @@ export default class UpdateForm extends React.Component {
             </div>
         )
     }
+
 }

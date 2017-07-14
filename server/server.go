@@ -53,11 +53,13 @@ func main() {
 		authorized.GET("/api/post/:id/comments", api.FetchAllCommentsForPost)
 		authorized.GET("/api/post/:id/commentspage/:pageId", api.FetchCommentsOnPage)
 
+		authorized.POST("/api/uploadimage", api.UploadImage)
+		authorized.POST("/api/articles", api.CreateArticle)
+
 	}
 
 	router.LoadHTMLFiles("./client/src/index.html")
 	router.NoRoute(index)
-
 	r := router.Group("/vcelin")
 	{
 		r.GET("/", index)
@@ -65,6 +67,8 @@ func main() {
 		r.POST("/api/register", api.Register)
 		r.Static("/css", "./client/src/css")
 		r.Static("/js", "./client/src/js")
+		r.POST("/tokenValidation", api.TokenValidation)
+		r.GET("/api/articlespage/:id", api.FetchArticlesOnPage)
 	}
 	router.Run(":5513")
 }

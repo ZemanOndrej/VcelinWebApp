@@ -8,12 +8,34 @@ class Login extends React.Component {
 
 
         this.state = {
-            error: null
+            isAuthorized: localStorage.getItem("isAuthorized"),
+            error: null,
         };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleLogoutClick = this.handleLogoutClick.bind(this);
         this.handleLoginClick = this.handleLoginClick.bind(this);
+
+
+    }
+
+    componentDidMount() {
+        let token = localStorage.getItem("token");
+        if (token) {
+            fetch(`${serverAddress}/vcelin/tokenValidation`, {
+                method: "POST",
+                mode: "cors",
+                cache: "default",
+                headers: {"token": token}
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        localStorage.clear();
+                        this.setState({isAuthorized: false})
+                    }
+                });
+        }
+
     }
 
     handleChangeEmail(event) {
@@ -51,7 +73,7 @@ class Login extends React.Component {
                         localStorage.setItem("userName", json.user.name);
                         localStorage.setItem("userId", json.user.ID);
                         localStorage.setItem("expiration", time);
-                        console.log(localStorage.getItem("expiration"));
+                        this.setState({isAuthorized: true});
                         this.props.updateHeader();
                         this.props.history.push("/vcelin/posts");
                     });
@@ -64,6 +86,7 @@ class Login extends React.Component {
     handleLogoutClick() {
 
         localStorage.clear();
+        this.setState({isAuthorized: false});
         this.props.history.push("/vcelin");
 
     }
@@ -77,9 +100,7 @@ class Login extends React.Component {
     }
 
     render() {
-
-
-        if (localStorage.getItem("isAuthorized")) {
+        if (this.state.isAuthorized) {
             return (
                 <div style={{float: "right"}}>
 

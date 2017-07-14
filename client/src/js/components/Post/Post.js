@@ -3,7 +3,7 @@
  */
 import React from "react";
 import Link from "react-router-dom/es/Link";
-import UpdateForm from "./UpdateForm";
+import UpdateForm from "../UpdateForm";
 export default class Post extends React.Component {
 
     constructor(props){

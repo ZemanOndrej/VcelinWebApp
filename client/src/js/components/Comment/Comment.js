@@ -2,7 +2,7 @@
  * Created by zeman on 08-May-17.
  */
 import React from "react";
-import UpdateForm from "./UpdateForm";
+import UpdateForm from "../UpdateForm";
 export default class Comment extends React.Component {
 
     constructor(props) {

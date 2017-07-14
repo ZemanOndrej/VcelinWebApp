@@ -106,9 +106,7 @@ func AuthRequired() gin.HandlerFunc {
 					c.Next()
 				} else {
 					c.AbortWithError(http.StatusUnauthorized, err)
-
 				}
-
 			} else {
 				fmt.Print("Token is not valid \n")
 				c.AbortWithError(http.StatusUnauthorized, err)
@@ -144,7 +142,7 @@ func Login(c *gin.Context) {
 
 			tokenString, err := token.SignedString([]byte(signingKey))
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"status": "error"})
+				c.AbortWithError(http.StatusInternalServerError, err)
 				log.Printf("Error signing token: %v\n", err)
 				return
 			}
@@ -191,4 +189,35 @@ func Register(c *gin.Context) {
 
 		fmt.Print("could not bind")
 	}
+}
+
+func TokenValidation(c *gin.Context) {
+	raw := c.Request.Header.Get("token")
+
+	token, err := jwt.Parse(raw, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(signingKey), nil
+	})
+	if err == nil {
+		if token.Valid {
+			claims := token.Claims.(jwt.MapClaims)
+			if _, ok := strconv.ParseUint(claims["userId"].(string), 10, 32); ok == nil {
+				c.JSON(http.StatusOK, gin.H{"status": "Token is valid" })
+
+			} else {
+				c.AbortWithError(http.StatusUnauthorized, err)
+			}
+		} else {
+			fmt.Print("Token is not valid \n")
+			c.AbortWithError(http.StatusUnauthorized, err)
+
+		}
+	} else {
+		fmt.Errorf("Unauthorised access to this resource %s", err)
+		c.AbortWithError(http.StatusUnauthorized, err)
+
+	}
+
 }

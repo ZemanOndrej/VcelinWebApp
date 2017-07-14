@@ -10,15 +10,16 @@ import (
 func InitDb() {
 	context := Database()
 	defer context.Close()
-	context.AutoMigrate(&User{})
-	context.AutoMigrate(&Post{})
-	context.AutoMigrate(&Comment{})
 	context.DropTableIfExists(&User{})
 	context.DropTableIfExists(&Post{})
 	context.DropTableIfExists(&Comment{})
+	context.DropTableIfExists(&Image{})
+	context.DropTableIfExists(&Article{})
 	context.CreateTable(&User{})
 	context.CreateTable(&Post{})
 	context.CreateTable(&Comment{})
+	context.CreateTable(&Image{})
+	context.CreateTable(&Article{})
 
 	hashedPw, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 	user := User{
@@ -46,6 +47,22 @@ func InitDb() {
 		Password: string(hashedPw),
 	}
 	context.Create(&user2)
+
+	article := Article{
+		User:user,
+		Title:"first Article",
+		Text:"Lorem ipsum dolor sit amet, mei ex tantas accumsan corrumpit. Mel ad detraxit urbanitas pertinacia, nam habemus oporteat instructior ut. Id eam integre conceptam interesset, nisl graece epicuri id eos. No veri consequat democritum sed, ridens discere no sea, an qui detracto interpretaris. Nam illum luptatum ad, et etiam mandamus repudiandae sit, veri falli adolescens in his.",
+
+
+	}
+	context.Create(&article)
+	image := Image{
+		Name:"firstImageName",
+		Article:article,
+		FileName:"firstImage.png",
+
+	}
+	context.Create(&image)
 
 }
 
