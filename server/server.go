@@ -3,10 +3,9 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"vcelin/server/api"
-	_ "vcelin/server/db"
 	"gopkg.in/gin-contrib/cors.v1"
 	"time"
-	"vcelin/server/db"
+	_"vcelin/server/db"
 )
 
 func main() {
@@ -24,7 +23,7 @@ func main() {
 	}))
 
 	api.InitKeys()
-	db.InitDb()
+	//db.InitDb()
 
 	authorized := router.Group("/vcelin")
 	authorized.Use(api.AuthRequired())
@@ -56,6 +55,7 @@ func main() {
 		authorized.POST("/api/uploadimage", api.UploadImage)
 		authorized.POST("/api/articles", api.CreateArticle)
 
+
 	}
 
 	router.LoadHTMLFiles("./client/src/index.html")
@@ -69,6 +69,9 @@ func main() {
 		r.Static("/js", "./client/src/js")
 		r.POST("/tokenValidation", api.TokenValidation)
 		r.GET("/api/articlespage/:id", api.FetchArticlesOnPage)
+
+		r.GET("/api/articles/:id", api.FetchArticle)
+		r.GET("/api/images/:id", api.FetchImage)
 	}
 	router.Run(":5513")
 }

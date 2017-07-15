@@ -5,11 +5,16 @@ import (
 	"github.com/jinzhu/gorm"
 	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"os"
+	"path/filepath"
 )
 
 func InitDb() {
 	context := Database()
 	defer context.Close()
+
+	CleanContentInDir(ImagesTmpURI)
+	CleanContentInDir(ImagesURI)
 	context.DropTableIfExists(&User{})
 	context.DropTableIfExists(&Post{})
 	context.DropTableIfExists(&Comment{})
@@ -56,13 +61,7 @@ func InitDb() {
 
 	}
 	context.Create(&article)
-	image := Image{
-		Name:"firstImageName",
-		Article:article,
-		FileName:"firstImage.png",
 
-	}
-	context.Create(&image)
 
 }
 
@@ -75,4 +74,24 @@ func Database() *gorm.DB {
 	}
 	return db
 
+}
+
+func CleanContentInDir(dir string) error {
+
+	d, err := os.Open(dir)
+	if err != nil {
+		return err
+	}
+	defer d.Close()
+	names, err := d.Readdirnames(-1)
+	if err != nil {
+		return err
+	}
+	for _, name := range names {
+		err = os.RemoveAll(filepath.Join(dir, name))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }

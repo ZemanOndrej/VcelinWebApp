@@ -6,6 +6,7 @@ import (
 
 const PageSize = 15
 const ImagesURI = "./server/images"
+const ImagesTmpURI = "./server/tmp"
 
 type User struct {
 	gorm.Model
@@ -46,5 +47,5 @@ type Image struct {
 	Name      string `gorm:"not null" form:"name" json:"name"`
 	Article   Article `gorm:"ForeignKey:ArticleId"`
 	ArticleId uint `gorm:"not null"`
-	FileName  string `gorm:"not null"`
+	FileName  string `sql:"not null;unique"`
 }

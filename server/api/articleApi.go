@@ -12,18 +12,15 @@ import (
 	_"strings"
 	_"io/ioutil"
 	"encoding/base64"
-	"bytes"
-	"image/png"
+
 	"time"
 	"math/rand"
 	"strings"
 	"io/ioutil"
 	"log"
+	"io"
+	"bytes"
 )
-
-//type ImageModel struct {
-//	Image []byte  `json:"image" bidning:"required"`
-//}
 
 type ArticleModel struct {
 	Title          string `json:"title" binding:"required"`
@@ -51,7 +48,7 @@ func CreateArticle(c *gin.Context) {
 
 				var imgSlice []db.Image;
 				for i := 0; i < max; i++ {
-					err := os.Rename("./server//tmp/" + articleModel.ImageFileNames[i], "./server//images/" + articleModel.ImageFileNames[i])
+					err := os.Rename(db.ImagesTmpURI + articleModel.ImageFileNames[i], db.ImagesURI + articleModel.ImageFileNames[i])
 					if (err == nil ) {
 
 						newImage := db.Image{Name:articleModel.ImageNames[i],
@@ -117,9 +114,10 @@ func FetchArticlesOnPage(c *gin.Context) {
 func UploadImage(c *gin.Context) {
 	file, _ := ioutil.ReadAll(c.Request.Body)
 	str := string(file[:])
-	filename := RandomString() + c.Request.Header.Get("filename")
-	str = strings.SplitN(str, ",", 2)[1]
-	SaveImage(str, filename)
+	filename := RandomString() + "-" + c.Request.Header.Get("filename")
+	stringArr := strings.SplitN(str, ",", 2)
+
+	SaveImage(stringArr[1], filename)
 	c.JSON(http.StatusOK, gin.H{"status": "Image uploaded successfuly", "filename":filename })
 
 }
@@ -129,20 +127,17 @@ func SaveImage(img string, filename string) {
 	if err != nil {
 		panic("Cannot decode b64")
 	}
-
-	r := bytes.NewReader(unbased)
-	im, err := png.Decode(r)
+	reader := bytes.NewReader(unbased)
+	file, err := os.Create(db.ImagesTmpURI + filename)
+	defer file.Close()
 	if err != nil {
-		panic("Bad png")
+		log.Fatal(err)
+	}
+	_, err = io.Copy(file, reader)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	f, err := os.OpenFile("./server/tmp/" + filename, os.O_WRONLY | os.O_CREATE, 0777)
-	defer f.Close()
-	if err != nil {
-		panic("Cannot open file")
-	}
-
-	png.Encode(f, im)
 }
 
 func RandomString() string {
@@ -154,4 +149,45 @@ func RandomString() string {
 		result[i] = chars[r.Intn(len(chars))]
 	}
 	return string(result)
+}
+
+func FetchArticle(c *gin.Context) {
+	id := c.Params.ByName("id")
+	var article db.Article
+
+	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		article.ID = uint(articleId)
+		context := db.Database()
+		defer context.Close()
+		context.Preload("User").Preload("Images").Find(&article)
+		article.User.Email = ""
+		article.User.Password = ""
+		c.JSON(http.StatusOK, gin.H{"data" : article})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+
+}
+
+func FetchImage(c *gin.Context) {
+	id := c.Params.ByName("id")
+	var img db.Image
+
+	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		img.ID = uint(postId)
+		context := db.Database()
+		defer context.Close()
+		context.Find(&img)
+
+		file, err := ioutil.ReadFile(db.ImagesURI + img.FileName)
+		if (err != nil) {
+			panic(err)
+		}
+		base := base64.StdEncoding.EncodeToString(file)
+
+		c.JSON(http.StatusOK, gin.H{"Image" : img, "data":"data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+
 }

@@ -2,10 +2,12 @@
  * Created by Ondrej on 10/06/2017.
  */
 import React from "react";
+import Link from "react-router-dom/es/Link";
 export default class Article extends React.Component {
 
     constructor(props) {
         super(props);
+
 
     }
 
@@ -26,6 +28,8 @@ export default class Article extends React.Component {
                 <span>sent:
                     {data.User.name}
                 </span>
+                <Link to={"/vcelin/articles/" + data.ID}>Details</Link>
+
             </div>
         )
     }

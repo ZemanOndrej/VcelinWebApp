@@ -77,7 +77,6 @@ export default class CommentList extends React.Component {
 
     }
 
-
     handleScroll() {
 
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
