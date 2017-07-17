@@ -1,3 +1,89 @@
 a:hover {
     cursor: pointer;
 }
+
+.closingXSign {
+    top: -2%;
+    position: absolute;
+    right: 2%;
+    font-size: 4em;
+    cursor: pointer;
+    z-index: 1002;
+    color: white;
+    font-weight: bold
+}
+
+.arrow {
+    z-index: 1002;
+    color: white;
+    font-weight: bold;
+    top: 50%;
+    position: absolute;
+    font-size: 4em;
+    cursor: pointer;
+
+}
+
+.nextArrow {
+    right: 2%;
+}
+
+.previousArrow {
+    left: 2%;
+}
+
+#bigPicture {
+    z-index: 1001;
+    /*left: 5%;*/
+    display: block;
+    max-height: 90%;
+    max-width: 90%;
+    margin-left: 50%;
+    margin-top: 5%;
+    transform: translate(-50%, -5%);
+    position: absolute;
+
+}
+
+#imageOverlayParent {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 999;
+}
+
+#imageOverlay {
+    z-index: 1000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: black;
+    opacity: 0.95;
+}
+
+.unselectable {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.imageNumber {
+    top: 96%;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    position: absolute;
+    color: white;
+    font-size: 20px;
+    z-index: 1002;
+    font-weight: bold;
+
+}
