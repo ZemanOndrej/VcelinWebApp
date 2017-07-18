@@ -51,7 +51,7 @@ export default class CommentList extends React.Component {
 
     loadMoreComments() {
         if (this.state.token) {
-            fetch(`${serverAddress}/vcelin/api/post/${this.props.match.params.postId}/commentspage/${this.state.page}`, {
+            fetch(`${serverAddress}/vcelin/api/post/${this.props.match.params.postId}/commentsPage/${this.state.page}`, {
                 method: "GET",
                 headers: {"token": this.state.token}
             })

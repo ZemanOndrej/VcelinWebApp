@@ -36,19 +36,19 @@ a:hover {
     z-index: 1001;
     /*left: 5%;*/
     display: block;
-    max-height: 90%;
-    max-width: 90%;
-    margin-left: 50%;
-    margin-top: 5%;
-    transform: translate(-50%, -5%);
-    position: absolute;
+    max-height: 90vh;
+    max-width: 90vw;
+    margin-left: 50vw;
+    margin-top: 50vh;
+    transform: translate(-50%, -50%);
+    position: fixed;
 
 }
 
 #imageOverlayParent {
-    height: 100%;
-    width: 100%;
-    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
     top: 0;
     left: 0;
     margin: 0;
@@ -58,13 +58,24 @@ a:hover {
 
 #imageOverlay {
     z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: black;
+    opacity: 0.95;
+}
+
+.overlay {
+    z-index: 1000;
     position: absolute;
     top: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: black;
-    opacity: 0.95;
+    height: 100vh;
+    width: 100vw;
+    background-color: white;
+    opacity: 0.75;
 }
 
 .unselectable {
@@ -86,4 +97,17 @@ a:hover {
     z-index: 1002;
     font-weight: bold;
 
+}
+
+.formWindow {
+    border: black solid 1px;
+    z-index: 1000;
+    position: absolute;
+    top: 30%;
+    left: 30%;
+    margin: 0 auto;
+    height: 40%;
+    width: 40%;
+    background-color: #d6d6d6;
+    opacity: 1;
 }

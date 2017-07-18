@@ -25,7 +25,7 @@ export default class PostList extends React.Component {
 
     loadPosts() {
         if (this.state.token) {
-            fetch(`${serverAddress}/vcelin/api/postspage/${this.state.page}` , {
+            fetch(`${serverAddress}/vcelin/api/postsPage/${this.state.page}`, {
                 method: "GET",
                 headers: {"token": this.state.token}
             })

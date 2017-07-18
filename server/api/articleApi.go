@@ -29,9 +29,13 @@ type ArticleModel struct {
 	ImageNames     [] string `json:"imageNames" binding:"required"`
 }
 
+type ArticleCancelModel struct {
+	ImageFileNames [] string `json:"imageFileNames" binding:"required"`
+}
+
 func CreateArticle(c *gin.Context) {
 
-	user, err := c.Get("User")
+	loggedUser, err := c.Get("User")
 	var articleModel ArticleModel
 
 	if err {
@@ -41,19 +45,19 @@ func CreateArticle(c *gin.Context) {
 
 				context := db.Database()
 				defer context.Close()
-				article := db.Article{Text:articleModel.Text, Title:articleModel.Title, User:user.(db.User)};
+				article := db.Article{Text: articleModel.Text, Title: articleModel.Title, User: loggedUser.(db.User)}
 				context.Create(&article)
 
 				max := len(articleModel.ImageFileNames)
 
-				var imgSlice []db.Image;
+				var imgSlice []db.Image
 				for i := 0; i < max; i++ {
-					err := os.Rename(db.ImagesTmpURI + articleModel.ImageFileNames[i], db.ImagesURI + articleModel.ImageFileNames[i])
-					if (err == nil ) {
+					err := os.Rename(db.ImagesTmpURI+articleModel.ImageFileNames[i], db.ImagesURI+articleModel.ImageFileNames[i])
+					if err == nil {
 
-						newImage := db.Image{Name:articleModel.ImageNames[i],
-							FileName:articleModel.ImageFileNames[i],
-							Article:article}
+						newImage := db.Image{Name: articleModel.ImageNames[i],
+							FileName:              articleModel.ImageFileNames[i],
+							Article:               article}
 						context.Create(&newImage)
 						imgSlice = append(imgSlice, newImage)
 					} else {
@@ -67,19 +71,19 @@ func CreateArticle(c *gin.Context) {
 
 				article.User.Email = ""
 				article.User.Password = ""
-				c.JSON(http.StatusCreated, gin.H{"message" : "Article created successfully!", "article": article})
+				c.JSON(http.StatusCreated, gin.H{"message": "Article created successfully!", "article": article})
 
 			} else {
-				c.JSON(http.StatusBadRequest, gin.H{"message" : "Article was not created, Invalid text lenght or image arrays arent as large"})
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not created, Invalid text lenght or image arrays arent as large"})
 
 			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"message" : "Article was not created. Cant bind model"})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not created. Cant bind model"})
 
 		}
 
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"message" : "Article was not created. User not found"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not created. User not found"})
 	}
 
 }
@@ -98,14 +102,14 @@ func FetchArticlesOnPage(c *gin.Context) {
 			articles[y].User.Password = ""
 			articles[y].User.Email = ""
 		}
-		if (len(articles) > 0) {
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : articles})
+		if len(articles) > 0 {
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": articles})
 
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more posts ;( " })
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "No more posts ;( " })
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"message":"wrong page number"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong page number"})
 
 	}
 
@@ -118,8 +122,32 @@ func UploadImage(c *gin.Context) {
 	stringArr := strings.SplitN(str, ",", 2)
 
 	SaveImage(stringArr[1], filename)
-	c.JSON(http.StatusOK, gin.H{"status": "Image uploaded successfuly", "filename":filename })
+	c.JSON(http.StatusOK, gin.H{"status": "Image uploaded successfuly", "filename": filename })
 
+}
+
+func CancelArticle(c *gin.Context) {
+	var articleCancelModel ArticleCancelModel
+	if c.Bind(&articleCancelModel) == nil {
+		if len(articleCancelModel.ImageFileNames) > 0 {
+			max := len(articleCancelModel.ImageFileNames)
+			for i := 0; i < max; i++ {
+				err := os.Remove(db.ImagesTmpURI + articleCancelModel.ImageFileNames[i])
+				if err == nil {
+				} else {
+					log.Fatal(err)
+					c.AbortWithError(500, err)
+				}
+			}
+			c.JSON(http.StatusOK, gin.H{"message": "Article cancelled successfully!"})
+
+		} else {
+			c.JSON(http.StatusOK, gin.H{"message": "Article cancelled successfully!"})
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Cant bind model"})
+
+	}
 }
 
 func SaveImage(img string, filename string) {
@@ -162,7 +190,7 @@ func FetchArticle(c *gin.Context) {
 		context.Preload("User").Preload("Images").Find(&article)
 		article.User.Email = ""
 		article.User.Password = ""
-		c.JSON(http.StatusOK, gin.H{"data" : article})
+		c.JSON(http.StatusOK, gin.H{"data": article})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
@@ -180,12 +208,12 @@ func FetchImage(c *gin.Context) {
 		context.Find(&img)
 
 		file, err := ioutil.ReadFile(db.ImagesURI + img.FileName)
-		if (err != nil) {
+		if err != nil {
 			panic(err)
 		}
 		base := base64.StdEncoding.EncodeToString(file)
 
-		c.JSON(http.StatusOK, gin.H{"Image" : img, "data":"data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
+		c.JSON(http.StatusOK, gin.H{"Image": img, "data": "data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}

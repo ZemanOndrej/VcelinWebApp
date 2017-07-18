@@ -4,6 +4,7 @@
 import React from "react";
 import {serverAddress} from "../../serverConfig";
 import ImageGallery from "./ImageGallery";
+
 export default class ArticleDetails extends React.Component {
 
     constructor(props) {

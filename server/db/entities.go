@@ -5,8 +5,8 @@ import (
 )
 
 const PageSize = 15
-const ImagesURI = "./server/images"
-const ImagesTmpURI = "./server/tmp"
+const ImagesURI = "./server/images/"
+const ImagesTmpURI = "./server/tmp/"
 
 type User struct {
 	gorm.Model

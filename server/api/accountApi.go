@@ -60,7 +60,6 @@ func InitKeys() {
 	//done
 	signingKey = privKeyPEMBuffer.Bytes()
 
-	//fmt.Println(string(signingKey))
 
 	// create verificationKey from pubKey. Also in PEM-format
 	pubKeyBytes, err = x509.MarshalPKIXPublicKey(pubKey) //serialize key bytes
@@ -79,7 +78,6 @@ func InitKeys() {
 	// done
 	verificationKey = pubKeyPEMBuffer.Bytes()
 
-	//fmt.Println(string(verificationKey))
 }
 
 func AuthRequired() gin.HandlerFunc {

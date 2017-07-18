@@ -5,7 +5,6 @@ import (
 	"vcelin/server/api"
 	"gopkg.in/gin-contrib/cors.v1"
 	"time"
-	_"vcelin/server/db"
 )
 
 func main() {
@@ -22,8 +21,8 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	api.InitKeys()
 	//db.InitDb()
+	api.InitKeys()
 
 	authorized := router.Group("/vcelin")
 	authorized.Use(api.AuthRequired())
@@ -41,7 +40,7 @@ func main() {
 
 		authorized.GET("/api/posts/:id", api.FetchSinglePost)
 		authorized.GET("/api/posts", api.FetchAllPosts)
-		authorized.GET("/api/postspage/:id", api.FetchPostsOnPage)
+		authorized.GET("/api/postsPage/:id", api.FetchPostsOnPage)
 
 		authorized.POST("/api/comments", api.CreateComment)
 		authorized.PUT("/api/comments/:id", api.UpdateComment)
@@ -50,10 +49,12 @@ func main() {
 		authorized.GET("/api/comments/:id", api.FetchSingleComment)
 		authorized.GET("/api/comments", api.FetchAllComments)
 		authorized.GET("/api/post/:id/comments", api.FetchAllCommentsForPost)
-		authorized.GET("/api/post/:id/commentspage/:pageId", api.FetchCommentsOnPage)
+		authorized.GET("/api/post/:id/commentsPage/:pageId", api.FetchCommentsOnPage)
 
-		authorized.POST("/api/uploadimage", api.UploadImage)
+		authorized.POST("/api/uploadImage", api.UploadImage)
 		authorized.POST("/api/articles", api.CreateArticle)
+
+		authorized.DELETE("/api/cancelArticle", api.CancelArticle)
 
 
 	}
@@ -68,7 +69,7 @@ func main() {
 		r.Static("/css", "./client/src/css")
 		r.Static("/js", "./client/src/js")
 		r.POST("/tokenValidation", api.TokenValidation)
-		r.GET("/api/articlespage/:id", api.FetchArticlesOnPage)
+		r.GET("/api/articlesPage/:id", api.FetchArticlesOnPage)
 
 		r.GET("/api/articles/:id", api.FetchArticle)
 		r.GET("/api/images/:id", api.FetchImage)

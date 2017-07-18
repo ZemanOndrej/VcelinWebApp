@@ -3,26 +3,40 @@
  */
 import * as React from "react";
 import {serverAddress} from "../../serverConfig";
+import ImageGallery from "./ImageGallery";
+
 export default class ArticleForm extends React.Component {
     constructor(props) {
         super(props);
-        this.handleArticleCreate = this.handleArticleCreate.bind(this);
 
         if (this.props.data) {
 
-            this.state = {error: null, text: this.props.data.article.text, title: this.props.data.article.title};
+            this.state = {
+                error: null,
+                text: this.props.data.article.text,
+                title: this.props.data.article.title
+            };
         } else {
 
-            this.state = {error: null, text: "", title: "", imgNames: [], newArticle: true, buttonsEnabled: true};
+            this.state = {
+                error: null,
+                text: "",
+                title: "",
+                imgNames: [],
+                newArticle: true,
+                buttonsEnabled: true,
+                images: []
+            };
 
         }
+        this.handleArticleCreate = this.handleArticleCreate.bind(this);
         this.handleArticleTitleChange = this.handleArticleTitleChange.bind(this);
         this.handleArticleTextChange = this.handleArticleTextChange.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleArticleCancel = this.handleArticleCancel.bind(this);
     }
 
     handleArticleCreate() {
-        console.log(`${this.state.text}  ${this.state.title} ${this.state.imgNames}   LUL`);
         fetch(`${serverAddress}/vcelin/api/articles`, {
             method: 'POST',
             mode: "cors",
@@ -42,67 +56,11 @@ export default class ArticleForm extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then(json => {
-                        console.log(json);
                         this.props.newArticleHandler(json.article);
                         this.props.closeModal();
-
-
                     });
                 }
             })
-    }
-
-    handleInputChange(event) {
-
-        let preview = document.getElementById("imagePreviews");
-        let target = event.target || window.event.srcElement;
-        let files = target.files;
-
-        if (FileReader && files && files.length) {
-            this.setState({buttonsEnabled: false});
-            for (let i = 0; i < files.length; i++) {
-
-                let fr = new FileReader();
-                fr.onload = (file) => {
-                    let imgDiv = document.createElement("img");
-                    imgDiv.style.height = "100px";
-                    imgDiv.style.width = "100px";
-                    imgDiv.src = fr.result;
-                    preview.appendChild(imgDiv);
-                    /*
-                     Will change this part a little bit
-                     Ill use Promise.all to wait for images
-                     */
-                    let formData = new FormData();
-                    formData.append("image", file.target.result);
-                    fetch(`${serverAddress}/vcelin/api/uploadimage`, {
-                        method: 'POST',
-                        mode: "cors",
-                        cache: "default",
-                        headers: {
-                            "Content-Type": "image/png",
-                            "token": localStorage.getItem("token"),
-                            "fileName": files[i].name
-                        },
-                        body: file.target.result
-                    })
-                        .then((response) => {
-                            if (response.ok) {
-                                return response.json().then(json => {
-                                    let imgNames = this.state.imgNames;
-                                    imgNames.push(json.filename);
-                                    this.setState({imgNames: imgNames});
-                                    console.log(imgNames);
-                                    if (i === files.length - 1) {
-                                        this.setState({buttonsEnabled: true})
-                                    }
-                                });
-                            }
-                        })
-                };
-                fr.readAsDataURL(files[i]);
-            }
-        }
     }
 
     handleArticleTextChange(event) {
@@ -113,29 +71,70 @@ export default class ArticleForm extends React.Component {
         this.setState({title: event.target.value})
     }
 
+    handleArticleCancel(event) {
+        fetch(`${serverAddress}/vcelin/api/cancelArticle`, {
+                method: 'DELETE',
+                mode: "cors",
+                cache: "default",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": localStorage.getItem("token"),
+                },
+                body: JSON.stringify({ImageFileNames: this.state.imgNames,})
+            }
+        );
+        this.props.closeModal(event);
+    }
+
+    handleInputChange(event) {
+
+        let target = event.target || window.event.srcElement;
+        let files = target.files;
+
+        if (FileReader && files && files.length) {
+            this.setState({buttonsEnabled: false});
+            for (let i = 0; i < files.length; i++) {
+
+                let fr = new FileReader();
+                fr.onload = () => {
+                    this.setState({images: [...this.state.images, fr.result]});
+                    fetch(`${serverAddress}/vcelin/api/uploadImage`, {
+                        method: 'POST',
+                        mode: "cors",
+                        cache: "default",
+                        headers: {
+                            "Content-Type": "image/png",
+                            "token": localStorage.getItem("token"),
+                            "fileName": files[i].name
+                        },
+                        body: fr.result
+                    })
+                        .then((response) => {
+                            if (response.ok) {
+                                return response.json().then(json => {
+                                    this.setState({imgNames: [...this.state.imgNames, json.filename]});
+
+                                    if (i === files.length - 1) {
+                                        this.setState({buttonsEnabled: true})
+                                    }
+                                });
+                            }
+                        });
+                };
+                fr.readAsDataURL(files[i]);
+
+            }
+        }
+    }
+
+
     render() {
         return (
-            <div >
-                <div style={{
-                    zIndex: "1000",
-                    position: "fixed",
-                    top: "0",
-                    left: "0",
-                    height: "100%",
-                    width: "100%",
-                    backgroundColor: "white",
-                    opacity: "0.75"
-                }}>
-                </div>
+            <div>
+                <div className="overlay"></div>
+                <div className="formWindow">
 
-                <div style={{
-                    border: "black solid 1px",
-                    zIndex: "1000", position: "fixed", top: "30%", left: "30%", margin: "0 auto",
-                    height: "40%", width: "40%",
-                    backgroundColor: "#d6d6d6", opacity: "1"
-                }}>
-
-                    <form >
+                    <form>
                         <div className="input-group">
                             <textarea value={this.state.title} onChange={this.handleArticleTitleChange}
                                       className="form-control" type="text" placeholder="Title" rows="1"/>
@@ -151,23 +150,22 @@ export default class ArticleForm extends React.Component {
 
                         <div className="imageUpload">
 
-                            <div id="imagePreviews">
+                            <ImageGallery images={this.state.images}/>
 
-                            </div>
-
-                            <input disabled={!this.state.buttonsEnabled} id="inputFiles" type='file' name="img" multiple
+                            <input disabled={!this.state.buttonsEnabled}
+                                   id="inputFiles" type='file' name="img" multiple
+                                   style={{color: "transparent"}}
                                    onChange={this.handleInputChange}/>
 
                         </div>
 
-                        {/*FOTO PLACE*/}
                     </form>
 
-                    {/*<button onClick={this.handleDelete}> Delete</button>*/}
                     <button disabled={!this.state.buttonsEnabled} onClick={this.handleArticleCreate}>Create</button>
-                    <button disabled={!this.state.buttonsEnabled} onClick={this.props.closeModal}>Cancel</button>
+                    <button disabled={!this.state.buttonsEnabled} onClick={this.handleArticleCancel}>Cancel</button>
 
                 </div>
+
             </div>
         )
     }

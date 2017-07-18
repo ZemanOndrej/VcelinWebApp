@@ -5,13 +5,12 @@
 import * as React from "react";
 import Link from "react-router-dom/es/Link";
 import Login from "./Login";
+
 export default class Header extends React.Component {
     constructor(props) {
         super(props);
     }
     render(){
-
-
         let token = localStorage.getItem("token");
         return(
             <nav className="navbar navbar-default">
