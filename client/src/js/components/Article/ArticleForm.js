@@ -14,7 +14,8 @@ export default class ArticleForm extends React.Component {
             this.state = {
                 error: null,
                 text: this.props.data.article.text,
-                title: this.props.data.article.title
+                title: this.props.data.article.title,
+                imagesToDelete: []
             };
         } else {
 
@@ -25,7 +26,8 @@ export default class ArticleForm extends React.Component {
                 imgNames: [],
                 newArticle: true,
                 buttonsEnabled: true,
-                images: []
+                images: [],
+                imagesToDelete: []
             };
 
         }
@@ -34,6 +36,25 @@ export default class ArticleForm extends React.Component {
         this.handleArticleTextChange = this.handleArticleTextChange.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleArticleCancel = this.handleArticleCancel.bind(this);
+        this.handleImageDelete = this.handleImageDelete.bind(this);
+
+        window.onbeforeunload = this.handleArticleCancel
+    }
+
+    handleImageDelete(index) {
+        let arr = this.state.images;
+        arr.splice(index, 1);
+
+        let delImg = [...this.state.imagesToDelete, this.state.imgNames[index]];
+
+        let nameArr = this.state.imgNames;
+        nameArr.splice(index, 1);
+
+        this.setState({
+            images: arr,
+            imagesToDelete: delImg,
+            imgNames: nameArr
+        });
     }
 
     handleArticleCreate() {
@@ -50,7 +71,8 @@ export default class ArticleForm extends React.Component {
                 Title: this.state.title,
                 Text: this.state.text,
                 ImageFileNames: this.state.imgNames,
-                ImageNames: this.state.imgNames
+                ImageNames: this.state.imgNames,
+                DeleteImages: this.state.imagesToDelete
             })
         })
             .then((response) => {
@@ -60,7 +82,9 @@ export default class ArticleForm extends React.Component {
                         this.props.closeModal();
                     });
                 }
-            })
+            });
+        this.setState({imagesToDelete: [], imgNames: []});
+
     }
 
     handleArticleTextChange(event) {
@@ -80,7 +104,7 @@ export default class ArticleForm extends React.Component {
                     "Content-Type": "application/json",
                     "token": localStorage.getItem("token"),
                 },
-                body: JSON.stringify({ImageFileNames: this.state.imgNames,})
+            body: JSON.stringify({ImageFileNames: this.state.imgNames.concat(this.state.imagesToDelete)})
             }
         );
         this.props.closeModal(event);
@@ -97,7 +121,11 @@ export default class ArticleForm extends React.Component {
 
                 let fr = new FileReader();
                 fr.onload = () => {
-                    this.setState({images: [...this.state.images, fr.result]});
+
+                    let arr = this.state.images;
+                    let index = arr.push({data: fr.result}) - 1;
+
+                    this.setState({images: arr});
                     fetch(`${serverAddress}/vcelin/api/uploadImage`, {
                         method: 'POST',
                         mode: "cors",
@@ -112,8 +140,10 @@ export default class ArticleForm extends React.Component {
                         .then((response) => {
                             if (response.ok) {
                                 return response.json().then(json => {
-                                    this.setState({imgNames: [...this.state.imgNames, json.filename]});
+                                    let arr = this.state.images;
 
+                                    arr[index].FileName = json.filename;
+                                    this.setState({imgNames: [...this.state.imgNames, json.filename], images: arr});
                                     if (i === files.length - 1) {
                                         this.setState({buttonsEnabled: true})
                                     }
@@ -126,7 +156,6 @@ export default class ArticleForm extends React.Component {
             }
         }
     }
-
 
     render() {
         return (
@@ -150,7 +179,7 @@ export default class ArticleForm extends React.Component {
 
                         <div className="imageUpload">
 
-                            <ImageGallery images={this.state.images}/>
+                            <ImageGallery images={this.state.images} handleImageDelete={this.handleImageDelete}/>
 
                             <input disabled={!this.state.buttonsEnabled}
                                    id="inputFiles" type='file' name="img" multiple

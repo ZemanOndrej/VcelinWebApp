@@ -3,12 +3,11 @@
  */
 import React from "react";
 import Link from "react-router-dom/es/Link";
+
 export default class Article extends React.Component {
 
     constructor(props) {
         super(props);
-
-
     }
 
     render() {

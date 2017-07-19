@@ -5,12 +5,7 @@ import (
 	"vcelin/server/db"
 	"strconv"
 	"net/http"
-	_"fmt"
 	"os"
-	_ "io"
-	_"image/png"
-	_"strings"
-	_"io/ioutil"
 	"encoding/base64"
 
 	"time"
@@ -27,6 +22,7 @@ type ArticleModel struct {
 	Text           string `json:"text" binding:"required"`
 	ImageFileNames [] string `json:"imageFileNames" binding:"required"`
 	ImageNames     [] string `json:"imageNames" binding:"required"`
+	DeleteImages   [] string `json:"deleteImages" binding:"required"`
 }
 
 type ArticleCancelModel struct {
@@ -50,6 +46,10 @@ func CreateArticle(c *gin.Context) {
 
 				max := len(articleModel.ImageFileNames)
 
+				for _, elem := range articleModel.DeleteImages {
+					os.Remove(db.ImagesTmpURI + elem)
+				}
+
 				var imgSlice []db.Image
 				for i := 0; i < max; i++ {
 					err := os.Rename(db.ImagesTmpURI+articleModel.ImageFileNames[i], db.ImagesURI+articleModel.ImageFileNames[i])
@@ -66,6 +66,7 @@ func CreateArticle(c *gin.Context) {
 
 					}
 				}
+
 				article.Images = append(article.Images, imgSlice...)
 				context.Save(&article)
 
@@ -213,9 +214,77 @@ func FetchImage(c *gin.Context) {
 		}
 		base := base64.StdEncoding.EncodeToString(file)
 
-		c.JSON(http.StatusOK, gin.H{"Image": img, "data": "data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
+		c.JSON(http.StatusOK, gin.H{"image": img, "data": "data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
+
+}
+
+func DeleteArticle(c *gin.Context) {
+
+	id := c.Params.ByName("id")
+	var article db.Article
+	user, okUser := c.Get("User")
+
+	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if okUser && articleId > 0 {
+			article.ID = uint(articleId)
+			context := db.Database()
+			defer context.Close()
+			context.Preload("Images").Find(&article)
+			for _, el := range article.Images {
+				err := os.Remove(db.ImagesTmpURI + el.FileName)
+				if err == nil {
+				} else {
+					log.Fatal(err)
+					c.AbortWithError(500, err)
+				}
+				context.Delete(&el)
+			}
+			//admin user id is 1 he can delete what he wants
+			if user.(db.User).ID == article.UserId || user.(db.User).ID == 1 {
+				context.Delete(&article)
+				c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "article deleted successfully!"})
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{"message": "You cannot delete this post"})
+			}
+
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{})
+
+		}
+
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+}
+
+func DeleteImage(c *gin.Context) {
+
+	id := c.Params.ByName("id")
+	var image db.Image
+
+	if imageId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if imageId > 0 {
+			image.ID = uint(imageId)
+			context := db.Database()
+			defer context.Close()
+			context.Find(&image)
+			os.Remove(db.ImagesURI + image.FileName)
+			context.Delete(&image)
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Image deleted successfully!"})
+
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{})
+
+		}
+
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+	}
+}
+
+func UpdateArticle(c *gin.Context) {
 
 }

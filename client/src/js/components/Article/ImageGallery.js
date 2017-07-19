@@ -38,7 +38,6 @@ export default class ImageGallery extends React.Component {
     }
 
     openBigImageHandler(number) {
-        console.log(number);
         this.setState({selectedImage: number, showImageView: true})
     }
 
@@ -49,8 +48,10 @@ export default class ImageGallery extends React.Component {
     render() {
         let images = this.props.images;
         if (images) {
-            let imageComps = images.map((object, i) => {
-                return <Image image={object} key={i} index={i} openBigImageHandler={this.openBigImageHandler}/>;
+            let imageComps = images.map((obj, i) => {
+                return <Image image={obj} key={i} index={i}
+                              handleImageDelete={this.props.handleImageDelete}
+                              openBigImageHandler={this.openBigImageHandler}/>;
             });
             return (
                 <div className="imageGallery" style={{display: "inline-block", marginTop: "25px"}}>

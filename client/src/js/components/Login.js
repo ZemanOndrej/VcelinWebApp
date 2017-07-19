@@ -75,7 +75,7 @@ class Login extends React.Component {
                         localStorage.setItem("expiration", time);
                         this.setState({isAuthorized: true});
                         this.props.updateHeader();
-                        this.props.history.push("/vcelin/posts");
+                        this.props.history.go(0)
                     });
                 }
 
@@ -87,7 +87,7 @@ class Login extends React.Component {
 
         localStorage.clear();
         this.setState({isAuthorized: false});
-        this.props.history.push("/vcelin");
+        this.props.history.go(0)
 
     }
 
@@ -137,4 +137,5 @@ class Login extends React.Component {
     }
 
 }
+
 export default withRouter(Login);
