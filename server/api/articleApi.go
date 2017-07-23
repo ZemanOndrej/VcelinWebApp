@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"encoding/base64"
-
 	"time"
 	"math/rand"
 	"strings"
@@ -23,6 +22,17 @@ type ArticleModel struct {
 	ImageFileNames [] string `json:"imageFileNames" binding:"required"`
 	ImageNames     [] string `json:"imageNames" binding:"required"`
 	DeleteImages   [] string `json:"deleteImages" binding:"required"`
+}
+
+type ArticleUpdateModel struct {
+	Title        string `json:"Title" binding:"required"`
+	Text         string `json:"Text" binding:"required"`
+	NewImages    [] ImageModel `json:"NewImages" binding:"required"`
+	DeleteImages [] string `json:"DeleteImages" binding:"required"`
+}
+type ImageModel struct {
+	Name     string `json:"Name" binding:"required"`
+	FileName string `json:"FileName" binding:"required"`
 }
 
 type ArticleCancelModel struct {
@@ -213,6 +223,7 @@ func FetchImage(c *gin.Context) {
 			panic(err)
 		}
 		base := base64.StdEncoding.EncodeToString(file)
+		//io.Copy(c.Writer,io.Reader(db.ImagesURI + img.FileName))
 
 		c.JSON(http.StatusOK, gin.H{"image": img, "data": "data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
 	} else {
@@ -234,7 +245,7 @@ func DeleteArticle(c *gin.Context) {
 			defer context.Close()
 			context.Preload("Images").Find(&article)
 			for _, el := range article.Images {
-				err := os.Remove(db.ImagesTmpURI + el.FileName)
+				err := os.Remove(db.ImagesURI + el.FileName)
 				if err == nil {
 				} else {
 					log.Fatal(err)
@@ -260,7 +271,7 @@ func DeleteArticle(c *gin.Context) {
 	}
 }
 
-func DeleteImage(c *gin.Context) {
+func RemoveImageFromArticle(c *gin.Context) {
 
 	id := c.Params.ByName("id")
 	var image db.Image
@@ -286,5 +297,79 @@ func DeleteImage(c *gin.Context) {
 }
 
 func UpdateArticle(c *gin.Context) {
+	id := c.Params.ByName("id")
 
+	loggedUser, err := c.Get("User")
+	var articleModel ArticleUpdateModel
+	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+
+		if err {
+			if c.Bind(&articleModel) == nil {
+
+				if len(articleModel.Title) > 0 && len(articleModel.Text) > 0 {
+
+					context := db.Database()
+
+					defer context.Close()
+					var article db.Article
+					article.ID = uint(articleId)
+
+					context.Preload("User").Preload("Images").Find(&article)
+					//admin can edit post with id 1
+					if article.UserId == loggedUser.(db.User).ID || loggedUser.(db.User).ID == 1 {
+						article.Text = articleModel.Text
+						article.Title = articleModel.Title
+
+						for _, elem := range articleModel.DeleteImages {
+							os.Remove(db.ImagesTmpURI + elem)
+							os.Remove(db.ImagesURI + elem)
+							filtered := []db.Image{}
+							for _, v := range article.Images {
+								if v.FileName != elem {
+									filtered = append(filtered, v)
+								}
+							}
+							article.Images = filtered
+							context.Where("file_name = ?", elem).Delete(db.Image{})
+						}
+
+						var imgSlice []db.Image
+
+						for _, i := range articleModel.NewImages {
+							err := os.Rename(db.ImagesTmpURI+i.FileName,
+								db.ImagesURI+i.FileName)
+							if err == nil {
+
+								newImage := db.Image{Name: i.Name,
+									FileName:              i.FileName,
+									Article:               article}
+								context.Create(&newImage)
+								imgSlice = append(imgSlice, newImage)
+							} else {
+								log.Fatal(err)
+								c.AbortWithError(500, err)
+
+							}
+						}
+
+						article.Images = append(article.Images, imgSlice...)
+						context.Save(&article)
+
+						c.JSON(http.StatusCreated, gin.H{"message": "Article successfully updated!", "id": article.ID})
+					} else {
+						c.JSON(http.StatusUnauthorized, gin.H{"message": "Article was not updated, you cant edit others articles"})
+					}
+				} else {
+					c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not updated, Invalid text lenght or image arrays arent as large"})
+				}
+			} else {
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not updated. Cant bind model"})
+			}
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not updated. User not found"})
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{})
+
+	}
 }

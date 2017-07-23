@@ -115,6 +115,7 @@ export default class ArticleForm extends React.Component {
         let target = event.target || window.event.srcElement;
         let files = target.files;
 
+        //rewrite
         if (FileReader && files && files.length) {
             this.setState({buttonsEnabled: false});
             for (let i = 0; i < files.length; i++) {
@@ -145,6 +146,8 @@ export default class ArticleForm extends React.Component {
                                     arr[index].FileName = json.filename;
                                     this.setState({imgNames: [...this.state.imgNames, json.filename], images: arr});
                                     if (i === files.length - 1) {
+                                        let file = document.getElementById("inputFiles");
+                                        file.value = file.defaultValue;
                                         this.setState({buttonsEnabled: true})
                                     }
                                 });
@@ -179,7 +182,8 @@ export default class ArticleForm extends React.Component {
 
                         <div className="imageUpload">
 
-                            <ImageGallery images={this.state.images} handleImageDelete={this.handleImageDelete}/>
+                            <ImageGallery showDelete={true} images={this.state.images}
+                                          handleImageDelete={this.handleImageDelete}/>
 
                             <input disabled={!this.state.buttonsEnabled}
                                    id="inputFiles" type='file' name="img" multiple

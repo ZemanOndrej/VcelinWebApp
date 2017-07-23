@@ -115,3 +115,7 @@ a:hover {
 .spanClick {
     cursor: pointer;
 }
+
+.selectedImage {
+    border: solid black 2px;
+}

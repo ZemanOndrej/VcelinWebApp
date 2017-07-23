@@ -49,7 +49,7 @@ export default class ImageGallery extends React.Component {
         let images = this.props.images;
         if (images) {
             let imageComps = images.map((obj, i) => {
-                return <Image image={obj} key={i} index={i}
+                return <Image image={obj} key={i} index={i} showDelete={this.props.showDelete}
                               handleImageDelete={this.props.handleImageDelete}
                               openBigImageHandler={this.openBigImageHandler}/>;
             });
@@ -67,7 +67,7 @@ export default class ImageGallery extends React.Component {
                         <span className="imageNumber">{this.state.selectedImage + 1}/{this.props.images.length}</span>
 
                         {this.state.selectedImage >= 0 ?
-                            (<img id="bigPicture" src={images[this.state.selectedImage]}/>) : null}
+                            (<img id="bigPicture" src={images[this.state.selectedImage].data}/>) : null}
                     </div>
 
                 </div>

@@ -57,11 +57,13 @@ func main() {
 
 		authorized.DELETE("/api/cancelArticle", api.CancelArticle)
 		authorized.DELETE("/api/articles/:id", api.DeleteArticle)
-		authorized.DELETE("/api/images/:id", api.DeleteImage)
+		authorized.DELETE("/api/images/:id", api.RemoveImageFromArticle)
 		authorized.PUT("/api/articles/:id", api.UpdateArticle)
 
-
 	}
+	/*
+
+	 */
 
 	router.LoadHTMLFiles("./client/src/index.html")
 	router.NoRoute(index)
@@ -77,6 +79,9 @@ func main() {
 
 		r.GET("/api/articles/:id", api.FetchArticle)
 		r.GET("/api/images/:id", api.FetchImage)
+
+		r.Static("/img", "./server/images")
+
 	}
 	router.Run(":5513")
 }
