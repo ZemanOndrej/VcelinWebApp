@@ -5,7 +5,6 @@ import * as React from "react";
 
 export default class Image extends React.Component {
 
-    // bug in selecting image css class
     constructor(props) {
         super(props);
         this.handleImageEnlarge = this.handleImageEnlarge.bind(this);
@@ -14,8 +13,15 @@ export default class Image extends React.Component {
 
     }
 
+    componentWillReceiveProps(nextProps) {
+        if (!nextProps.showDelete) {
+            this.setState({isSelected: false})
+        }
+
+    }
+
     handleImageDelete() {
-        this.setState({isSelected: !this.state.isSelected && this.props.showDelete});
+        this.setState({isSelected: !this.state.isSelected});
         this.props.handleImageDelete(this.props.image.FileName);
     }
 
@@ -27,7 +33,7 @@ export default class Image extends React.Component {
         let image = this.props.image;
         return (
             <div style={{padding: "10px 20px 10px 20px", display: "inline-block"}}
-                 className={(this.state.isSelected ? "selectedImage" : null )}>
+                 className={(this.props.showDelete && this.state.isSelected ? "selectedImage" : null )}>
                 <img style={{height: "100px", width: "100px"}} src={image.data} onClick={this.handleImageEnlarge}/>
 
                 {this.state.token && this.props.showDelete ?

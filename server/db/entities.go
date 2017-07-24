@@ -36,7 +36,7 @@ type Post struct {
 type Article struct {
 	gorm.Model
 	Title  string `gorm:"not null" form:"title" json:"title"`
-	Text   string `gorm:"not null;type:varchar(400)" form:"text" json:"text" `
+	Text   string `gorm:"not null;type:varchar(2000)" form:"text" json:"text" `
 	User   User `gorm:"ForeignKey:UserId"`
 	UserId uint `gorm:"not null"`
 	Images []Image `gorm:"ForeignKey:ArticleId"`

@@ -18,9 +18,20 @@ export default class PostList extends React.Component {
         this.loadPosts = this.loadPosts.bind(this);
         window.addEventListener("scroll", this.handleScroll);
 
-        let token = localStorage.getItem("token");
-        this.state = {token: token, page: 0, data: []};
-        this.loadPosts()
+        this.state = {token: localStorage.getItem("token"), page: 0, data: []};
+    }
+
+    componentDidMount() {
+        this.loadPosts();
+
+        if (this.props.location.state) {
+            this.setState({postError: this.props.location.state.error});
+            this.props.history.replace({
+                pathname: '/vcelin/posts',
+                state: {}
+            });
+
+        }
     }
 
     loadPosts() {
@@ -49,6 +60,7 @@ export default class PostList extends React.Component {
                     }
                 });
         }
+
 
     }
 
@@ -102,6 +114,8 @@ export default class PostList extends React.Component {
         }
         return (
             <div>
+                {this.state.postError ?
+                    <div className="alert alert-danger"> ERROR: {this.state.postError}</div> : null}
                 <h2>Posts</h2>
                 <PostForm newPostHandler={this.newPostHandler}/>
                 {posts}

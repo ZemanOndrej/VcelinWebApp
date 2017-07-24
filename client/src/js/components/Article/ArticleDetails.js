@@ -17,12 +17,14 @@ export default class ArticleDetails extends React.Component {
             buttonsEnabled: true,
             imagesToDelete: []
         };
+
         this.handleImageDelete = this.handleImageDelete.bind(this);
         this.handleEditClick = this.handleEditClick.bind(this);
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
         this.handleArticleDelete = this.handleArticleDelete.bind(this);
-        this.handleAddNewImages = this.handleAddNewImages.bind(this)
+        this.handleAddNewImages = this.handleAddNewImages.bind(this);
+        this.handleUpdateCancel = this.handleUpdateCancel.bind(this);
     }
 
     componentDidMount() {
@@ -34,6 +36,7 @@ export default class ArticleDetails extends React.Component {
                 if (response.ok) {
                     return response.json()
                         .then((json) => {
+
                             this.setState({data: json.data, title: json.data.title, text: json.text});
 
                             for (let i = 0; i < json.data.Images.length; i++) {
@@ -51,9 +54,15 @@ export default class ArticleDetails extends React.Component {
 
                             }
 
+
                         });
                 } else {
-                    this.setState({err: "server error: " + response.status})
+                    this.props.history.push({
+                        pathname: "/vcelin/articles",
+                        state: {
+                            error: response.status + ", Could not find Article with id: " + this.props.match.params.articleId
+                        }
+                    })
                 }
             });
 
@@ -232,6 +241,49 @@ export default class ArticleDetails extends React.Component {
         }
     }
 
+    handleUpdateCancel() {
+
+        if (this.state.newImages.length > 0) {
+            fetch(`${serverAddress}/vcelin/api/cancelArticle`, {
+                    method: 'DELETE',
+                    mode: "cors",
+                    cache: "default",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "token": this.state.token,
+                    },
+                    body: JSON.stringify({ImageFileNames: this.state.newImages.map(o => o.fileName)})
+                }
+            );
+
+            let arr = this.state.images;
+
+            let imagesNamesArray = this.state.newImages.map(o => o.fileName);
+
+
+            this.setState({
+                title: this.state.data.title,
+                text: this.state.data.text,
+                isEditing: false,
+                images: this.state.images.filter(o => imagesNamesArray.indexOf(o.FileName) === -1),
+                imagesToDelete: [],
+                newImages:
+                    []
+            })
+            ;
+        } else {
+            this.setState({
+                title: this.state.data.title,
+                text: this.state.data.text,
+                isEditing: false,
+                imagesToDelete: [],
+                newImages: []
+            });
+        }
+
+
+    }
+
     render() {
         let userId = parseInt(localStorage.getItem("userId"));
         let data = this.state.data;
@@ -269,6 +321,9 @@ export default class ArticleDetails extends React.Component {
                             {this.state.isEditing && (userId === data.User.ID || userId === 1) ?
                                 <button onClick={this.handleArticleDelete} className="btn btn-primary">
                                     Delete </button> : null}
+                            {this.state.isEditing ?
+                                <button onClick={this.handleUpdateCancel} className="btn btn-default">
+                                    Cancel</button> : null}
                         </div>
                         {this.state.isEditing && userId ? <input disabled={!this.state.buttonsEnabled}
                                                                  id="inputFiles" type='file' name="img" multiple
@@ -276,7 +331,7 @@ export default class ArticleDetails extends React.Component {
                                                                  onChange={this.handleAddNewImages}/> : null}
 
                         < ImageGallery showDelete={this.state.isEditing} handleImageDelete={this.handleImageDelete}
-                                       images={this.state.images}/>
+                                       images={this.state.images} selectedImages={this.state.imagesToDelete}/>
                     </div>
                 </div>
             )

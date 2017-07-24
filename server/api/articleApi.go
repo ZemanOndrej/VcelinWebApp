@@ -195,15 +195,19 @@ func FetchArticle(c *gin.Context) {
 	var article db.Article
 
 	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		article.ID = uint(articleId)
 		context := db.Database()
 		defer context.Close()
-		context.Preload("User").Preload("Images").Find(&article)
-		article.User.Email = ""
-		article.User.Password = ""
-		c.JSON(http.StatusOK, gin.H{"data": article})
+		context.Preload("User").Preload("Images").First(&article, articleId)
+
+		if article.ID != 0 {
+			article.User.Email = ""
+			article.User.Password = ""
+			c.JSON(http.StatusOK, gin.H{"data": article})
+		} else {
+			c.AbortWithStatus(http.StatusNotFound)
+		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{})
+		c.AbortWithStatus(http.StatusBadRequest)
 	}
 
 }

@@ -19,9 +19,21 @@ export default class ArticleList extends React.Component {
 
         window.addEventListener("scroll", this.handleScroll);
 
-        let token = localStorage.getItem("token");
-        this.state = {token: token, page: 0, data: []};
+
+        this.state = {token: localStorage.getItem("token"), page: 0, data: [], error: ""};
+
         this.loadArticles()
+    }
+
+    componentDidMount() {
+        if (this.props.location.state) {
+            this.setState({articleError: this.props.location.state.error});
+            this.props.history.replace({
+                pathname: '/vcelin/articles',
+                state: {}
+            });
+
+        }
     }
 
     closeModal() {
@@ -72,6 +84,7 @@ export default class ArticleList extends React.Component {
     render() {
         let articles = null;
 
+
         if (!this.state.data) {
             articles = <div>No Articles(</div>
         } else {
@@ -81,6 +94,9 @@ export default class ArticleList extends React.Component {
         }
         return (
             <div>
+
+                {this.state.articleError ?
+                    <div className="alert alert-danger"> ERROR: {this.state.articleError}</div> : null}
                 {this.state.showModal ?
                     <ArticleForm closeModal={this.closeModal} newArticleHandler={this.newArticleHandler}/> : null}
 

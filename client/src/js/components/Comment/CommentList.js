@@ -20,34 +20,38 @@ export default class CommentList extends React.Component {
         this.updatePostHandler = this.updatePostHandler.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.loadMoreComments = this.loadMoreComments.bind(this);
-
         window.addEventListener("scroll", this.handleScroll);
+        this.state = {data: {}, token: localStorage.getItem("token"), page: 1};
 
-        let token = localStorage.getItem("token");
-        this.state = {data: {}, token: token, page: 1};
+    }
 
-        if (token) {
-            fetch(`${serverAddress}/vcelin/api/posts/${this.props.match.params.postId}`  , {
+    componentDidMount() {
+        if (this.state.token) {
+            fetch(`${serverAddress}/vcelin/api/posts/${this.props.match.params.postId}`, {
                 method: "GET",
-                headers: {"token": token}
+                headers: {"token": this.state.token}
             })
                 .then((response) => {
                     if (response.ok) {
                         return response.json()
                             .then((json) => {
-                                this.setState({"data": json.Post});
+                                this.setState({"data": json.post});
                             });
                     } else if (response.status === 401) {
                         localStorage.removeItem("token");
                         localStorage.removeItem("isAuthorized");
                         this.props.history.push("/vcelin")
 
+                    } else if (response.status === 404) {
+                        this.props.history.push({
+                            pathname: "/vcelin/posts",
+                            state: {error: response.status + ", Could not find Post with id: " + this.props.match.params.postId}
+                        })
+
                     }
                 });
         }
-
     }
-
 
     loadMoreComments() {
         if (this.state.token) {
@@ -96,7 +100,7 @@ export default class CommentList extends React.Component {
                 break;
             }
         }
-        this.setState({data:data})
+        this.setState({data: data})
     }
 
     deletePostHandler() {
