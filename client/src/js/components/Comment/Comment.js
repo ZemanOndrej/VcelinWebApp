@@ -3,6 +3,8 @@
  */
 import React from "react";
 import UpdateForm from "../UpdateForm";
+import {formatTimeSince} from "../../util";
+
 export default class Comment extends React.Component {
 
     constructor(props) {
@@ -29,15 +31,16 @@ export default class Comment extends React.Component {
         let userId = parseInt(localStorage.getItem("userId"));
 
         return (
-            <div style={{padding: "10px 20px 10px 20px"}}>
-                <h3>
+            <div className="commentSection">
+                <p>
                     {data.message}
-                </h3>
+                </p>
 
                 <span>
-                    {data.CreatedAt}
+                    {formatTimeSince(data.CreatedAt)} ago
                 </span>
-                <span>sent:
+                <span className="buttonMargin">
+                    Sent by:
                     {data.User.name}
                 </span>
                 {/*admin control with id 1 */}

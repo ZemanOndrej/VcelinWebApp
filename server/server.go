@@ -5,7 +5,6 @@ import (
 	"vcelin/server/api"
 	"gopkg.in/gin-contrib/cors.v1"
 	"time"
-	"vcelin/server/db"
 )
 
 func main() {
@@ -22,7 +21,7 @@ func main() {
 		MaxAge: 12 * time.Hour,
 	}))
 
-	db.InitDb()
+	//db.InitDb()
 	api.InitKeys()
 
 	authorized := router.Group("/vcelin")

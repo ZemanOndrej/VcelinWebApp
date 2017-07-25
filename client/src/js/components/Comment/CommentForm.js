@@ -3,30 +3,31 @@
  */
 import React from "react";
 import {serverAddress} from "../../serverConfig";
+
 export default class CommentForm extends React.Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
 
-        this.state={error:null, message:""};
+        this.state = {error: null, message: ""};
 
-        this.handleSendComment= this.handleSendComment.bind(this);
+        this.handleSendComment = this.handleSendComment.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
 
     }
 
-    handleMessageChange(event){
+    handleMessageChange(event) {
 
         this.setState({message: event.target.value})
     }
 
-    handleSendComment(event){
+    handleSendComment(event) {
         event.preventDefault();
 
-        if(this.state.message){
+        if (this.state.message) {
             let data = JSON.stringify({
-                Message:this.state.message,
-                PostId:this.props.postId
+                Message: this.state.message,
+                PostId: this.props.postId
 
             });
             fetch(`${serverAddress}/vcelin/api/comments`, {
@@ -34,17 +35,19 @@ export default class CommentForm extends React.Component {
                 body: data,
                 mode: "cors",
                 cache: "default",
-                headers: {"Content-type": "application/json", "token":localStorage.getItem("token")}
+                headers: {"Content-type": "application/json", "token": localStorage.getItem("token")}
             })
                 .then((response) => {
                     if (response.ok) {
                         return response.json().then((json) => {
-                            this.props.newCommentHandler(json.comment)
+                            this.props.newCommentHandler(json.comment);
+                            this.setState({message: ""});
+
                         });
                     }
 
                 });
-        }else {
+        } else {
             this.setState({error: "Message is empty"});
         }
 
@@ -58,11 +61,11 @@ export default class CommentForm extends React.Component {
         return <div style={{color: 'red'}}>{this.state.error}</div>;
     }
 
-    render(){
-        return(
-            <div style={{padding:"10px 20px 10px 20px"}}>
+    render() {
+        return (
+            <div style={{padding: "10px 20px 10px 20px"}}>
 
-                <form >
+                <form>
                     <div className="input-group">
                         <textarea className="form-control" type="text" placeholder="Message" rows="3"
                                   value={this.state.message}

@@ -108,7 +108,7 @@ func FetchArticlesOnPage(c *gin.Context) {
 
 		context := db.Database()
 		defer context.Close()
-		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&articles)
+		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Preload("Images").Find(&articles)
 		for y := range articles {
 			articles[y].User.Password = ""
 			articles[y].User.Email = ""
@@ -117,7 +117,7 @@ func FetchArticlesOnPage(c *gin.Context) {
 			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": articles})
 
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "No more posts ;( " })
+			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "No more articles ;( " })
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong page number"})
@@ -216,11 +216,10 @@ func FetchImage(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var img db.Image
 
-	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		img.ID = uint(postId)
+	if imageId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		context := db.Database()
 		defer context.Close()
-		context.Find(&img)
+		context.First(&img, imageId)
 
 		file, err := ioutil.ReadFile(db.ImagesURI + img.FileName)
 		if err != nil {
@@ -262,7 +261,7 @@ func DeleteArticle(c *gin.Context) {
 				context.Delete(&article)
 				c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "article deleted successfully!"})
 			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "You cannot delete this post"})
+				c.JSON(http.StatusUnauthorized, gin.H{"message": "You cannot delete this article!"})
 			}
 
 		} else {
@@ -319,7 +318,7 @@ func UpdateArticle(c *gin.Context) {
 					article.ID = uint(articleId)
 
 					context.Preload("User").Preload("Images").Find(&article)
-					//admin can edit post with id 1
+					//admin can edit article with id 1
 					if article.UserId == loggedUser.(db.User).ID || loggedUser.(db.User).ID == 1 {
 						article.Text = articleModel.Text
 						article.Title = articleModel.Title

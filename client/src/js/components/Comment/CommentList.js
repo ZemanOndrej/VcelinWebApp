@@ -25,6 +25,10 @@ export default class CommentList extends React.Component {
 
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll)
+    }
+
     componentDidMount() {
         if (this.state.token) {
             fetch(`${serverAddress}/vcelin/api/posts/${this.props.match.params.postId}`, {

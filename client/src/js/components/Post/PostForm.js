@@ -3,6 +3,7 @@
  */
 import {serverAddress} from "../../serverConfig";
 import React from "react";
+
 export default class PostForm extends React.Component {
 
     constructor(props) {
@@ -35,7 +36,8 @@ export default class PostForm extends React.Component {
                 .then((response) => {
                     if (response.ok) {
                         return response.json().then((json) => {
-                            this.props.newPostHandler(json.post)
+                            this.props.newPostHandler(json.post);
+                            this.setState({message: ""});
                         });
                     }
                 });
@@ -55,11 +57,11 @@ export default class PostForm extends React.Component {
 
     render() {
         return (
-            <div style={{padding: "10px 20px 10px 20px"}}>
+            <div className="generalPadding postForm">
 
                 <form onSubmit={this.handleSendPost.bind(this)}>
-                    <div className="input-group">
-                        <textarea className="form-control" type="text" placeholder="Message" rows="3"
+                    <div className="input-group postFormTextArea">
+                        <textarea className="form-control" type="text" placeholder="Message" rows="4" cols="70"
                                   value={this.state.message}
                                   onChange={this.handleMessageChange}/>
                     </div>

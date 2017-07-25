@@ -16,13 +16,18 @@ export default class ArticleList extends React.Component {
         this.closeModal = this.closeModal.bind(this);
         this.openModal = this.openModal.bind(this);
         this.newArticleHandler = this.newArticleHandler.bind(this);
+        this.openArticle = this.openArticle.bind(this);
 
         window.addEventListener("scroll", this.handleScroll);
 
 
-        this.state = {token: localStorage.getItem("token"), page: 0, data: [], error: ""};
+        this.state = {token: localStorage.getItem("token"), page: 0, data: [], error: "", openArticle: false};
 
         this.loadArticles()
+    }
+
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll)
     }
 
     componentDidMount() {
@@ -34,6 +39,16 @@ export default class ArticleList extends React.Component {
             });
 
         }
+    }
+
+    openArticle(opening, index) {
+        if (opening) {
+            this.setState({openArticle: index});
+
+        } else {
+            this.setState({openArticle: false})
+        }
+
     }
 
     closeModal() {
@@ -83,13 +98,13 @@ export default class ArticleList extends React.Component {
 
     render() {
         let articles = null;
-
-
         if (!this.state.data) {
             articles = <div>No Articles(</div>
         } else {
             articles = this.state.data.map((object, i) => {
-                return <Article data={object} key={i}/>;
+                return <Article token={this.state.token} articleOpen={this.state.openArticle}
+                                handleOpenArticle={this.openArticle}
+                                index={i} data={object} key={i}/>;
             })
         }
         return (
@@ -102,7 +117,7 @@ export default class ArticleList extends React.Component {
 
                 {this.state.token ?
                     <button className="btn btn-default" onClick={this.openModal}>Create Article</button> : null}
-                <h2>Articles</h2>
+                <h2 style={{textAlign: "center"}}>Articles</h2>
                 {articles}
                 <div>
                     <span>

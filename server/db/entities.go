@@ -10,15 +10,15 @@ const ImagesTmpURI = "./server/tmp/"
 
 type User struct {
 	gorm.Model
-	Name     string `gorm:"not null" form:"name" json:"name"`
-	Password string `gorm:"not null" form:"password" json:"password"`
-	Email    string `gorm:"not null" form:"email" json:"email" sql:"unique"`
+	Name     string `gorm:"not null;type:varchar(128)" form:"name" json:"name"`
+	Password string `gorm:"not null;type:varchar(128)" form:"password" json:"password"`
+	Email    string `gorm:"not null;type:varchar(128)" form:"email" json:"email" sql:"unique"`
 	Posts    []Post `gorm:"ForeignKey:UserId"`
 	Comments []Comment `gorm:"ForeignKey:UserId"`
 }
 type Comment struct {
 	gorm.Model
-	Message string `gorm:"not null" form:"message" json:"message"`
+	Message string `gorm:"not null;type:varchar(1000)" form:"message" json:"message"`
 	User    User `gorm:"ForeignKey:UserId"`
 	UserId  uint `gorm:"not null"`
 	Post    Post `gorm:"ForeignKey:PostId"`
@@ -27,7 +27,7 @@ type Comment struct {
 
 type Post struct {
 	gorm.Model
-	Message  string `gorm:"not null" form:"message" json:"message"`
+	Message  string `gorm:"not null;type:varchar(1000)" form:"message" json:"message"`
 	User     User `gorm:"ForeignKey:UserId"`
 	UserId   uint `gorm:"not null"`
 	Comments []Comment `gorm:"ForeignKey:PostId"`
@@ -35,7 +35,7 @@ type Post struct {
 
 type Article struct {
 	gorm.Model
-	Title  string `gorm:"not null" form:"title" json:"title"`
+	Title  string `gorm:"not null;type:varchar(100)" form:"title" json:"title"`
 	Text   string `gorm:"not null;type:varchar(2000)" form:"text" json:"text" `
 	User   User `gorm:"ForeignKey:UserId"`
 	UserId uint `gorm:"not null"`

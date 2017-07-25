@@ -63,7 +63,7 @@ export default class UpdateForm extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="formComponent">
                 <div className="overlay"></div>
 
                 <div className="formWindow">

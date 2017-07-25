@@ -4,6 +4,7 @@
 import React from "react";
 import {serverAddress} from "../../serverConfig";
 import ImageGallery from "./ImageGallery";
+import {formatTimeSince} from "../../util";
 
 export default class ArticleDetails extends React.Component {
 
@@ -289,49 +290,60 @@ export default class ArticleDetails extends React.Component {
         let data = this.state.data;
         if (data) {
             return (
-                <div style={{padding: "10px 20px 10px 20px"}}>
+                <div className="generalPadding">
                     <div>
-                        <div className="article">
+                        <div className="articleDetails">
 
                             {this.state.isEditing && (userId === data.User.ID || userId === 1) ? (
-                                    <form>
+                                    <form className="articleForm">
                                         <div className="input-group">
                                             <textarea value={this.state.title} onChange={this.handleTitleChange}
                                                       className="form-control" type="text" placeholder="Title"
-                                                      rows="1"/>
+                                                      rows="3" cols="100"/>
                                         </div>
                                         <div className="input-group">
                                             <textarea value={this.state.text} onChange={this.handleTextChange}
-                                                      className="form-control" type="text" placeholder="Text" rows="3"/>
+                                                      className="form-control" type="text" placeholder="Text"
+                                                      rows="6" cols="100"/>
                                         </div>
                                     </form>) :
                                 (<div><h3>{data.title}</h3><p>{data.text}</p></div>)}
-                            <span>{data.CreatedAt}</span>
-                            <span>sent:{data.User.name}</span>
-                        </div>
-                        <div className="buttons">
+
+                            <span className="spanInfo">
+                                {formatTimeSince(data.CreatedAt)} ago
+                            </span>
+
+                            <span className="spanInfo">
+                                Sent by :
+                                {data.User.name}
+                            </span>
                             {!this.state.isEditing && userId ?
 
-                                <a onClick={this.handleEditClick}>Edit </a>
+                                <button className="btn btn-default" onClick={this.handleEditClick}>Edit </button>
                                 : null
                             }
-                            {this.state.isEditing && userId ?
-                                <button onClick={this.handleEditClick} className="btn btn-primary">
-                                    Update</button> : null}
-                            {this.state.isEditing && (userId === data.User.ID || userId === 1) ?
-                                <button onClick={this.handleArticleDelete} className="btn btn-primary">
-                                    Delete </button> : null}
-                            {this.state.isEditing ?
-                                <button onClick={this.handleUpdateCancel} className="btn btn-default">
-                                    Cancel</button> : null}
+                            {this.state.isEditing && userId ? <input disabled={!this.state.buttonsEnabled}
+                                                                     id="inputFiles" type='file' name="img" multiple
+                                                                     style={{
+                                                                         color: "transparent",
+                                                                         display: "inline-block"
+                                                                     }}
+                                                                     onChange={this.handleAddNewImages}/> : null}
                         </div>
-                        {this.state.isEditing && userId ? <input disabled={!this.state.buttonsEnabled}
-                                                                 id="inputFiles" type='file' name="img" multiple
-                                                                 style={{color: "transparent"}}
-                                                                 onChange={this.handleAddNewImages}/> : null}
-
                         < ImageGallery showDelete={this.state.isEditing} handleImageDelete={this.handleImageDelete}
                                        images={this.state.images} selectedImages={this.state.imagesToDelete}/>
+                    </div>
+
+                    <div className="articleDetails">
+                        {this.state.isEditing && userId ?
+                            <button onClick={this.handleEditClick} className="btn btn-primary buttonMargin">
+                                Update</button> : null}
+                        {this.state.isEditing && (userId === data.User.ID || userId === 1) ?
+                            <button onClick={this.handleArticleDelete} className="btn btn-primary buttonMargin">
+                                Delete </button> : null}
+                        {this.state.isEditing ?
+                            <button onClick={this.handleUpdateCancel} className="btn btn-default buttonMargin">
+                                Cancel</button> : null}
                     </div>
                 </div>
             )

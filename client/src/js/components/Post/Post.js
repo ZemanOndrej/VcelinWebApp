@@ -4,6 +4,8 @@
 import React from "react";
 import Link from "react-router-dom/es/Link";
 import UpdateForm from "../UpdateForm";
+import {formatTimeSince} from "../../util";
+
 export default class Post extends React.Component {
 
     constructor(props){
@@ -27,21 +29,22 @@ export default class Post extends React.Component {
         let data = this.props.data;
         let userId = parseInt(localStorage.getItem("userId"));
         return(
-            <div style={{padding:"10px 20px 10px 20px"}}>
-                <h3>
+            <div className={(this.props.link ? "postSection" : null) + " postDetails"}>
+                <h4>
                 {data.message}
-                </h3>
+                </h4>
 
-                <span>
-                    {data.CreatedAt}
+                <span className="spanInfo">
+                    {formatTimeSince(data.CreatedAt)} ago
                 </span>
-                <span>sent:
+                <span className="spanInfo">
+                    Sent by :
                     {data.User.name}
                 </span>
                 {this.props.link ? <Link to={"/vcelin/posts/" + data.ID}>Comments</Link> : null}
                 {/*admin control with id 1 */}
                 {userId === data.User.ID || userId === 1 ?
-                    <a onClick={this.editClickModal} >Edit </a>:null}
+                    <a className="buttonMargin" onClick={this.editClickModal}>Edit </a> : null}
 
                 {this.state.showModal ?
                     <UpdateForm closeModal={this.closeModal} updateHandler={this.props.updatePostHandler}

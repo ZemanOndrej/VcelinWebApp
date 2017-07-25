@@ -34,6 +34,10 @@ export default class PostList extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        window.removeEventListener('scroll', this.handleScroll)
+    }
+
     loadPosts() {
         if (this.state.token) {
             fetch(`${serverAddress}/vcelin/api/postsPage/${this.state.page}`, {
@@ -116,9 +120,11 @@ export default class PostList extends React.Component {
             <div>
                 {this.state.postError ?
                     <div className="alert alert-danger"> ERROR: {this.state.postError}</div> : null}
-                <h2>Posts</h2>
+                <h2 className="heading">Posts</h2>
                 <PostForm newPostHandler={this.newPostHandler}/>
-                {posts}
+                <div id="postList">
+                    {posts}
+                </div>
                 <div>
                     <span>
                         {this.state.error}

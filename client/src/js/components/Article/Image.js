@@ -30,14 +30,22 @@ export default class Image extends React.Component {
     }
 
     render() {
-        let image = this.props.image;
         return (
-            <div style={{padding: "10px 20px 10px 20px", display: "inline-block"}}
-                 className={(this.props.showDelete && this.state.isSelected ? "selectedImage" : null )}>
-                <img style={{height: "100px", width: "100px"}} src={image.data} onClick={this.handleImageEnlarge}/>
+            <div className="generalPadding" style={{display: "inline-block"}}>
+
+                <img
+                    className={"imagePreview " + (this.props.showDelete && this.state.isSelected ? "selectedImage" : null )}
+                    style={{height: "100px", width: "100px"}} src={this.props.image.data}
+                    onClick={this.handleImageEnlarge}/>
+
 
                 {this.state.token && this.props.showDelete ?
-                    <span className="spanClick" onClick={this.handleImageDelete}>Delete</span> : null}
+                    <div style={{position: "relative", width: "0", height: "0"}}>
+                        <span className="spanClick spanImageClickDelete glyphicon glyphicon-remove-circle"
+                              onClick={this.handleImageDelete}>
+                        </span>
+                    </div>
+                    : null}
             </div>
 
         )
