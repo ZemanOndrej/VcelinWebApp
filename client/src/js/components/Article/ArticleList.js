@@ -17,13 +17,8 @@ export default class ArticleList extends React.Component {
         this.openModal = this.openModal.bind(this);
         this.newArticleHandler = this.newArticleHandler.bind(this);
         this.openArticle = this.openArticle.bind(this);
-
         window.addEventListener("scroll", this.handleScroll);
-
-
         this.state = {token: localStorage.getItem("token"), page: 0, data: [], error: "", openArticle: false};
-
-        this.loadArticles()
     }
 
     componentWillUnmount() {
@@ -39,6 +34,7 @@ export default class ArticleList extends React.Component {
             });
 
         }
+        this.loadArticles()
     }
 
     openArticle(opening, index) {
@@ -93,7 +89,7 @@ export default class ArticleList extends React.Component {
     }
 
     newArticleHandler(e) {
-        this.setState({data: [e, ...this.state.data]});
+        this.setState({data: [e, ...this.state.data], openArticle: 0});
     }
 
     render() {

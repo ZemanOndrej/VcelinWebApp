@@ -17,16 +17,18 @@ export default class Image extends React.Component {
         if (!nextProps.showDelete) {
             this.setState({isSelected: false})
         }
-
     }
 
     handleImageDelete() {
-        this.setState({isSelected: !this.state.isSelected});
         this.props.handleImageDelete(this.props.image.FileName);
+        if (this.props.isImageSelectable) {
+            this.setState({isSelected: !this.state.isSelected});
+        }
     }
 
-    handleImageEnlarge() {
-        this.props.openBigImageHandler(this.props.index)
+    handleImageEnlarge(e) {
+        this.props.openBigImageHandler(this.props.index);
+        e.stopPropagation();
     }
 
     render() {
@@ -38,6 +40,8 @@ export default class Image extends React.Component {
                     style={{height: "100px", width: "100px"}} src={this.props.image.data}
                     onClick={this.handleImageEnlarge}/>
 
+                {/*//             static content rework inc
+       style={{height: "100px", width: "100px"}} src={`${serverAddress}/vcelin/img/${this.props.image.name}`}*/}
 
                 {this.state.token && this.props.showDelete ?
                     <div style={{position: "relative", width: "0", height: "0"}}>

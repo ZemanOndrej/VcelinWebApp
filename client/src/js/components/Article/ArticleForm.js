@@ -78,6 +78,7 @@ export default class ArticleForm extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then(json => {
+                        json.article.images = this.state.images;
                         this.props.newArticleHandler(json.article);
                         this.props.closeModal();
                     });
@@ -163,7 +164,8 @@ export default class ArticleForm extends React.Component {
     render() {
         return (
             <div>
-                <div className="overlay"></div>
+                <div className="overlay">
+                </div>
                 <div className="formWindow">
 
                     <form>
@@ -182,7 +184,7 @@ export default class ArticleForm extends React.Component {
 
                         <div className="imageUpload">
 
-                            <ImageGallery showDelete={true} images={this.state.images}
+                            <ImageGallery showDelete={true} images={this.state.images} isImageSelectable={false}
                                           handleImageDelete={this.handleImageDelete}/>
 
                             <input disabled={!this.state.buttonsEnabled}

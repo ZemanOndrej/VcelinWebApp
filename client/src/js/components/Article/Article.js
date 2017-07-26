@@ -17,7 +17,12 @@ export default class Article extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({isOpen: nextProps.index === nextProps.articleOpen});
+        if (nextProps.data.images) {
+            this.setState({isOpen: nextProps.index === nextProps.articleOpen, images: nextProps.data.images});
+        } else {
+            this.setState({isOpen: nextProps.index === nextProps.articleOpen});
+
+        }
     }
 
     openArticle() {
@@ -26,6 +31,7 @@ export default class Article extends React.Component {
             this.setState({isOpen: false});
         } else {
             this.setState({isOpen: true});
+            console.log(this.props.data.Images.length !== this.state.images.length, this.props.data.Images.length, this.state.images.length);
             if (this.props.data.Images.length !== this.state.images.length) {
                 for (let i = 0; i < this.props.data.Images.length; i++) {
                     fetch(`${serverAddress}/vcelin/api/images/${this.props.data.Images[i].ID}`, {
@@ -73,8 +79,6 @@ export default class Article extends React.Component {
                         <ImageGallery showDelete={false} images={this.state.images}/>
                     </div>
                 </Collapse>
-
-
             </div>
         )
     }

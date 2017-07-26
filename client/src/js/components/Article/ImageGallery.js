@@ -17,32 +17,32 @@ export default class ImageGallery extends React.Component {
 
     }
 
-    previousImageHandler() {
+    previousImageHandler(e) {
         let index = this.state.selectedImage - 1;
-
         if (index < 0) {
             index = this.props.images.length - 1;
         }
-
-        this.setState({selectedImage: index})
+        this.setState({selectedImage: index});
+        e.stopPropagation();
     }
 
-    nextImageHandler() {
-
+    nextImageHandler(e) {
         let index = this.state.selectedImage + 1;
-
         if (index === this.props.images.length) {
             index = 0;
         }
-        this.setState({selectedImage: index})
+        this.setState({selectedImage: index});
+        e.stopPropagation();
     }
 
     openBigImageHandler(number) {
-        this.setState({selectedImage: number, showImageView: true})
+        this.setState({selectedImage: number, showImageView: true});
+
     }
 
-    closeBigImageHandler() {
-        this.setState({selectedImage: -1, showImageView: false})
+    closeBigImageHandler(e) {
+        this.setState({selectedImage: -1, showImageView: false});
+        e.stopPropagation();
     }
 
     render() {
@@ -50,6 +50,7 @@ export default class ImageGallery extends React.Component {
         if (images) {
             let imageComps = images.map((obj, i) => {
                 return <Image image={obj} key={i} index={i} showDelete={this.props.showDelete}
+                              isImageSelectable={this.props.isImageSelectable}
                               handleImageDelete={this.props.handleImageDelete}
                               openBigImageHandler={this.openBigImageHandler}/>;
             });
@@ -58,12 +59,15 @@ export default class ImageGallery extends React.Component {
                     <div id="images">
                         {imageComps}
                     </div>
-                    <div id="imageOverlayParent" style={{display: this.state.showImageView ? 'block' : 'none'}}>
-                        <div id="imageOverlay"></div>
-                        <span className="previousArrow arrow unselectable"
+                    <div id="imageOverlayParent" onClick={e => e.stopPropagation()}
+                         style={{display: this.state.showImageView ? 'block' : 'none', cursor: "default"}}>
+                        <div id="imageOverlay">
+                        </div>
+                        <span className="previousArrow arrow unselectable spanClick"
                               onClick={this.previousImageHandler}>&#8249;</span>
-                        <span className="nextArrow arrow unselectable" onClick={this.nextImageHandler}>&#8250;</span>
-                        <span className="closingXSign" onClick={this.closeBigImageHandler}>&times;</span>
+                        <span className="nextArrow arrow unselectable spanClick"
+                              onClick={this.nextImageHandler}>&#8250;</span>
+                        <span className="closingXSign spanClick" onClick={this.closeBigImageHandler}>&times;</span>
                         <span className="imageNumber">{this.state.selectedImage + 1}/{this.props.images.length}</span>
 
                         {this.state.selectedImage >= 0 ?
@@ -73,7 +77,8 @@ export default class ImageGallery extends React.Component {
                 </div>
             )
         } else {
-            return (<div className="imageGallery"></div>)
+            return (<div className="imageGallery">
+            </div>)
         }
 
 
