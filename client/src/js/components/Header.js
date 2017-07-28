@@ -21,6 +21,7 @@ export default class Header extends React.Component {
 
                     <ul className="nav navbar-nav">
                         <li><Link to="/vcelin">Home</Link></li>
+                        <li><Link to="/vcelin/about">About</Link></li>
                         <li><Link to="/vcelin/articles"> Articles</Link></li>
                         { token && token.length > 0 ? (
                             <li><Link to="/vcelin/posts">Posts</Link></li>) : ("")}

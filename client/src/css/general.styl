@@ -1,3 +1,8 @@
+body html
+  padding 0
+  margin 0
+  height 100%
+
 .unselectable
   -webkit-touch-callout none
   -webkit-user-select none
@@ -31,3 +36,45 @@
 .spanInfo
   margin 10px 20px 10px 20px
 
+.navbar
+  margin-bottom 0
+  height 5vh
+
+#homepageBackground
+  background-image url("http://i.imgur.com/z4rGyE3.png")
+  filter brightness(65%)
+  height 95vh
+  width 100%
+  position relative
+
+#mainHeading
+  top 50%
+  margin auto
+  textAlign center
+  left 50%
+  transform translate(-50%, -50%)
+  position absolute
+  font-size 100px
+  color: white
+
+.downArrow
+  transform: rotate(270deg) translate(-50%, -20%)
+  left 50%
+  font-size 100px
+  top 85vh
+
+#aboutLink
+  cursor: pointer
+  transform translate(-50%, -50%)
+  left 50%
+  font-size 30px
+  top 91vh
+  position absolute
+  opacity 0
+  color: silver
+  -webkit-animation: fadeInFromNone 0.5s ease-out;
+  -moz-animation: fadeInFromNone 0.5s ease-out;
+  -o-animation: fadeInFromNone 0.5s ease-out;
+  animation: fadeInFromNone 0.5s ease-out;
+  &:hover
+    opacity 1

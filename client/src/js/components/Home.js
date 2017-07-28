@@ -3,20 +3,26 @@
  */
 
 import React from "react";
+import scroll from "react-scroll/modules/mixins/animate-scroll";
+
 export default class Home extends React.Component {
 
 
     render(){
-
-
-        const userInfo = localStorage.getItem("login");
         return (
             <div>
 
-                <p>
-                    Home screen
-                </p>
+                <div id="homepageBackground">
+                </div>
+                <div id="mainHeading">
+                    Včelín tím
+                </div>
 
+
+                <div onClick={scroll.scrollToBottom}>
+                    <div id="aboutLink"> About</div>
+                    <span className="arrow unselectable spanClick downArrow">&#9001;</span>
+                </div>
             </div>
 
         )
