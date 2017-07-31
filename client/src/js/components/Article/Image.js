@@ -2,13 +2,19 @@
  * Created by Ondrej on 17/07/2017.
  */
 import * as React from "react";
+import {serverAddress} from "../../serverConfig";
 
 export default class Image extends React.Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            token: localStorage.getItem("token"),
+            isSelected: false
+        };
+
         this.handleImageEnlarge = this.handleImageEnlarge.bind(this);
-        this.state = {token: localStorage.getItem("token"), isSelected: false};
         this.handleImageDelete = this.handleImageDelete.bind(this);
 
     }
@@ -32,17 +38,16 @@ export default class Image extends React.Component {
     }
 
     render() {
+        console.log(this.state.isRawImage, "kappa");
+
         return (
             <div className="generalPadding" style={{display: "inline-block"}}>
 
                 <img
                     className={"imagePreview " + (this.props.showDelete && this.state.isSelected ? "selectedImage" : null )}
-                    style={{height: "100px", width: "100px"}} src={this.props.image.data}
+                    style={{height: "100px", width: "100px"}}
+                    src={(this.props.image.data ? this.props.image.data : `${serverAddress}/vcelin/img/${this.props.image.name}`)}
                     onClick={this.handleImageEnlarge}/>
-
-                {/*//             static content rework inc
-       style={{height: "100px", width: "100px"}} src={`${serverAddress}/vcelin/img/${this.props.image.name}`}*/}
-
                 {this.state.token && this.props.showDelete ?
                     <div style={{position: "relative", width: "0", height: "0"}}>
                         <span className="spanClick spanImageClickDelete glyphicon glyphicon-remove-circle"

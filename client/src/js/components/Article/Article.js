@@ -4,7 +4,6 @@
 import React from "react";
 import Link from "react-router-dom/es/Link";
 import ImageGallery from "./ImageGallery";
-import {serverAddress} from "../../serverConfig";
 import {Collapse} from "react-collapse";
 import {formatTimeSince} from "../../util";
 
@@ -31,23 +30,25 @@ export default class Article extends React.Component {
             this.setState({isOpen: false});
         } else {
             this.setState({isOpen: true});
-            console.log(this.props.data.Images.length !== this.state.images.length, this.props.data.Images.length, this.state.images.length);
-            if (this.props.data.Images.length !== this.state.images.length) {
-                for (let i = 0; i < this.props.data.Images.length; i++) {
-                    fetch(`${serverAddress}/vcelin/api/images/${this.props.data.Images[i].ID}`, {
-                        method: "GET",
-                    }).then((response) => {
-                        if (response.ok) {
-                            return response.json().then(json => {
-                                let image = json.image;
-                                image.data = json.data;
-                                this.setState({images: [...this.state.images, image]});
-                            });
-                        }
-                    })
+            // console.log(this.props.data.Images.length !== this.state.images.length, this.props.data.Images, this.state.images);
 
-                }
-            }
+
+            // if (this.props.data.Images.length !== this.state.images.length) {
+            //     for (let i = 0; i < this.props.data.Images.length; i++) {
+            //         fetch(`${serverAddress}/vcelin/api/images/${this.props.data.Images[i].ID}`, {
+            //             method: "GET",
+            //         }).then((response) => {
+            //             if (response.ok) {
+            //                 return response.json().then(json => {
+            //                     let image = json.image;
+            //                     image.data = json.data;
+            //                     this.setState({images: [...this.state.images, image]});
+            //                 });
+            //             }
+            //         })
+            //
+            //     }
+            // }
 
         }
         this.props.handleOpenArticle(!this.state.isOpen, this.props.index)
@@ -76,7 +77,7 @@ export default class Article extends React.Component {
                         <p style={{margin: "15px 0 10px 20px"}}>
                             {data.text}
                         </p>
-                        <ImageGallery showDelete={false} images={this.state.images}/>
+                        <ImageGallery showDelete={false} images={this.props.data.Images}/>
                     </div>
                 </Collapse>
             </div>

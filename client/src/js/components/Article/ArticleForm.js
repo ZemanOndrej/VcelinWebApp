@@ -127,6 +127,9 @@ export default class ArticleForm extends React.Component {
                     let arr = this.state.images;
                     let index = arr.push({data: fr.result}) - 1;
 
+                    let data = new FormData();
+                    data.append("image", fr.result);
+
                     this.setState({images: arr});
                     fetch(`${serverAddress}/vcelin/api/uploadImage`, {
                         method: 'POST',
