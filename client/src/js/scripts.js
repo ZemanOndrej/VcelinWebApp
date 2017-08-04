@@ -10,6 +10,7 @@ import CommentList from "./components/Comment/CommentList";
 import ArticleList from "./components/Article/ArticleList";
 import ArticleDetails from "./components/Article/ArticleDetails";
 import MainPage from "./components/MainPage";
+import ArticleForm from "./components/Article/ArticleForm";
 
 
 const App = () => (
@@ -17,12 +18,12 @@ const App = () => (
         <div>
             <Header />
             <Switch>
+                <Route exact path={"/vcelin/createArticle"} component={ArticleForm}/>
                 <Route path={"/vcelin/posts/:postId"} component={CommentList}/>
                 <Route exact path={"/vcelin/posts"} component={PostList}/>
                 <Route path={"/vcelin/articles/:articleId"} component={ArticleDetails}/>
                 <Route exact path={"/vcelin/articles"} component={ArticleList}/>
                 <Route path={"/vcelin/:about?"} component={MainPage}/>
-
             </Switch>
         </div>
     </Router>

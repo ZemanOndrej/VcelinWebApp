@@ -47,5 +47,5 @@ type Image struct {
 	Name      string `gorm:"not null" form:"name" json:"name"`
 	Article   Article `gorm:"ForeignKey:ArticleId"`
 	ArticleId uint `gorm:"not null"`
-	FileName  string `sql:"not null;unique"`
+	Filename  string `sql:"not null;unique" json:"filename"`
 }

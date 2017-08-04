@@ -5,9 +5,9 @@ import React from "react";
 import {serverAddress} from "../../serverConfig";
 import ImageGallery from "./ImageGallery";
 import {formatTimeSince} from "../../util";
+import ImageInput from "./ImageInput";
 
 export default class ArticleDetails extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {
@@ -24,8 +24,9 @@ export default class ArticleDetails extends React.Component {
         this.handleTitleChange = this.handleTitleChange.bind(this);
         this.handleTextChange = this.handleTextChange.bind(this);
         this.handleArticleDelete = this.handleArticleDelete.bind(this);
-        this.handleAddNewImages = this.handleAddNewImages.bind(this);
         this.handleUpdateCancel = this.handleUpdateCancel.bind(this);
+        this.handleNewImage = this.handleNewImage.bind(this);
+        this.enableButtons = this.enableButtons.bind(this);
     }
 
     componentDidMount() {
@@ -37,24 +38,12 @@ export default class ArticleDetails extends React.Component {
                 if (response.ok) {
                     return response.json()
                         .then((json) => {
-
-                            this.setState({data: json.data, title: json.data.title, text: json.text});
-
-                            for (let i = 0; i < json.data.Images.length; i++) {
-                                fetch(`${serverAddress}/vcelin/api/images/${json.data.Images[i].ID}`, {
-                                    method: "GET",
-                                }).then((response) => {
-                                    if (response.ok) {
-                                        return response.json().then(json => {
-                                            let image = json.image;
-                                            image.data = json.data;
-                                            this.setState({images: [...this.state.images, image]});
-                                        });
-                                    }
-                                })
-
-                            }
-
+                            this.setState({
+                                data: json.data,
+                                title: json.data.title,
+                                text: json.data.text,
+                                images: json.data.Images
+                            });
 
                         });
                 } else {
@@ -72,8 +61,6 @@ export default class ArticleDetails extends React.Component {
     handleArticleDelete(event) {
         event.preventDefault();
 
-
-        //need to fix
         fetch(`${serverAddress}/vcelin/api/articles/${this.state.data.ID}`, {
             method: "DELETE",
             mode: "cors",
@@ -82,10 +69,8 @@ export default class ArticleDetails extends React.Component {
         })
             .then((response) => {
                 if (response.ok) {
-                    return response.json().then((json) => {
-                        this.props.history.push("/vcelin/articles")
+                    this.props.history.push("/vcelin/articles")
 
-                    });
                 }
 
             });
@@ -104,7 +89,7 @@ export default class ArticleDetails extends React.Component {
 
         // yea this is not a nice code
         let newImgIndex = this.state.newImages.findIndex((obj) => {
-            return obj.fileName === index;
+            return obj.filename === index;
         });
         let deleteImgIndex = this.state.imagesToDelete.findIndex((obj) => {
             return obj.fileName === index;
@@ -113,28 +98,28 @@ export default class ArticleDetails extends React.Component {
         if (deleteImgIndex === -1 && newImgIndex > -1) {
             this.setState({
                 newImages: this.state.newImages.filter((obj) => {
-                    return obj.fileName !== index
+                    return obj.filename !== index
                 }),
-                imagesToDelete: [...this.state.imagesToDelete, {fileName: index}],
+                imagesToDelete: [...this.state.imagesToDelete, {filename: index}],
             });
         } else if (deleteImgIndex === -1 && newImgIndex === -1) {
             this.setState({
-                imagesToDelete: [...this.state.imagesToDelete, {fileName: index, isOldImage: true}],
+                imagesToDelete: [...this.state.imagesToDelete, {filename: index, isOldImage: true}],
             });
 
         } else if (deleteImgIndex > -1 && this.state.imagesToDelete[deleteImgIndex].isOldImage) {
 
             this.setState({
                 imagesToDelete: this.state.imagesToDelete.filter((obj) => {
-                    return obj.fileName !== index
+                    return obj.filename !== index
                 })
             });
 
         } else if (deleteImgIndex > -1) {
             this.setState({
-                newImages: [...this.state.newImages, {fileName: index}],
+                newImages: [...this.state.newImages, {filename: index}],
                 imagesToDelete: this.state.imagesToDelete.filter((obj) => {
-                    return obj.fileName !== index
+                    return obj.filename !== index
                 })
             });
 
@@ -144,7 +129,6 @@ export default class ArticleDetails extends React.Component {
     handleEditClick() {
 
         if (this.state.isEditing) {
-
             fetch(`${serverAddress}/vcelin/api/articles/${this.state.data.ID}`, {
                 method: 'PUT',
                 mode: "cors",
@@ -158,26 +142,24 @@ export default class ArticleDetails extends React.Component {
                     Text: this.state.text,
                     NewImages: this.state.newImages,
                     DeleteImages: this.state.imagesToDelete.map((o) => {
-                        return o.fileName
+                        return o.filename
                     })
                 })
             }).then((response) => {
                     if (response.ok) {
-                        return response.json().then((json) => {
+                        let imagesNamesArray = this.state.imagesToDelete.map(o => o.filename);
 
-                                let imagesNamesArray = this.state.imagesToDelete.map(o => o.fileName);
-
-                                let article = this.state.data;
-                                article.title = this.state.title;
-                                article.text = this.state.text;
-                                this.setState({
-                                    data: article,
-                                    images: this.state.images.filter(o => imagesNamesArray.indexOf(o.FileName) === -1),
-                                    imagesToDelete: [],
-                                    newImages: []
-                                });
-                            }
-                        );
+                        let article = this.state.data;
+                        article.title = this.state.title;
+                        article.text = this.state.text;
+                        this.setState({
+                            data: article,
+                            images: this.state.images.filter(o => imagesNamesArray.indexOf(o.filename) === -1),
+                            imagesToDelete: [],
+                            newImages: []
+                        });
+                    } else {
+                        this.handleUpdateCancel()
                     }
                 }
             )
@@ -191,60 +173,17 @@ export default class ArticleDetails extends React.Component {
         }
     }
 
-    handleAddNewImages(event) {
-
-        let target = event.target || window.event.srcElement;
-        let files = target.files;
-
-        if (FileReader && files && files.length) {
-            this.setState({buttonsEnabled: false});
-            for (let i = 0; i < files.length; i++) {
-
-                let fr = new FileReader();
-                fr.onload = () => {
-
-                    let arr = this.state.images;
-                    let index = arr.push({data: fr.result}) - 1;
-
-                    //need to rewrite this (upload)
-                    this.setState({images: arr});
-                    fetch(`${serverAddress}/vcelin/api/uploadImage`, {
-                        method: 'POST',
-                        mode: "cors",
-                        cache: "default",
-                        headers: {
-                            "Content-Type": "image/png",
-                            "token": localStorage.getItem("token"),
-                            "fileName": files[i].name
-                        },
-                        body: fr.result
-                    })
-                        .then((response) => {
-                            if (response.ok) {
-                                return response.json().then(json => {
-                                    let arr = this.state.images;
-                                    arr[index].FileName = json.filename;
-                                    this.setState({
-                                        newImages: [...this.state.newImages, {fileName: json.filename}],
-                                        images: arr
-                                    });
-                                    if (i === files.length - 1) {
-                                        let file = document.getElementById("inputFiles");
-                                        file.value = file.defaultValue;
-                                        this.setState({buttonsEnabled: true})
-                                    }
-                                });
-                            }
-                        });
-                };
-                fr.readAsDataURL(files[i]);
-            }
-        }
+    enableButtons(value) {
+        this.setState({enableButtons: value})
     }
 
     handleUpdateCancel() {
 
-        if (this.state.newImages.length > 0) {
+        let imagesToDelete = this.state.newImages
+            .concat(this.state.imagesToDelete.filter(o => !o.isOldImage))
+            .map(o => o.filename);
+
+        if (imagesToDelete.length > 0) {
             fetch(`${serverAddress}/vcelin/api/cancelArticle`, {
                     method: 'DELETE',
                     mode: "cors",
@@ -253,25 +192,20 @@ export default class ArticleDetails extends React.Component {
                         "Content-Type": "application/json",
                         "token": this.state.token,
                     },
-                    body: JSON.stringify({ImageFileNames: this.state.newImages.map(o => o.fileName)})
+                body: JSON.stringify({
+                    ImageFilenames: imagesToDelete
+                })
                 }
             );
-
-            let arr = this.state.images;
-
-            let imagesNamesArray = this.state.newImages.map(o => o.fileName);
-
 
             this.setState({
                 title: this.state.data.title,
                 text: this.state.data.text,
                 isEditing: false,
-                images: this.state.images.filter(o => imagesNamesArray.indexOf(o.FileName) === -1),
+                images: this.state.images.filter(o => imagesToDelete.indexOf(o.filename) === -1),
                 imagesToDelete: [],
-                newImages:
-                    []
-            })
-            ;
+                newImages: []
+            });
         } else {
             this.setState({
                 title: this.state.data.title,
@@ -283,6 +217,14 @@ export default class ArticleDetails extends React.Component {
         }
 
 
+    }
+
+    handleNewImage(image) {
+
+        this.setState({
+            newImages: [...this.state.newImages, {filename: image.filename, name: image.name}],
+            images: [...this.state.images, image]
+        });
     }
 
     render() {
@@ -322,16 +264,14 @@ export default class ArticleDetails extends React.Component {
                                 <button className="btn btn-default" onClick={this.handleEditClick}>Edit </button>
                                 : null
                             }
-                            {this.state.isEditing && userId ? <input disabled={!this.state.buttonsEnabled}
-                                                                     id="inputFiles" type='file' name="img" multiple
-                                                                     style={{
-                                                                         color: "transparent",
-                                                                         display: "inline-block"
-                                                                     }}
-                                                                     onChange={this.handleAddNewImages}/> : null}
+                            {this.state.isEditing && userId ? <ImageInput
+                                currentImageArraySize={this.state.images.length + this.state.imagesToDelete.length}
+                                handleNewImage={this.handleNewImage} enableButtons={this.enableButtons}
+                                enabled={this.state.buttonsEnabled}/> : null}
                         </div>
                         < ImageGallery showDelete={this.state.isEditing} handleImageDelete={this.handleImageDelete}
-                                       images={this.state.images} selectedImages={this.state.imagesToDelete}/>
+                                       images={this.state.images} selectedImages={this.state.imagesToDelete}
+                                       isImageSelectable={true}/>
                     </div>
 
                     <div className="articleDetails">

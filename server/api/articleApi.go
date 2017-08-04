@@ -13,30 +13,22 @@ import (
 	"io/ioutil"
 	"log"
 	"io"
-	"bytes"
 )
 
 type ArticleModel struct {
-	Title          string `json:"title" binding:"required"`
-	Text           string `json:"text" binding:"required"`
-	ImageFileNames [] string `json:"imageFileNames" binding:"required"`
-	ImageNames     [] string `json:"imageNames" binding:"required"`
-	DeleteImages   [] string `json:"deleteImages" binding:"required"`
-}
-
-type ArticleUpdateModel struct {
 	Title        string `json:"Title" binding:"required"`
 	Text         string `json:"Text" binding:"required"`
 	NewImages    [] ImageModel `json:"NewImages" binding:"required"`
 	DeleteImages [] string `json:"DeleteImages" binding:"required"`
 }
+
 type ImageModel struct {
 	Name     string `json:"Name" binding:"required"`
-	FileName string `json:"FileName" binding:"required"`
+	Filename string `json:"Filename" binding:"required"`
 }
 
 type ArticleCancelModel struct {
-	ImageFileNames [] string `json:"imageFileNames" binding:"required"`
+	ImageFilenames [] string `json:"imageFilenames" binding:"required"`
 }
 
 func CreateArticle(c *gin.Context) {
@@ -47,26 +39,24 @@ func CreateArticle(c *gin.Context) {
 	if err {
 		if c.Bind(&articleModel) == nil {
 
-			if len(articleModel.Title) > 0 && len(articleModel.Text) > 0 && len(articleModel.ImageFileNames) == len(articleModel.ImageNames) {
+			if len(articleModel.Title) > 0 && len(articleModel.Text) > 0 {
 
 				context := db.Database()
 				defer context.Close()
 				article := db.Article{Text: articleModel.Text, Title: articleModel.Title, User: loggedUser.(db.User)}
 				context.Create(&article)
 
-				max := len(articleModel.ImageFileNames)
-
 				for _, elem := range articleModel.DeleteImages {
 					os.Remove(db.ImagesTmpURI + elem)
 				}
 
 				var imgSlice []db.Image
-				for i := 0; i < max; i++ {
-					err := os.Rename(db.ImagesTmpURI+articleModel.ImageFileNames[i], db.ImagesURI+articleModel.ImageFileNames[i])
+				for _, image := range articleModel.NewImages {
+					err := os.Rename(db.ImagesTmpURI+image.Filename, db.ImagesURI+image.Filename)
 					if err == nil {
 
-						newImage := db.Image{Name: articleModel.ImageNames[i],
-							FileName:              articleModel.ImageFileNames[i],
+						newImage := db.Image{Name: image.Name,
+							Filename:              image.Filename,
 							Article:               article}
 						context.Create(&newImage)
 						imgSlice = append(imgSlice, newImage)
@@ -127,12 +117,23 @@ func FetchArticlesOnPage(c *gin.Context) {
 }
 
 func UploadImage(c *gin.Context) {
-	file, _ := ioutil.ReadAll(c.Request.Body)
-	str := string(file[:])
-	filename := RandomString() + "-" + c.Request.Header.Get("filename")
-	stringArr := strings.SplitN(str, ",", 2)
+	body, meta, err := c.Request.FormFile("image")
+	if err != nil {
+		c.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+	filename := RandomString() + "-" + meta.Filename
 
-	SaveImage(stringArr[1], filename)
+	file, err := os.Create(db.ImagesTmpURI + filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err := io.Copy(file, body); err != nil {
+		log.Fatal(err)
+	}
+
+	defer body.Close()
+	defer file.Close()
 	c.JSON(http.StatusOK, gin.H{"status": "Image uploaded successfuly", "filename": filename })
 
 }
@@ -140,10 +141,10 @@ func UploadImage(c *gin.Context) {
 func CancelArticle(c *gin.Context) {
 	var articleCancelModel ArticleCancelModel
 	if c.Bind(&articleCancelModel) == nil {
-		if len(articleCancelModel.ImageFileNames) > 0 {
-			max := len(articleCancelModel.ImageFileNames)
+		if len(articleCancelModel.ImageFilenames) > 0 {
+			max := len(articleCancelModel.ImageFilenames)
 			for i := 0; i < max; i++ {
-				err := os.Remove(db.ImagesTmpURI + articleCancelModel.ImageFileNames[i])
+				err := os.Remove(db.ImagesTmpURI + articleCancelModel.ImageFilenames[i])
 				if err == nil {
 				} else {
 					log.Fatal(err)
@@ -159,24 +160,6 @@ func CancelArticle(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "Cant bind model"})
 
 	}
-}
-
-func SaveImage(img string, filename string) {
-	unbased, err := base64.StdEncoding.DecodeString(img)
-	if err != nil {
-		panic("Cannot decode b64")
-	}
-	reader := bytes.NewReader(unbased)
-	file, err := os.Create(db.ImagesTmpURI + filename)
-	defer file.Close()
-	if err != nil {
-		log.Fatal(err)
-	}
-	_, err = io.Copy(file, reader)
-	if err != nil {
-		log.Fatal(err)
-	}
-
 }
 
 func RandomString() string {
@@ -221,14 +204,14 @@ func FetchImage(c *gin.Context) {
 		defer context.Close()
 		context.First(&img, imageId)
 
-		file, err := ioutil.ReadFile(db.ImagesURI + img.FileName)
+		file, err := ioutil.ReadFile(db.ImagesURI + img.Filename)
 		if err != nil {
 			panic(err)
 		}
 		base := base64.StdEncoding.EncodeToString(file)
 		//io.Copy(c.Writer,io.Reader(db.ImagesURI + img.FileName))
 
-		c.JSON(http.StatusOK, gin.H{"image": img, "data": "data:image/" + strings.Split(img.FileName, ".")[1] + ";base64," + base})
+		c.JSON(http.StatusOK, gin.H{"image": img, "data": "data:image/" + strings.Split(img.Filename, ".")[1] + ";base64," + base})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
@@ -248,7 +231,7 @@ func DeleteArticle(c *gin.Context) {
 			defer context.Close()
 			context.Preload("Images").Find(&article)
 			for _, el := range article.Images {
-				err := os.Remove(db.ImagesURI + el.FileName)
+				err := os.Remove(db.ImagesURI + el.Filename)
 				if err == nil {
 				} else {
 					log.Fatal(err)
@@ -281,11 +264,10 @@ func RemoveImageFromArticle(c *gin.Context) {
 
 	if imageId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		if imageId > 0 {
-			image.ID = uint(imageId)
 			context := db.Database()
 			defer context.Close()
-			context.Find(&image)
-			os.Remove(db.ImagesURI + image.FileName)
+			context.Find(&image, imageId)
+			os.Remove(db.ImagesURI + image.Filename)
 			context.Delete(&image)
 			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Image deleted successfully!"})
 
@@ -303,7 +285,7 @@ func UpdateArticle(c *gin.Context) {
 	id := c.Params.ByName("id")
 
 	loggedUser, err := c.Get("User")
-	var articleModel ArticleUpdateModel
+	var articleModel ArticleModel
 	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
 		if err {
@@ -319,7 +301,7 @@ func UpdateArticle(c *gin.Context) {
 
 					context.Preload("User").Preload("Images").Find(&article)
 					//admin can edit article with id 1
-					if article.UserId == loggedUser.(db.User).ID || loggedUser.(db.User).ID == 1 {
+					if article.UserId == loggedUser.(db.User).ID || loggedUser.(db.User).ID == 1 || (articleModel.Title == article.Title && articleModel.Text == article.Text) {
 						article.Text = articleModel.Text
 						article.Title = articleModel.Title
 
@@ -328,23 +310,23 @@ func UpdateArticle(c *gin.Context) {
 							os.Remove(db.ImagesURI + elem)
 							filtered := []db.Image{}
 							for _, v := range article.Images {
-								if v.FileName != elem {
+								if v.Filename != elem {
 									filtered = append(filtered, v)
 								}
 							}
 							article.Images = filtered
-							context.Where("file_name = ?", elem).Delete(db.Image{})
+							context.Where("filename = ?", elem).Delete(db.Image{})
 						}
 
 						var imgSlice []db.Image
 
 						for _, i := range articleModel.NewImages {
-							err := os.Rename(db.ImagesTmpURI+i.FileName,
-								db.ImagesURI+i.FileName)
+							err := os.Rename(db.ImagesTmpURI+i.Filename,
+								db.ImagesURI+i.Filename)
 							if err == nil {
 
 								newImage := db.Image{Name: i.Name,
-									FileName:              i.FileName,
+									Filename:              i.Filename,
 									Article:               article}
 								context.Create(&newImage)
 								imgSlice = append(imgSlice, newImage)

@@ -36,6 +36,7 @@ export default class PostForm extends React.Component {
                 .then((response) => {
                     if (response.ok) {
                         return response.json().then((json) => {
+                            json.post.Comments = [];
                             this.props.newPostHandler(json.post);
                             this.setState({message: ""});
                         });

@@ -6,6 +6,7 @@ import {removeDuplicates} from "../../util";
 import {serverAddress} from "../../serverConfig";
 import Article from "./Article";
 import ArticleForm from "./ArticleForm";
+import {Link} from "react-router-dom";
 
 export default class ArticleList extends React.Component {
 
@@ -13,8 +14,6 @@ export default class ArticleList extends React.Component {
         super(props);
         this.handleScroll = this.handleScroll.bind(this);
         this.loadArticles = this.loadArticles.bind(this);
-        this.closeModal = this.closeModal.bind(this);
-        this.openModal = this.openModal.bind(this);
         this.newArticleHandler = this.newArticleHandler.bind(this);
         this.openArticle = this.openArticle.bind(this);
         window.addEventListener("scroll", this.handleScroll);
@@ -45,14 +44,6 @@ export default class ArticleList extends React.Component {
             this.setState({openArticle: false})
         }
 
-    }
-
-    closeModal() {
-        this.setState({showModal: false})
-    }
-
-    openModal() {
-        this.setState({showModal: true})
     }
 
     loadArticles() {
@@ -112,7 +103,7 @@ export default class ArticleList extends React.Component {
                     <ArticleForm closeModal={this.closeModal} newArticleHandler={this.newArticleHandler}/> : null}
 
                 {this.state.token ?
-                    <button className="btn btn-default" onClick={this.openModal}>Create Article</button> : null}
+                    <Link className="btn btn-default" to="/vcelin/createArticle">Create Article</Link> : null}
                 <h2 style={{textAlign: "center"}}>Articles</h2>
                 {articles}
                 <div>

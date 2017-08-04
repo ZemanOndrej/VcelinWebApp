@@ -4,207 +4,161 @@
 import * as React from "react";
 import {serverAddress} from "../../serverConfig";
 import ImageGallery from "./ImageGallery";
+import ImageInput from "./ImageInput";
 
 export default class ArticleForm extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            error: null,
+            text: "",
+            title: "",
+            buttonsEnabled: true,
+            images: [],
+            imagesToDelete: [],
+            token: localStorage.getItem("token")
+        };
 
-        if (this.props.data) {
-
-            this.state = {
-                error: null,
-                text: this.props.data.article.text,
-                title: this.props.data.article.title,
-                imagesToDelete: []
-            };
-        } else {
-
-            this.state = {
-                error: null,
-                text: "",
-                title: "",
-                imgNames: [],
-                newArticle: true,
-                buttonsEnabled: true,
-                images: [],
-                imagesToDelete: []
-            };
-
-        }
-        this.handleArticleCreate = this.handleArticleCreate.bind(this);
-        this.handleArticleTitleChange = this.handleArticleTitleChange.bind(this);
-        this.handleArticleTextChange = this.handleArticleTextChange.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleArticleCancel = this.handleArticleCancel.bind(this);
+        this.handleCreate = this.handleCreate.bind(this);
+        this.handleTitleChange = this.handleTitleChange.bind(this);
+        this.handleTextChange = this.handleTextChange.bind(this);
+        this.handleNewImage = this.handleNewImage.bind(this);
+        this.handleCancel = this.handleCancel.bind(this);
         this.handleImageDelete = this.handleImageDelete.bind(this);
+        this.handleEnableButtons = this.handleEnableButtons.bind(this);
 
-        window.onbeforeunload = this.handleArticleCancel
+        window.onbeforeunload = this.handleCancel
+    }
+
+    componentDidMount() {
+        if (!this.state.token) {
+            this.props.history.push({
+                pathname: "/vcelin/articles",
+                state: {
+                    error: " You moust be logged in to create article "
+                }
+            })
+        }
+
     }
 
     handleImageDelete(index) {
-        let arr = this.state.images;
-        arr.splice(index, 1);
-
-        let delImg = [...this.state.imagesToDelete, this.state.imgNames[index]];
-
-        let nameArr = this.state.imgNames;
-        nameArr.splice(index, 1);
-
         this.setState({
-            images: arr,
-            imagesToDelete: delImg,
-            imgNames: nameArr
+            imagesToDelete: [...this.state.imagesToDelete, this.state.images.find(o => o.filename === index)],
+            images: this.state.images.filter(o => o.filename !== index)
         });
     }
 
-    handleArticleCreate() {
+    handleCreate() {
         fetch(`${serverAddress}/vcelin/api/articles`, {
             method: 'POST',
             mode: "cors",
             cache: "default",
             headers: {
                 "Content-Type": "application/json",
-                "token": localStorage.getItem("token"),
+                "token": this.state.token,
             },
             body: JSON.stringify({
 
                 Title: this.state.title,
                 Text: this.state.text,
-                ImageFileNames: this.state.imgNames,
-                ImageNames: this.state.imgNames,
+                NewImages: this.state.newImages,
                 DeleteImages: this.state.imagesToDelete
             })
         })
             .then((response) => {
                 if (response.ok) {
-                    return response.json().then(json => {
-                        json.article.images = this.state.images;
-                        this.props.newArticleHandler(json.article);
-                        this.props.closeModal();
-                    });
+                    this.props.history.push("/vcelin/articles")
                 }
             });
-        this.setState({imagesToDelete: [], imgNames: []});
+        this.setState({imagesToDelete: [], images: []});
 
     }
 
-    handleArticleTextChange(event) {
+    handleTextChange(event) {
         this.setState({text: event.target.value});
     }
 
-    handleArticleTitleChange(event) {
+    handleTitleChange(event) {
         this.setState({title: event.target.value})
     }
 
-    handleArticleCancel(event) {
+    handleCancel() {
         fetch(`${serverAddress}/vcelin/api/cancelArticle`, {
                 method: 'DELETE',
                 mode: "cors",
                 cache: "default",
                 headers: {
                     "Content-Type": "application/json",
-                    "token": localStorage.getItem("token"),
+                    "token": this.state.token,
                 },
-            body: JSON.stringify({ImageFileNames: this.state.imgNames.concat(this.state.imagesToDelete)})
+            body: JSON.stringify({ImageFilenames: this.state.images.concat(this.state.imagesToDelete).map(o => o.filename)})
             }
-        );
-        this.props.closeModal(event);
+        ).then((response) => {
+            if (response.ok) {
+                this.setState({
+                    error: null,
+                    text: "",
+                    title: "",
+                    buttonsEnabled: true,
+                    images: [],
+                    imagesToDelete: []
+                });
+                this.props.history.push("/vcelin/articles")
+            }
+        });
     }
 
-    handleInputChange(event) {
+    handleNewImage(image) {
+        this.setState({images: [...this.state.images, image]});
+    }
 
-        let target = event.target || window.event.srcElement;
-        let files = target.files;
+    handleEnableButtons(value) {
+        this.setState({enableButtons: value});
 
-        //rewrite
-        if (FileReader && files && files.length) {
-            this.setState({buttonsEnabled: false});
-            for (let i = 0; i < files.length; i++) {
-
-                let fr = new FileReader();
-                fr.onload = () => {
-
-                    let arr = this.state.images;
-                    let index = arr.push({data: fr.result}) - 1;
-
-                    let data = new FormData();
-                    data.append("image", fr.result);
-
-                    this.setState({images: arr});
-                    fetch(`${serverAddress}/vcelin/api/uploadImage`, {
-                        method: 'POST',
-                        mode: "cors",
-                        cache: "default",
-                        headers: {
-                            "Content-Type": "image/png",
-                            "token": localStorage.getItem("token"),
-                            "fileName": files[i].name
-                        },
-                        body: fr.result
-                    })
-                        .then((response) => {
-                            if (response.ok) {
-                                return response.json().then(json => {
-                                    let arr = this.state.images;
-
-                                    arr[index].FileName = json.filename;
-                                    this.setState({imgNames: [...this.state.imgNames, json.filename], images: arr});
-                                    if (i === files.length - 1) {
-                                        let file = document.getElementById("inputFiles");
-                                        file.value = file.defaultValue;
-                                        this.setState({buttonsEnabled: true})
-                                    }
-                                });
-                            }
-                        });
-                };
-                fr.readAsDataURL(files[i]);
-
-            }
-        }
     }
 
     render() {
+
         return (
-            <div>
-                <div className="overlay">
+            <div className="generalPadding">
+                <div>
+                    <div className="articleDetails">
+
+                        <form className="articleForm">
+                            <div className="input-group">
+                                    <textarea value={this.state.title} onChange={this.handleTitleChange}
+                                              className="form-control" type="text" placeholder="Title"
+                                              rows="3" cols="100"/>
+                            </div>
+                            <div className="input-group">
+                                    <textarea value={this.state.text} onChange={this.handleTextChange}
+                                              className="form-control" type="text" placeholder="Text"
+                                              rows="6" cols="100"/>
+                            </div>
+                        </form>
+                        <ImageInput
+                            currentImageArraySize={this.state.images.length}
+                            handleNewImage={this.handleNewImage} enableButtons={this.handleEnableButtons}
+                            enabled={this.state.buttonsEnabled}/>
+
+                    </div>
+                    < ImageGallery showDelete={true} handleImageDelete={this.handleImageDelete}
+                                   images={this.state.images} selectedImages={this.state.imagesToDelete}/>
+                    <div className="articleDetails">
+                        <button disabled={!this.state.buttonsEnabled} onClick={this.handleCancel}
+                                className="btn btn-default buttonMargin">Cancel
+                        </button>
+                        <button disabled={!this.state.buttonsEnabled} className="btn btn-default"
+                                onClick={this.handleCreate}>Create
+                        </button>
+                    </div>
                 </div>
-                <div className="formWindow">
 
-                    <form>
-                        <div className="input-group">
-                            <textarea value={this.state.title} onChange={this.handleArticleTitleChange}
-                                      className="form-control" type="text" placeholder="Title" rows="1"/>
-                        </div>
-                        <div className="input-group">
-                            <textarea value={this.state.text} onChange={this.handleArticleTextChange}
-                                      className="form-control" type="text" placeholder="Text" rows="3"/>
-                        </div>
-                        {!this.state.newArticle ? (
-                            <button disabled={!this.state.buttonsEnabled} onClick={this.handleUpdate}
-                                    className="btn btn-primary">Update</button>
-                        ) : null}
-
-                        <div className="imageUpload">
-
-                            <ImageGallery showDelete={true} images={this.state.images} isImageSelectable={false}
-                                          handleImageDelete={this.handleImageDelete}/>
-
-                            <input disabled={!this.state.buttonsEnabled}
-                                   id="inputFiles" type='file' name="img" multiple
-                                   style={{color: "transparent"}}
-                                   onChange={this.handleInputChange}/>
-
-                        </div>
-
-                    </form>
-
-                    <button disabled={!this.state.buttonsEnabled} onClick={this.handleArticleCreate}>Create</button>
-                    <button disabled={!this.state.buttonsEnabled} onClick={this.handleArticleCancel}>Cancel</button>
-
-                </div>
 
             </div>
         )
+
+
     }
 }

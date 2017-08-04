@@ -10,6 +10,7 @@ class Login extends React.Component {
         this.state = {
             isAuthorized: localStorage.getItem("isAuthorized"),
             error: null,
+            token: localStorage.getItem("token")
         };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -20,13 +21,12 @@ class Login extends React.Component {
     }
 
     componentDidMount() {
-        let token = localStorage.getItem("token");
-        if (token) {
+        if (this.state.token) {
             fetch(`${serverAddress}/vcelin/tokenValidation`, {
                 method: "POST",
                 mode: "cors",
                 cache: "default",
-                headers: {"token": token}
+                headers: {"token": this.state.token}
             })
                 .then(response => {
                     if (response.status === 401) {

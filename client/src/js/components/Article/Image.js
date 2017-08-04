@@ -26,7 +26,8 @@ export default class Image extends React.Component {
     }
 
     handleImageDelete() {
-        this.props.handleImageDelete(this.props.image.FileName);
+        console.log(this.props.image);
+        this.props.handleImageDelete(this.props.image.filename);
         if (this.props.isImageSelectable) {
             this.setState({isSelected: !this.state.isSelected});
         }
@@ -38,15 +39,13 @@ export default class Image extends React.Component {
     }
 
     render() {
-        console.log(this.state.isRawImage, "kappa");
-
         return (
             <div className="generalPadding" style={{display: "inline-block"}}>
 
                 <img
                     className={"imagePreview " + (this.props.showDelete && this.state.isSelected ? "selectedImage" : null )}
                     style={{height: "100px", width: "100px"}}
-                    src={(this.props.image.data ? this.props.image.data : `${serverAddress}/vcelin/img/${this.props.image.name}`)}
+                    src={(this.props.image.data ? this.props.image.data : `${serverAddress}/vcelin/img/${this.props.image.filename}`)}
                     onClick={this.handleImageEnlarge}/>
                 {this.state.token && this.props.showDelete ?
                     <div style={{position: "relative", width: "0", height: "0"}}>

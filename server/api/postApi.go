@@ -170,10 +170,15 @@ func FetchPostsOnPage(c *gin.Context) {
 
 		context := db.Database()
 		defer context.Close()
-		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&posts)
+		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("Comments").Preload("User").Find(&posts)
 		for y := range posts {
 			posts[y].User.Password = ""
 			posts[y].User.Email = ""
+			for i := range posts[y].Comments {
+				posts[y].Comments[i].User.Password = ""
+				posts[y].Comments[i].User.Email = ""
+			}
+
 		}
 		if len(posts) > 0 {
 			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": posts})

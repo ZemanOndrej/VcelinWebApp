@@ -139,6 +139,16 @@ a:hover {
   font-weight: bold;
 }
 
+.imageInputButton {
+    color: transparent;
+    text-align: center;
+    width: 104px;
+    margin-left: 0;
+}
+
+#imageInputButton {
+    display: inline-block;
+}
 body html {
     padding: 0;
     margin: 0;
@@ -179,12 +189,10 @@ body html {
 .spanInfo {
   margin: 10px 20px 10px 20px;
 }
-
 .navbar {
     margin-bottom: 0;
     height: 5vh;
 }
-
 #homepageBackground {
     background-image: url("http://i.imgur.com/z4rGyE3.png");
     filter: brightness(65%);
@@ -192,7 +200,6 @@ body html {
     width: 100%;
     position: relative;
 }
-
 #mainHeading {
     top: 50%;
     margin: auto;
@@ -203,14 +210,12 @@ body html {
     font-size: 100px;
     color: #fff;
 }
-
 .downArrow {
     transform: rotate(270deg) translate(-50%, -20%);
     left: 50%;
     font-size: 100px;
     top: 85vh;
 }
-
 #aboutLink {
     cursor: pointer;
     transform: translate(-50%, -50%);
@@ -225,7 +230,6 @@ body html {
     -o-animation: fadeInFromNone 0.5s ease-out;
     animation: fadeInFromNone 0.5s ease-out;
 }
-
 #aboutLink:hover {
     opacity: 1;
 }
