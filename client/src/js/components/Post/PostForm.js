@@ -5,10 +5,9 @@ import {serverAddress} from "../../serverConfig";
 import React from "react";
 
 export default class PostForm extends React.Component {
-
     constructor(props) {
         super(props);
-        this.state = {error: null, message: ""};
+        this.state = {error: null, message: "", token: localStorage.getItem("token")};
         this.handleSendPost = this.handleSendPost.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
 
@@ -31,15 +30,18 @@ export default class PostForm extends React.Component {
                 body: data,
                 mode: "cors",
                 cache: "default",
-                headers: {"Content-type": "application/json", "token": localStorage.getItem("token")}
+                headers: {"Content-type": "application/json", "token": this.state.token}
             })
                 .then((response) => {
                     if (response.ok) {
                         return response.json().then((json) => {
                             json.post.Comments = [];
                             this.props.newPostHandler(json.post);
-                            this.setState({message: ""});
+                            this.setState({message: "", error: null});
                         });
+                    } else if (response.status === 401) {
+                        this.setState({token: null});
+                        localStorage.clear();
                     }
                 });
         } else {
@@ -48,26 +50,24 @@ export default class PostForm extends React.Component {
 
     }
 
-    renderError() {
-        if (!this.state.error) {
-            return null;
-        }
-
-        return <div style={{color: 'red'}}>{this.state.error}</div>;
-    }
-
     render() {
         return (
-            <div className="generalPadding postForm">
+            <div className="generalPadding">
 
-                <form onSubmit={this.handleSendPost.bind(this)}>
-                    <div className="input-group postFormTextArea">
-                        <textarea className="form-control" type="text" placeholder="Message" rows="4" cols="70"
-                                  value={this.state.message}
-                                  onChange={this.handleMessageChange}/>
+                <form>
+                    <div className="input-group  postForm">
+                           <textarea className="form-control postTextArea" type="text" placeholder="Message" rows="4"
+                                     cols="70"
+                                     value={this.state.message}
+                                     onChange={this.handleMessageChange}/>
+                        <button className="btn btn-primary postFormButton" onClick={this.handleSendPost}>
+                            Send
+                        </button>
+
+
                     </div>
-                    <button className="btn btn-primary">Send</button>
-                    {this.renderError()}
+                    {this.state.error ?
+                        <div className="alert alert-danger"> ERROR: {this.state.error}</div> : null}
                 </form>
             </div>
         )

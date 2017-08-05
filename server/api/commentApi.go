@@ -32,8 +32,10 @@ func CreateComment(c *gin.Context) {
 					post.ID = uint(s)
 					context.Find(&post)
 					if len(post.Message) > 0 {
-						Comment := db.Comment{Message: commentModel.Message, User:user.(db.User), Post:post};
+						Comment := db.Comment{Message: commentModel.Message, User: user.(db.User), Post: post}
 						context.Create(&Comment)
+						post.CommentCount++
+						context.Save(&post)
 						Comment.User.Email = ""
 						Comment.User.Password = ""
 						c.JSON(http.StatusCreated, gin.H{"message" : "Comment item created successfully!", "comment": Comment})
@@ -115,7 +117,12 @@ func DeleteComment(c *gin.Context) {
 			context.Find(&comment)
 			//admin user id is 1 he can delete what he wants
 			if user.(db.User).ID == comment.UserId || user.(db.User).ID == 1 {
+
 				context.Delete(&comment)
+				var post db.Post
+				context.Find(&post, comment.PostId)
+				post.CommentCount--
+				context.Save(&post)
 				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Comment deleted successfully!"})
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"message":"You cannot delete this comment"})
@@ -195,12 +202,15 @@ func FetchCommentsOnPage(c *gin.Context) {
 		if postId, okPost := strconv.ParseUint(postPar, 10, 32); okPost == nil {
 			context := db.Database()
 			defer context.Close()
+			//context.Where("post_id = ?", postId).Order("created_at desc").Preload("User").Find(&comments)
 			context.Where("post_id = ?", postId).Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&comments)
+
 			for y := range comments {
 				comments[y].User.Password = ""
 				comments[y].User.Email = ""
 			}
-			if (len(comments) > 0) {
+
+			if len(comments) > 0 {
 				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments, "postId":postId})
 
 			} else {

@@ -50,28 +50,36 @@ export default class ArticleForm extends React.Component {
     }
 
     handleCreate() {
-        fetch(`${serverAddress}/vcelin/api/articles`, {
-            method: 'POST',
-            mode: "cors",
-            cache: "default",
-            headers: {
-                "Content-Type": "application/json",
-                "token": this.state.token,
-            },
-            body: JSON.stringify({
+        if (this.state.title.length > 0) {
+            fetch(`${serverAddress}/vcelin/api/articles`, {
+                method: 'POST',
+                mode: "cors",
+                cache: "default",
+                headers: {
+                    "Content-Type": "application/json",
+                    "token": this.state.token,
+                },
+                body: JSON.stringify({
 
-                Title: this.state.title,
-                Text: this.state.text,
-                NewImages: this.state.newImages,
-                DeleteImages: this.state.imagesToDelete
+                    Title: this.state.title,
+                    Text: this.state.text,
+                    NewImages: this.state.images,
+                    DeleteImages: this.state.imagesToDelete
+                })
             })
-        })
-            .then((response) => {
-                if (response.ok) {
-                    this.props.history.push("/vcelin/articles")
-                }
-            });
-        this.setState({imagesToDelete: [], images: []});
+                .then((response) => {
+                    if (response.ok) {
+                        this.props.history.push("/vcelin/articles");
+                        this.setState({error: ""});
+                    } else {
+                        response.json().then(j => this.setState({error: j.message}))
+                    }
+                });
+            this.setState({imagesToDelete: [], images: []});
+        } else {
+            this.setState({error: "Title should not be empty!"})
+        }
+
 
     }
 
@@ -110,6 +118,7 @@ export default class ArticleForm extends React.Component {
     }
 
     handleNewImage(image) {
+        image.position = this.state.images.length;
         this.setState({images: [...this.state.images, image]});
     }
 
@@ -123,6 +132,7 @@ export default class ArticleForm extends React.Component {
         return (
             <div className="generalPadding">
                 <div>
+                    <h1 className="heading">Create Article</h1>
                     <div className="articleDetails">
 
                         <form className="articleForm">
@@ -153,6 +163,8 @@ export default class ArticleForm extends React.Component {
                                 onClick={this.handleCreate}>Create
                         </button>
                     </div>
+                    {this.state.error ?
+                        <div className="alert alert-danger"> ERROR: {this.state.error}</div> : null}
                 </div>
 
 

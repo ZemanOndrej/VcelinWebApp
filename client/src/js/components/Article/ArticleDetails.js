@@ -92,7 +92,7 @@ export default class ArticleDetails extends React.Component {
             return obj.filename === index;
         });
         let deleteImgIndex = this.state.imagesToDelete.findIndex((obj) => {
-            return obj.fileName === index;
+            return obj.filename === index;
         });
 
         if (deleteImgIndex === -1 && newImgIndex > -1) {
@@ -240,7 +240,8 @@ export default class ArticleDetails extends React.Component {
                                     <form className="articleForm">
                                         <div className="input-group">
                                             <textarea value={this.state.title} onChange={this.handleTitleChange}
-                                                      className="form-control" type="text" placeholder="Title"
+                                                      className="form-control articleDetailsTextarea" type="text"
+                                                      placeholder="Title"
                                                       rows="3" cols="100"/>
                                         </div>
                                         <div className="input-group">

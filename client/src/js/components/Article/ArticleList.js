@@ -5,11 +5,8 @@ import React from "react";
 import {removeDuplicates} from "../../util";
 import {serverAddress} from "../../serverConfig";
 import Article from "./Article";
-import ArticleForm from "./ArticleForm";
-import {Link} from "react-router-dom";
 
 export default class ArticleList extends React.Component {
-
     constructor(props) {
         super(props);
         this.handleScroll = this.handleScroll.bind(this);
@@ -86,7 +83,7 @@ export default class ArticleList extends React.Component {
     render() {
         let articles = null;
         if (!this.state.data) {
-            articles = <div>No Articles(</div>
+            articles = <div>No Articles;(</div>
         } else {
             articles = this.state.data.map((object, i) => {
                 return <Article token={this.state.token} articleOpen={this.state.openArticle}
@@ -99,12 +96,10 @@ export default class ArticleList extends React.Component {
 
                 {this.state.articleError ?
                     <div className="alert alert-danger"> ERROR: {this.state.articleError}</div> : null}
-                {this.state.showModal ?
-                    <ArticleForm closeModal={this.closeModal} newArticleHandler={this.newArticleHandler}/> : null}
+                <div style={{display: "inline-block", width: "100vw", textAlign: "center"}}>
+                    <h1>Articles</h1>
+                </div>
 
-                {this.state.token ?
-                    <Link className="btn btn-default" to="/vcelin/createArticle">Create Article</Link> : null}
-                <h2 style={{textAlign: "center"}}>Articles</h2>
                 {articles}
                 <div>
                     <span>

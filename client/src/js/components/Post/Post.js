@@ -27,25 +27,29 @@ export default class Post extends React.Component {
         let data = this.props.data;
         let userId = parseInt(localStorage.getItem("userId"));
         return (
-            <div className={(this.props.link ? "postSection" : null) + " postDetails"}>
-                <h4>
-                    {data.message}
-                </h4>
+            <div className={(this.props.link ? "postSection" : "postTextAlign") + " postDetails generalPadding"}>
+                <div>
+                    <h3>
+                        {data.message}
+                    </h3>
 
-                <span className="spanInfo">
-                    {formatTimeSince(data.CreatedAt)} ago
-                </span>
-                <span className="spanInfo">
-                    Sent by :
-                    {data.User.name}
-                </span>
-                {this.props.link ? <Link to={"/vcelin/posts/" + data.ID}>Details</Link> : null}
-                <span className="spanInfo">
-                    Comments: {data.Comments.length}
-                </span>
-                {/*admin control with id 1 */}
-                {userId === data.User.ID || userId === 1 ?
-                    <a className="buttonMargin" onClick={this.editClickModal}>Edit </a> : null}
+                    <span className="spanInfo">
+                        {formatTimeSince(data.CreatedAt)} ago
+                    </span>
+
+                    <span className="spanInfo">
+                        Sent by :{data.User.name}
+                    </span>
+                    {/*admin control with id 1 */}
+                    {userId === data.User.ID || userId === 1 ?
+                        <a className="buttonMargin" onClick={this.editClickModal}>Edit </a> : null}
+
+                    {this.props.link ? <Link to={"/vcelin/posts/" + data.ID}>Comments: {data.commentCount}</Link> :
+                        <span className="spanInfo">
+                            Comments: {data.commentCount}
+                        </span>}
+
+                </div>
 
                 {this.state.showModal ?
                     <UpdateForm closeModal={this.closeModal} updateHandler={this.props.updatePostHandler}

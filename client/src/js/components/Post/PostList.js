@@ -64,8 +64,6 @@ export default class PostList extends React.Component {
                     }
                 });
         }
-
-
     }
 
     handleScroll() {
@@ -120,7 +118,7 @@ export default class PostList extends React.Component {
             <div>
                 {this.state.postError ?
                     <div className="alert alert-danger"> ERROR: {this.state.postError}</div> : null}
-                <h2 className="heading">Posts</h2>
+                <h1 className="heading">Posts</h1>
                 <PostForm newPostHandler={this.newPostHandler}/>
                 <div id="postList">
                     {posts}

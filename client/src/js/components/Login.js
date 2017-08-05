@@ -5,12 +5,12 @@ import {serverAddress} from "../serverConfig";
 class Login extends React.Component {
     constructor(props) {
         super(props);
-
-
         this.state = {
             isAuthorized: localStorage.getItem("isAuthorized"),
             error: null,
-            token: localStorage.getItem("token")
+            token: localStorage.getItem("token"),
+            password: "",
+            email: ""
         };
         this.handleChangeEmail = this.handleChangeEmail.bind(this);
         this.handleChangePassword = this.handleChangePassword.bind(this);
@@ -64,7 +64,7 @@ class Login extends React.Component {
             .then((response) => {
                 if (response.ok) {
                     return response.json().then((json) => {
-                        this.setState({"loginInfo": json, error: null});
+                        this.setState({email: "", title: "", error: null});
 
                         let time = new Date();
                         time.setTime(time.getTime() + (24 * 60 * 60 * 1000));

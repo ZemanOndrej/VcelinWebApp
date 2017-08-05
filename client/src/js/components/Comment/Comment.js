@@ -6,24 +6,20 @@ import UpdateForm from "../UpdateForm";
 import {formatTimeSince} from "../../util";
 
 export default class Comment extends React.Component {
-
     constructor(props) {
         super(props);
         this.state = {showModal: false};
-
-        this.editClickModal = this.editClickModal.bind(this);
+        this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
 
     }
 
-
     closeModal() {
-        this.setState({showModal: false})
+        this.setState({showModal: false});
     }
 
-
-    editClickModal() {
-        this.setState({showModal: true})
+    openModal() {
+        this.setState({showModal: true});
     }
 
     render() {
@@ -31,21 +27,21 @@ export default class Comment extends React.Component {
         let userId = parseInt(localStorage.getItem("userId"));
 
         return (
-            <div className="commentSection">
-                <p>
+            <div className="commentSection generalPadding">
+                <h4>
                     {data.message}
-                </p>
+                </h4>
 
-                <span>
+                <span className="spanInfo">
                     {formatTimeSince(data.CreatedAt)} ago
                 </span>
-                <span className="buttonMargin">
+                <span className="spanInfo">
                     Sent by:
                     {data.User.name}
                 </span>
                 {/*admin control with id 1 */}
                 {userId === data.User.ID || userId === 1 ?
-                    <a onClick={this.editClickModal} >Edit </a>:null}
+                    <a onClick={this.openModal} className="spanClick">Edit </a> : null}
 
                 {this.state.showModal ?
                     <UpdateForm closeModal={this.closeModal} updateHandler={this.props.updateCommentHandler}

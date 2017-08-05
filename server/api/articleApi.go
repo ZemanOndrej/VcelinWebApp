@@ -17,7 +17,7 @@ import (
 
 type ArticleModel struct {
 	Title        string `json:"Title" binding:"required"`
-	Text         string `json:"Text" binding:"required"`
+	Text         string `json:"Text"`
 	NewImages    [] ImageModel `json:"NewImages" binding:"required"`
 	DeleteImages [] string `json:"DeleteImages" binding:"required"`
 }
@@ -25,6 +25,7 @@ type ArticleModel struct {
 type ImageModel struct {
 	Name     string `json:"Name" binding:"required"`
 	Filename string `json:"Filename" binding:"required"`
+	Position uint `json:"Position" binding:"required"`
 }
 
 type ArticleCancelModel struct {
@@ -39,7 +40,7 @@ func CreateArticle(c *gin.Context) {
 	if err {
 		if c.Bind(&articleModel) == nil {
 
-			if len(articleModel.Title) > 0 && len(articleModel.Text) > 0 {
+			if len(articleModel.Title) > 0 {
 
 				context := db.Database()
 				defer context.Close()
@@ -55,9 +56,11 @@ func CreateArticle(c *gin.Context) {
 					err := os.Rename(db.ImagesTmpURI+image.Filename, db.ImagesURI+image.Filename)
 					if err == nil {
 
-						newImage := db.Image{Name: image.Name,
-							Filename:              image.Filename,
-							Article:               article}
+						newImage := db.Image{
+							Name:     image.Name,
+							Filename: image.Filename,
+							Article:  article,
+							Position: image.Position}
 						context.Create(&newImage)
 						imgSlice = append(imgSlice, newImage)
 					} else {
@@ -75,7 +78,7 @@ func CreateArticle(c *gin.Context) {
 				c.JSON(http.StatusCreated, gin.H{"message": "Article created successfully!", "article": article})
 
 			} else {
-				c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not created, Invalid text lenght or image arrays arent as large"})
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Article was not created, Invalid title"})
 
 			}
 		} else {

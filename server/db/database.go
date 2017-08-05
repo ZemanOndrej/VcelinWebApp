@@ -37,8 +37,8 @@ func InitDb() {
 	context.Create(&user)
 
 	post := Post{
-		Message:"first post",
-		User:user,
+		Message: "first post",
+		User:    user, CommentCount: 1,
 	}
 	context.Create(&post)
 	comment := Comment{

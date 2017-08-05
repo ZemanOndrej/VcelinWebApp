@@ -5,9 +5,34 @@
 .postSection:hover {
   background-color: #fff;
 }
-.postFormTextArea {
+
+.postForm {
   left: 50vw;
   transform: translate(-50%, 0);
+    display: inline-block;
+    position: relative;
+}
+
+.postTextArea {
+    position: relative;
+    display: block;
+    resize: none;
+}
+
+.postFormButton {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    z-index: 1000;
+    opacity: 0.33;
+}
+
+.postFormButton:hover {
+    opacity: 1;
+}
+
+.postTextAlign {
+    text-align: center;
 }
 a:hover {
   cursor: pointer;
@@ -34,25 +59,14 @@ a:hover {
 }
 .overlay {
   z-index: 1000;
-  position: absolute;
+    position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
   width: 100vw;
   background-color: #fff;
   opacity: 0.75;
-}
-.formWindow {
-  border: #000 solid 1px;
-  z-index: 1000;
-  position: absolute;
-  top: 30%;
-  left: 30%;
-  margin: 0 auto;
-  height: 40%;
-  width: 40%;
-  background-color: #d6d6d6;
-  opacity: 1;
+    overflow: hidden;
 }
 .spanClick {
   cursor: pointer;
@@ -71,8 +85,9 @@ a:hover {
 .articleForm {
   position: relative;
   display: block;
-  left: 50%;
-  transform: translate(-25%, 0%);
+    max-width: 843px;
+    left: 50vw;
+    transform: translate(-50%, 0%);
 }
 .buttonMargin {
   margin: 0 10px 0 10px;
@@ -138,16 +153,19 @@ a:hover {
   z-index: 1002;
   font-weight: bold;
 }
-
 .imageInputButton {
     color: transparent;
     text-align: center;
     width: 104px;
     margin-left: 0;
 }
-
 #imageInputButton {
     display: inline-block;
+}
+
+.commentSection {
+    border: #fff 1px solid;
+    background-color: #f8f8f8;
 }
 body html {
     padding: 0;
@@ -168,7 +186,7 @@ body html {
   padding: 10px 20px 10px 20px;
 }
 .heading {
-  margin: auto;
+    margin-top: 15px;
   text-align: center;
 }
 .formWindow {
@@ -182,6 +200,7 @@ body html {
   width: 40%;
   background-color: #d6d6d6;
   opacity: 1;
+    text-align: center;
 }
 .formComponent {
   position: fixed;
@@ -232,4 +251,13 @@ body html {
 }
 #aboutLink:hover {
     opacity: 1;
+}
+
+textarea {
+    resize: none;
+}
+
+.updateFormTextarea {
+    transform: translate(-35%, -5%);
+    left: 50%;
 }

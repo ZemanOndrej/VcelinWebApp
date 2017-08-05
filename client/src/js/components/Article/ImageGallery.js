@@ -3,6 +3,7 @@
  */
 import React from "react";
 import Image from "./Image";
+import {serverAddress} from "../../serverConfig";
 
 export default class ImageGallery extends React.Component {
 
@@ -71,7 +72,11 @@ export default class ImageGallery extends React.Component {
                         <span className="imageNumber">{this.state.selectedImage + 1}/{this.props.images.length}</span>
 
                         {this.state.selectedImage >= 0 ?
-                            (<img id="bigPicture" src={images[this.state.selectedImage].data}/>) : null}
+                            (<img id="bigPicture"
+                                  src={(images[this.state.selectedImage].data ?
+                                      images[this.state.selectedImage].data :
+                                      `${serverAddress}/vcelin/img/${images[this.state.selectedImage].filename}`)
+                                  }/>) : null}
                     </div>
 
                 </div>

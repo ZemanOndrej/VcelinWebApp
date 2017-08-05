@@ -10,9 +10,10 @@ export default class Header extends React.Component {
     constructor(props) {
         super(props);
     }
-    render(){
+
+    render() {
         let token = localStorage.getItem("token");
-        return(
+        return (
             <nav className="navbar navbar-default">
                 <div className="container-fluid">
                     <div className="navbar-header">
@@ -23,8 +24,12 @@ export default class Header extends React.Component {
                         <li><Link to="/vcelin">Home</Link></li>
                         <li><Link to="/vcelin/about">About</Link></li>
                         <li><Link to="/vcelin/articles"> Articles</Link></li>
-                        { token && token.length > 0 ? (
-                            <li><Link to="/vcelin/posts">Posts</Link></li>) : ("")}
+                        {token ? <li>
+                            <Link to="/vcelin/createArticle">Create Article</Link>
+                        </li> : null}
+                        {token ?
+                            <li><Link to="/vcelin/posts">Posts</Link></li> : null
+                        }
                     </ul>
                     <Login history={this.props.history} updateHeader={(p) => this.setState({isAuthorized: p})}/>
                 </div>

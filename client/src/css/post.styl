@@ -4,6 +4,25 @@
   &:hover
     background-color #FFFFFF
 
-.postFormTextArea
+.postForm
   left 50vw
-  transform: translate(-50%, 0);
+  transform translate(-50%, 0)
+  display inline-block
+  position relative
+
+.postTextArea
+  position relative
+  display block
+  resize none
+
+.postFormButton
+  position absolute
+  bottom 18px
+  right 18px
+  z-index 1000
+  opacity 0.33
+  &:hover
+    opacity 1
+
+.postTextAlign
+  text-align center

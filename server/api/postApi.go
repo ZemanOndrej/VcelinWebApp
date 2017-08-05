@@ -6,10 +6,18 @@ import (
 	"vcelin/server/db"
 	"strconv"
 	"github.com/jinzhu/gorm"
+	"time"
 )
 
 type PostModel struct {
 	Message string `json:"message" binding:"required"`
+}
+type PostInfo struct {
+	ID           uint `gorm:"primary_key"`
+	CreatedAt    time.Time
+	Message      string `json:"message" binding:"required"`
+	User         db.User
+	CommentCount int `json:"commentCount" binding:"required"`
 }
 
 func CreatePost(c *gin.Context) {
@@ -22,7 +30,7 @@ func CreatePost(c *gin.Context) {
 
 				context := db.Database()
 				defer context.Close()
-				post := db.Post{Message: postModel.Message, User: user.(db.User)}
+				post := db.Post{Message: postModel.Message, User: user.(db.User), CommentCount: 0}
 				context.Create(&post)
 				post.User.Password = ""
 				post.User.Email = ""
@@ -170,15 +178,10 @@ func FetchPostsOnPage(c *gin.Context) {
 
 		context := db.Database()
 		defer context.Close()
-		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("Comments").Preload("User").Find(&posts)
+		context.Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&posts)
 		for y := range posts {
 			posts[y].User.Password = ""
 			posts[y].User.Email = ""
-			for i := range posts[y].Comments {
-				posts[y].Comments[i].User.Password = ""
-				posts[y].Comments[i].User.Email = ""
-			}
-
 		}
 		if len(posts) > 0 {
 			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": posts})

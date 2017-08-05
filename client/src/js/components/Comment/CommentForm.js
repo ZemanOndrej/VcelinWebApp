@@ -8,9 +8,7 @@ export default class CommentForm extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {error: null, message: ""};
-
         this.handleSendComment = this.handleSendComment.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
 
@@ -41,7 +39,7 @@ export default class CommentForm extends React.Component {
                     if (response.ok) {
                         return response.json().then((json) => {
                             this.props.newCommentHandler(json.comment);
-                            this.setState({message: ""});
+                            this.setState({message: "", error: null});
 
                         });
                     }
@@ -53,26 +51,22 @@ export default class CommentForm extends React.Component {
 
     }
 
-    renderError() {
-        if (!this.state.error) {
-            return null;
-        }
-
-        return <div style={{color: 'red'}}>{this.state.error}</div>;
-    }
-
     render() {
         return (
-            <div style={{padding: "10px 20px 10px 20px"}}>
+            <div className="generalPadding">
 
                 <form>
-                    <div className="input-group">
-                        <textarea className="form-control" type="text" placeholder="Message" rows="3"
+                    <div className="input-group postForm">
+                        <textarea className="form-control postTextArea" type="text" placeholder="Message" rows="4"
+                                  cols="70"
                                   value={this.state.message}
                                   onChange={this.handleMessageChange}/>
+                        <button className="btn btn-primary postFormButton" onClick={this.handleSendComment}>Send
+                        </button>
+
                     </div>
-                    <button className="btn btn-primary" onClick={this.handleSendComment}>Send</button>
-                    {this.renderError()}
+                    {this.state.error ?
+                        <div className="alert alert-danger"> ERROR: {this.state.error}</div> : null}
                 </form>
             </div>
         )

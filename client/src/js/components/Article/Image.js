@@ -8,12 +8,10 @@ export default class Image extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
             token: localStorage.getItem("token"),
             isSelected: false
         };
-
         this.handleImageEnlarge = this.handleImageEnlarge.bind(this);
         this.handleImageDelete = this.handleImageDelete.bind(this);
 
@@ -26,7 +24,6 @@ export default class Image extends React.Component {
     }
 
     handleImageDelete() {
-        console.log(this.props.image);
         this.props.handleImageDelete(this.props.image.filename);
         if (this.props.isImageSelectable) {
             this.setState({isSelected: !this.state.isSelected});

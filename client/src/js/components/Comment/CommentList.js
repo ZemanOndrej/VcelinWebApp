@@ -9,7 +9,6 @@ import {serverAddress} from "../../serverConfig";
 import {removeDuplicates} from "../../util";
 
 export default class CommentList extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -21,8 +20,7 @@ export default class CommentList extends React.Component {
         this.handleScroll = this.handleScroll.bind(this);
         this.loadMoreComments = this.loadMoreComments.bind(this);
         window.addEventListener("scroll", this.handleScroll);
-        this.state = {data: {}, token: localStorage.getItem("token"), page: 1};
-
+        this.state = {data: {}, token: localStorage.getItem("token"), page: 0};
     }
 
     componentWillUnmount() {
@@ -39,11 +37,10 @@ export default class CommentList extends React.Component {
                     if (response.ok) {
                         return response.json()
                             .then((json) => {
-                                this.setState({"data": json.post});
+                                this.setState({data: json.post});
                             });
                     } else if (response.status === 401) {
-                        localStorage.removeItem("token");
-                        localStorage.removeItem("isAuthorized");
+                        localStorage.clear();
                         this.props.history.push("/vcelin")
 
                     } else if (response.status === 404) {
@@ -68,13 +65,15 @@ export default class CommentList extends React.Component {
                         return response.json()
                             .then((json) => {
                                 if (json.data) {
-                                    let data = this.state.data.Comments.concat(json.data);
-                                    data = removeDuplicates(data);
-                                    this.setState({"data": data});
+                                    let comments = removeDuplicates(this.state.data.Comments.concat(json.data));
+                                    let data = this.state.data;
+                                    data.Comments = comments;
+                                    this.setState({data: data});
                                 } else {
                                     this.setState({error: json.message, lastPage: true})
                                 }
                             });
+
                     }
                     else if (response.status === 401) {
                         localStorage.clear();
@@ -97,38 +96,39 @@ export default class CommentList extends React.Component {
     }
 
     updateCommentHandler(event) {
-        let data = this.state.data;
-        for (let comment of this.state.data.Comments) {
-            if (comment.ID === event.ID) {
-                comment.message = event.Message;
-                break;
-            }
-        }
-        this.setState({data: data})
+        // let data = this.state.data;
+        // for (let comment of this.state.data.Comments) {
+        //     if (comment.ID === event.ID) {
+        //         comment.message = event.Message;
+        //         break;
+        //     }
+        // }
+        // this.setState({data: data})
     }
 
     deletePostHandler() {
-        this.props.history.push("/vcelin/posts")
+        // this.props.history.push("/vcelin/posts")
     }
 
     updatePostHandler(event) {
-        let data = this.state.data;
-        data.message = event.Message;
-        this.setState({data: data})
+        // let data = this.state.data;
+        // data.message = event.Message;
+        // this.setState({data: data})
     }
 
     newCommentHandler(e) {
 
-        let data = this.state.data;
-        data.Comments = [e, ...data.Comments];
-        this.setState({data: data});
+        // let data = this.state.data;
+        // data.commentCount++;
+        // data.Comments = [e, ...data.Comments];
+        // this.setState({data: data});
     }
 
     deleteCommentHandler(commentId) {
 
-        let data = this.state.data;
-        data.Comments = data.Comments.filter(c => c.ID !== commentId);
-        this.setState({data: data});
+        // let data = this.state.data;
+        // data.Comments = data.Comments.filter(c => c.ID !== commentId);
+        // this.setState({data: data});
     }
 
     render() {
@@ -148,7 +148,8 @@ export default class CommentList extends React.Component {
                          updatePostHandler={this.updatePostHandler}/>;
             comments = this.state.data.Comments.map((comment, key) => {
                 return <Comment data={comment} updateCommentHandler={this.updateCommentHandler}
-                                deleteCommentHandler={this.deleteCommentHandler} key={key}/>;
+                                deleteCommentHandler={this.deleteCommentHandler} key={key}
+                                handleScroll={this.handleScroll}/>;
             })
         }
 
@@ -156,11 +157,11 @@ export default class CommentList extends React.Component {
             <div>
                 {post}
 
-                <h2>Comments</h2>
+                <h2 className="heading">Comments</h2>
                 <CommentForm postId={this.props.match.params.postId} newCommentHandler={this.newCommentHandler}/>
                 {comments}
                 <div>
-                    <span>
+                    <span className="generalPadding spanInfo">
                         {this.state.error}
                     </span>
                 </div>
