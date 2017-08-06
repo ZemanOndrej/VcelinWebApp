@@ -8,6 +8,7 @@ export default class Image extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
             token: localStorage.getItem("token"),
             isSelected: false
@@ -41,8 +42,7 @@ export default class Image extends React.Component {
 
                 <img
                     className={"imagePreview " + (this.props.showDelete && this.state.isSelected ? "selectedImage" : null )}
-                    style={{height: "100px", width: "100px"}}
-                    src={(this.props.image.data ? this.props.image.data : `${serverAddress}/vcelin/img/${this.props.image.filename}`)}
+                    src={(this.props.image.data ? this.props.image.data : `${serverAddress}/vcelin/${this.props.url}/${this.props.image.filename}`)}
                     onClick={this.handleImageEnlarge}/>
                 {this.state.token && this.props.showDelete ?
                     <div style={{position: "relative", width: "0", height: "0"}}>

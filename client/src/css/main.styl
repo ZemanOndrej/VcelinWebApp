@@ -1,0 +1,93 @@
+#homepageBackground
+  background-image url("http://i.imgur.com/z4rGyE3.png")
+  filter brightness(65%)
+  height 95vh
+  width 100%
+  position relative
+
+#mainHeading
+  top 50%
+  margin auto
+  textAlign center
+  left 50%
+  transform translate(-50%, -50%)
+  position absolute
+  font-size 100px
+  color: white
+
+.downArrow
+  transform: rotate(270deg) translate(-50%, -20%)
+  left 50%
+  font-size 100px
+  top 85vh
+
+#aboutLink
+  cursor: pointer
+  transform translate(-50%, -50%)
+  left 50%
+  font-size 30px
+  top 91vh
+  position absolute
+  opacity 0
+  color: silver
+  -webkit-animation: fadeInFromNone 0.5s ease-out;
+  -moz-animation: fadeInFromNone 0.5s ease-out;
+  -o-animation: fadeInFromNone 0.5s ease-out;
+  animation: fadeInFromNone 0.5s ease-out;
+  &:hover
+    opacity 1
+
+.aboutPage
+  height 100vh
+  width 100%
+  position absolute
+
+  -webkit-background-size cover
+  -moz-background-size cover
+  -o-background-size cover
+  background-size cover
+  -webkit-filter blur(5px)
+  -moz-filter blur(5px)
+  -o-filter blur(5px)
+  -ms-filter blur(5px)
+  filter brightness(50%) blur(5px)
+
+  background-image url("https://i.imgur.com/YIl9AUA.jpg")
+
+.aboutContainer
+  background-color black
+  color: white
+  max-width 50%
+  top 150%
+  left 50%
+  transform translate(-50%, -50%)
+  position absolute
+  opacity 0.7
+  display inline-block
+
+.aboutText
+  top 50%
+  margin auto
+  textAlign center
+  left 50%
+  border black solid 1px
+
+.aboutContainer h1
+  color: white
+
+.aboutIframe
+  float right
+
+.navbar-default.navbar-toggle.icon-bar
+  background-color black
+
+#navigation
+  z-index 900
+
+@media (max-width: 767px) {
+  .navbar-collapse {
+    text-align center
+    background #ff4d4d
+  }
+}
+

@@ -41,44 +41,9 @@ body html
   margin-bottom 0
   height 5vh
 
-#homepageBackground
-  background-image url("http://i.imgur.com/z4rGyE3.png")
-  filter brightness(65%)
-  height 95vh
-  width 100%
-  position relative
-
-#mainHeading
-  top 50%
-  margin auto
-  textAlign center
-  left 50%
-  transform translate(-50%, -50%)
-  position absolute
-  font-size 100px
-  color: white
-
-.downArrow
-  transform: rotate(270deg) translate(-50%, -20%)
-  left 50%
-  font-size 100px
-  top 85vh
-
-#aboutLink
-  cursor: pointer
-  transform translate(-50%, -50%)
-  left 50%
-  font-size 30px
-  top 91vh
-  position absolute
-  opacity 0
-  color: silver
-  -webkit-animation: fadeInFromNone 0.5s ease-out;
-  -moz-animation: fadeInFromNone 0.5s ease-out;
-  -o-animation: fadeInFromNone 0.5s ease-out;
-  animation: fadeInFromNone 0.5s ease-out;
-  &:hover
-    opacity 1
+.imagePreview
+  height 100px
+  width 100px
 
 textarea
   resize none
@@ -86,3 +51,41 @@ textarea
 .updateFormTextarea
   transform translate(-35%, -5%)
   left 50%
+
+a:hover {
+  cursor: pointer;
+}
+
+#imageOverlayParent
+  height: 100vh
+  width: 100vw
+  position: fixed
+  top: 0
+  left: 0
+  margin: 0
+  padding: 0
+  z-index: 999
+
+#imageOverlay
+  z-index: 1000
+  position: fixed
+  top: 0
+  left: 0
+  height: 100vh
+  width: 100vw
+  background-color: black
+  opacity: 0.95
+
+.overlay
+  z-index: 1000
+  position: fixed
+  top: 0
+  left: 0
+  height: 100vh
+  width: 100vw
+  background-color: white
+  opacity: 0.75
+  overflow hidden
+
+.spanClick
+  cursor: pointer

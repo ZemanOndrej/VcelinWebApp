@@ -9,7 +9,14 @@ export default class ImageGallery extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {showImageView: false, selectedImage: -1};
+
+        let url = "";
+        if (this.props.static) {
+            url = "staticImg"
+        } else {
+            url = "img"
+        }
+        this.state = {showImageView: false, selectedImage: -1, url: url};
 
         this.openBigImageHandler = this.openBigImageHandler.bind(this);
         this.closeBigImageHandler = this.closeBigImageHandler.bind(this);
@@ -51,7 +58,7 @@ export default class ImageGallery extends React.Component {
         if (images) {
             let imageComps = images.map((obj, i) => {
                 return <Image image={obj} key={i} index={i} showDelete={this.props.showDelete}
-                              isImageSelectable={this.props.isImageSelectable}
+                              isImageSelectable={this.props.isImageSelectable} url={this.state.url}
                               handleImageDelete={this.props.handleImageDelete}
                               openBigImageHandler={this.openBigImageHandler}/>;
             });
@@ -75,7 +82,7 @@ export default class ImageGallery extends React.Component {
                             (<img id="bigPicture"
                                   src={(images[this.state.selectedImage].data ?
                                       images[this.state.selectedImage].data :
-                                      `${serverAddress}/vcelin/img/${images[this.state.selectedImage].filename}`)
+                                      `${serverAddress}/vcelin/${this.state.url}/${images[this.state.selectedImage].filename}`)
                                   }/>) : null}
                     </div>
 

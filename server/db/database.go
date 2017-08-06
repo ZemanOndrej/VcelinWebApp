@@ -28,7 +28,6 @@ func InitDb() {
 
 	hashedPw, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 
-	hashedPw2, _ := bcrypt.GenerateFromPassword([]byte("83107"), bcrypt.DefaultCost)
 	user := User{
 		Email:"admin@q.q",
 		Name: "admin",
@@ -49,23 +48,23 @@ func InitDb() {
 	context.Create(&comment)
 
 	user2 := User{
-		Email:    "zmnmrn@gmail.com",
+		Email:    "Marian@gmail.com",
 		Name:     "Majo",
-		Password: string(hashedPw2),
+		Password: string(hashedPw),
 	}
 	context.Create(&user2)
 
 	user3 := User{
-		Email:    "zdenoboska@gmail.com",
+		Email:    "zdeno@gmail.com",
 		Name:     "Zdeno",
-		Password: string(hashedPw2),
+		Password: string(hashedPw),
 	}
 	context.Create(&user3)
 
 	user4 := User{
-		Email:    "jurajzeman@gmail.com",
+		Email:    "juraj@gmail.com",
 		Name:     "Juro",
-		Password: string(hashedPw2),
+		Password: string(hashedPw),
 	}
 	context.Create(&user4)
 

@@ -80,6 +80,7 @@ func main() {
 		r.GET("/api/images/:id", api.FetchImage)
 
 		r.Static("/img", "./server/images")
+		r.Static("/staticImg", "./server/staticImages")
 
 	}
 	router.Run(":5513")

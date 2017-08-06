@@ -14,24 +14,40 @@ export default class Header extends React.Component {
     render() {
         let token = localStorage.getItem("token");
         return (
-            <nav className="navbar navbar-default">
+            <nav className="navbar navbar-inverse navbar-static-top" id="navigation" role="navigation">
                 <div className="container-fluid">
                     <div className="navbar-header">
-                        <Link className="navbar-brand" to="/vcelin">Vcelin</Link>
+                        <button type="button" className="navbar-toggle collapsed" data-toggle="collapse"
+                                data-target="#navbar-collapseId" aria-expanded="true">
+                            <span className="sr-only"> Toggle navigation</span>
+                            <span className="icon-bar"> </span>
+                            <span className="icon-bar"> </span>
+                            <span className="icon-bar"> </span>
+                        </button>
+                        <Link className="navbar-brand" to="/vcelin">Včelín Tím</Link>
+
                     </div>
 
-                    <ul className="nav navbar-nav">
-                        <li><Link to="/vcelin">Home</Link></li>
-                        <li><Link to="/vcelin/about">About</Link></li>
-                        <li><Link to="/vcelin/articles"> Articles</Link></li>
-                        {token ? <li>
-                            <Link to="/vcelin/createArticle">Create Article</Link>
-                        </li> : null}
-                        {token ?
-                            <li><Link to="/vcelin/posts">Posts</Link></li> : null
-                        }
-                    </ul>
-                    <Login history={this.props.history} updateHeader={(p) => this.setState({isAuthorized: p})}/>
+                    <div className="collapse navbar-collapse" id="navbar-collapseId">
+
+                        <ul className="nav navbar-nav">
+                            <li><Link data-toggle="collapse" data-target="#navbar-collapseId" to="/vcelin">Home</Link>
+                            </li>
+                            <li><Link data-toggle="collapse" data-target="#navbar-collapseId"
+                                      to="/vcelin/about">About</Link></li>
+                            <li><Link data-toggle="collapse" data-target="#navbar-collapseId" to="/vcelin/articles">
+                                Articles</Link></li>
+                            {token ? <li>
+                                <Link data-toggle="collapse" data-target="#navbar-collapseId"
+                                      to="/vcelin/createArticle">Create Article</Link>
+                            </li> : null}
+                            {token ?
+                                <li><Link data-toggle="collapse" data-target="#navbar-collapseId" to="/vcelin/posts">Posts</Link>
+                                </li> : null
+                            }
+                        </ul>
+                        <Login history={this.props.history} updateHeader={(p) => this.setState({isAuthorized: p})}/>
+                    </div>
                 </div>
             </nav>
         )

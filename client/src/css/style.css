@@ -5,20 +5,17 @@
 .postSection:hover {
   background-color: #fff;
 }
-
 .postForm {
   left: 50vw;
   transform: translate(-50%, 0);
     display: inline-block;
     position: relative;
 }
-
 .postTextArea {
     position: relative;
     display: block;
     resize: none;
 }
-
 .postFormButton {
     position: absolute;
     bottom: 18px;
@@ -26,50 +23,115 @@
     z-index: 1000;
     opacity: 0.33;
 }
-
 .postFormButton:hover {
     opacity: 1;
 }
-
 .postTextAlign {
     text-align: center;
 }
-a:hover {
+
+#homepageBackground {
+    background-image: url("http://i.imgur.com/z4rGyE3.png");
+    filter: brightness(65%);
+    height: 95vh;
+    width: 100%;
+    position: relative;
+}
+
+#mainHeading {
+    top: 50%;
+    margin: auto;
+    textAlign: center;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    font-size: 100px;
+    color: #fff;
+}
+
+.downArrow {
+    transform: rotate(270deg) translate(-50%, -20%);
+    left: 50%;
+    font-size: 100px;
+    top: 85vh;
+}
+
+#aboutLink {
   cursor: pointer;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    font-size: 30px;
+    top: 91vh;
+    position: absolute;
+    opacity: 0;
+    color: #c0c0c0;
+    -webkit-animation: fadeInFromNone 0.5s ease-out;
+    -moz-animation: fadeInFromNone 0.5s ease-out;
+    -o-animation: fadeInFromNone 0.5s ease-out;
+    animation: fadeInFromNone 0.5s ease-out;
 }
-#imageOverlayParent {
-  height: 100vh;
-  width: 100vw;
-  position: fixed;
-  top: 0;
-  left: 0;
-  margin: 0;
-  padding: 0;
-  z-index: 999;
+
+#aboutLink:hover {
+    opacity: 1;
 }
-#imageOverlay {
-  z-index: 1000;
-  position: fixed;
-  top: 0;
-  left: 0;
+
+.aboutPage {
   height: 100vh;
-  width: 100vw;
+    width: 100%;
+    position: absolute;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: brightness(50%) blur(5px);
+    background-image: url("https://i.imgur.com/YIl9AUA.jpg");
+}
+
+.aboutContainer {
   background-color: #000;
-  opacity: 0.95;
+    color: #fff;
+    max-width: 50%;
+    top: 150%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    opacity: 0.7;
+    display: inline-block;
 }
-.overlay {
-  z-index: 1000;
-    position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: 100vw;
-  background-color: #fff;
-  opacity: 0.75;
-    overflow: hidden;
+
+.aboutText {
+    top: 50%;
+    margin: auto;
+    textAlign: center;
+    left: 50%;
+    border: #000 solid 1px;
 }
-.spanClick {
-  cursor: pointer;
+
+.aboutContainer h1 {
+    color: #fff;
+}
+
+.aboutIframe {
+    float: right;
+}
+
+.navbar-default.navbar-toggle.icon-bar {
+    background-color: #000;
+}
+
+#navigation {
+    z-index: 900;
+}
+
+@media (max-width: 767px) {
+    .navbar-collapse {
+        text-align: center;
+        background: #ff4d4d;
+    }
 }
 .articleSection {
   background-color: #f8f8f8;
@@ -162,7 +224,6 @@ a:hover {
 #imageInputButton {
     display: inline-block;
 }
-
 .commentSection {
     border: #fff 1px solid;
     background-color: #f8f8f8;
@@ -212,52 +273,57 @@ body html {
     margin-bottom: 0;
     height: 5vh;
 }
-#homepageBackground {
-    background-image: url("http://i.imgur.com/z4rGyE3.png");
-    filter: brightness(65%);
-    height: 95vh;
-    width: 100%;
-    position: relative;
-}
-#mainHeading {
-    top: 50%;
-    margin: auto;
-    textAlign: center;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    font-size: 100px;
-    color: #fff;
-}
-.downArrow {
-    transform: rotate(270deg) translate(-50%, -20%);
-    left: 50%;
-    font-size: 100px;
-    top: 85vh;
-}
-#aboutLink {
-    cursor: pointer;
-    transform: translate(-50%, -50%);
-    left: 50%;
-    font-size: 30px;
-    top: 91vh;
-    position: absolute;
-    opacity: 0;
-    color: #c0c0c0;
-    -webkit-animation: fadeInFromNone 0.5s ease-out;
-    -moz-animation: fadeInFromNone 0.5s ease-out;
-    -o-animation: fadeInFromNone 0.5s ease-out;
-    animation: fadeInFromNone 0.5s ease-out;
-}
-#aboutLink:hover {
-    opacity: 1;
-}
 
+.imagePreview {
+    height: 100px;
+    width: 100px;
+}
 textarea {
     resize: none;
 }
-
 .updateFormTextarea {
     transform: translate(-35%, -5%);
     left: 50%;
+}
+
+a:hover {
+    cursor: pointer;
+}
+
+#imageOverlayParent {
+    height: 100vh;
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 999;
+}
+
+#imageOverlay {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000;
+    opacity: 0.95;
+}
+
+.overlay {
+    z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #fff;
+    opacity: 0.75;
+    overflow: hidden;
+}
+
+.spanClick {
+    cursor: pointer;
 }

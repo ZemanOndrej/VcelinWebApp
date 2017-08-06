@@ -3,7 +3,6 @@
  */
 
 import React from "react";
-import scroll from "react-scroll/modules/mixins/animate-scroll";
 
 export default class Home extends React.Component {
 
@@ -19,10 +18,10 @@ export default class Home extends React.Component {
                 </div>
 
 
-                <div onClick={scroll.scrollToBottom}>
-                    <div id="aboutLink"> About</div>
-                    <span className="arrow unselectable spanClick downArrow">&#9001;</span>
-                </div>
+                {/*<div onClick={scroll.scrollToBottom}>*/}
+                {/*<div id="aboutLink"> About</div>*/}
+                {/*<span className="arrow unselectable spanClick downArrow">&#9001;</span>*/}
+                {/*</div>*/}
             </div>
 
         )

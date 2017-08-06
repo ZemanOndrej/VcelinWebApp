@@ -9,6 +9,7 @@ class Login extends React.Component {
             isAuthorized: localStorage.getItem("isAuthorized"),
             error: null,
             token: localStorage.getItem("token"),
+            username: localStorage.getItem("userName"),
             password: "",
             email: ""
         };
@@ -16,7 +17,6 @@ class Login extends React.Component {
         this.handleChangePassword = this.handleChangePassword.bind(this);
         this.handleLogoutClick = this.handleLogoutClick.bind(this);
         this.handleLoginClick = this.handleLoginClick.bind(this);
-
 
     }
 
@@ -91,51 +91,36 @@ class Login extends React.Component {
 
     }
 
-    renderError() {
-        if (!this.state.error) {
-            return null;
-        }
-
-        return <div style={{color: 'red'}}>{this.state.error}</div>;
-    }
-
     render() {
-        if (this.state.isAuthorized) {
-            return (
-                <div style={{float: "right"}}>
+        return (
+            <div>
+                {this.state.isAuthorized ?
+                    <ul className="nav navbar-nav navbar-right">
+                        <li><p className="navbar-text">Logged in as {this.state.username}</p></li>
 
-                    <ul className="nav navbar-nav">
-                        <li style={{paddingTop: "15px", fontSize: "22px", marginRight: "20px"}}>
-                            <span>Welcome {localStorage.getItem("userName")}</span>
-                        </li>
-                        <li style={{paddingTop: "10px"}}>
-                            <button className="btn btn-default" onClick={this.handleLogoutClick}>
+                        <li>
+                            <button type="submit" className="btn btn-default navbar-btn"
+                                    data-toggle="collapse" data-target="#navbar-collapseId"
+                                    onClick={this.handleLogoutClick}>
                                 Logout
                             </button>
-
                         </li>
                     </ul>
-                </div>
-            )
-        }
-        return (
-            <div style={{float: "right"}}>
-                <form className="navbar-form">
-                    <div className="input-group">
-                        <input className="form-control" type="text" value={this.state.email} placeholder="Email"
-                               onChange={this.handleChangeEmail}/>
-                    </div>
-                    <div className="input-group">
-                        <input className="form-control" type="password" value={this.state.password}
-                               placeholder="Password" onChange={this.handleChangePassword}/>
-                    </div>
-                    <button className="btn btn-primary" onClick={this.handleLoginClick}>Login</button>
-                    {this.renderError()}
-                </form>
-            </div>
-        )
+                    :
+                    <form className="navbar-form navbar-right">
+                        <div className="form-group">
+                            <input type="text" className="form-control" onChange={this.handleChangeEmail}
+                                   value={this.state.email} placeholder="Email"/>
+                        </div>
+                        <div className="form-group">
+                            <input type="password" className="form-control" onChange={this.handleChangePassword}
+                                   value={this.state.password} placeholder="Password"/>
+                        </div>
+                        <button type="submit" className="btn btn-default" onClick={this.handleLoginClick}>Login</button>
+                        {this.state.error ? <div style={{color: 'red'}}>{this.state.error}</div> : null}
+                    </form>}
+            </div>);
     }
-
 }
 
 export default withRouter(Login);
