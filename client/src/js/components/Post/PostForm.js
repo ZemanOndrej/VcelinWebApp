@@ -63,8 +63,6 @@ export default class PostForm extends React.Component {
                         <button className="btn btn-primary postFormButton" onClick={this.handleSendPost}>
                             Send
                         </button>
-
-
                     </div>
                     {this.state.error ?
                         <div className="alert alert-danger"> ERROR: {this.state.error}</div> : null}

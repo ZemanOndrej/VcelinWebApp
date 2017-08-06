@@ -15,6 +15,7 @@
     position: relative;
     display: block;
     resize: none;
+    z-index: auto;
 }
 .postFormButton {
     position: absolute;
@@ -29,7 +30,6 @@
 .postTextAlign {
     text-align: center;
 }
-
 #homepageBackground {
     background-image: url("http://i.imgur.com/z4rGyE3.png");
     filter: brightness(65%);
@@ -37,7 +37,6 @@
     width: 100%;
     position: relative;
 }
-
 #mainHeading {
     top: 50%;
     margin: auto;
@@ -48,14 +47,12 @@
     font-size: 100px;
     color: #fff;
 }
-
 .downArrow {
     transform: rotate(270deg) translate(-50%, -20%);
     left: 50%;
     font-size: 100px;
     top: 85vh;
 }
-
 #aboutLink {
   cursor: pointer;
     transform: translate(-50%, -50%);
@@ -70,11 +67,9 @@
     -o-animation: fadeInFromNone 0.5s ease-out;
     animation: fadeInFromNone 0.5s ease-out;
 }
-
 #aboutLink:hover {
     opacity: 1;
 }
-
 .aboutPage {
   height: 100vh;
     width: 100%;
@@ -90,7 +85,6 @@
     filter: brightness(50%) blur(5px);
     background-image: url("https://i.imgur.com/YIl9AUA.jpg");
 }
-
 .aboutContainer {
   background-color: #000;
     color: #fff;
@@ -102,7 +96,6 @@
     opacity: 0.7;
     display: inline-block;
 }
-
 .aboutText {
     top: 50%;
     margin: auto;
@@ -110,23 +103,18 @@
     left: 50%;
     border: #000 solid 1px;
 }
-
 .aboutContainer h1 {
     color: #fff;
 }
-
 .aboutIframe {
     float: right;
 }
-
 .navbar-default.navbar-toggle.icon-bar {
     background-color: #000;
 }
-
 #navigation {
     z-index: 900;
 }
-
 @media (max-width: 767px) {
     .navbar-collapse {
         text-align: center;
@@ -265,6 +253,7 @@ body html {
 }
 .formComponent {
   position: fixed;
+    z-index: 1000;
 }
 .spanInfo {
   margin: 10px 20px 10px 20px;
@@ -273,7 +262,6 @@ body html {
     margin-bottom: 0;
     height: 5vh;
 }
-
 .imagePreview {
     height: 100px;
     width: 100px;
@@ -285,11 +273,9 @@ textarea {
     transform: translate(-35%, -5%);
     left: 50%;
 }
-
 a:hover {
     cursor: pointer;
 }
-
 #imageOverlayParent {
     height: 100vh;
     width: 100vw;
@@ -300,7 +286,6 @@ a:hover {
     padding: 0;
     z-index: 999;
 }
-
 #imageOverlay {
     z-index: 1000;
     position: fixed;
@@ -311,7 +296,6 @@ a:hover {
     background-color: #000;
     opacity: 0.95;
 }
-
 .overlay {
     z-index: 1000;
     position: fixed;
@@ -323,7 +307,6 @@ a:hover {
     opacity: 0.75;
     overflow: hidden;
 }
-
 .spanClick {
     cursor: pointer;
 }

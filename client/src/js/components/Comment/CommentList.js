@@ -85,7 +85,6 @@ export default class CommentList extends React.Component {
     }
 
     handleScroll() {
-
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
             if (!this.state.lastPage) {
                 this.setState({page: this.state.page + 1});
@@ -96,39 +95,38 @@ export default class CommentList extends React.Component {
     }
 
     updateCommentHandler(event) {
-        // let data = this.state.data;
-        // for (let comment of this.state.data.Comments) {
-        //     if (comment.ID === event.ID) {
-        //         comment.message = event.Message;
-        //         break;
-        //     }
-        // }
-        // this.setState({data: data})
+        let data = this.state.data;
+        for (let comment of this.state.data.Comments) {
+            if (comment.ID === event.ID) {
+                comment.message = event.Message;
+                break;
+            }
+        }
+        this.setState({data: data})
     }
 
     deletePostHandler() {
-        // this.props.history.push("/vcelin/posts")
+        this.props.history.push("/vcelin/posts")
     }
 
     updatePostHandler(event) {
-        // let data = this.state.data;
-        // data.message = event.Message;
-        // this.setState({data: data})
+        let data = this.state.data;
+        data.message = event.Message;
+        this.setState({data: data})
     }
 
     newCommentHandler(e) {
 
-        // let data = this.state.data;
-        // data.commentCount++;
-        // data.Comments = [e, ...data.Comments];
-        // this.setState({data: data});
+        let data = this.state.data;
+        data.commentCount++;
+        data.Comments = [e, ...data.Comments];
+        this.setState({data: data});
     }
 
     deleteCommentHandler(commentId) {
-
-        // let data = this.state.data;
-        // data.Comments = data.Comments.filter(c => c.ID !== commentId);
-        // this.setState({data: data});
+        let data = this.state.data;
+        data.Comments = data.Comments.filter(c => c.ID !== commentId);
+        this.setState({data: data});
     }
 
     render() {

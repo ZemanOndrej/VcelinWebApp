@@ -60,9 +60,6 @@ func main() {
 		authorized.PUT("/api/articles/:id", api.UpdateArticle)
 
 	}
-	/*
-
-	 */
 
 	router.LoadHTMLFiles("./client/src/index.html")
 	router.NoRoute(index)

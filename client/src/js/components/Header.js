@@ -13,6 +13,7 @@ export default class Header extends React.Component {
 
     render() {
         let token = localStorage.getItem("token");
+        let mobile = window.matchMedia("(max-width: 767px)");
         return (
             <nav className="navbar navbar-inverse navbar-static-top" id="navigation" role="navigation">
                 <div className="container-fluid">
@@ -24,25 +25,28 @@ export default class Header extends React.Component {
                             <span className="icon-bar"> </span>
                             <span className="icon-bar"> </span>
                         </button>
-                        <Link className="navbar-brand" to="/vcelin">Včelín Tím</Link>
+                        <Link className="navbar-brand" to="/vcelin">Včelín Team</Link>
 
                     </div>
 
                     <div className="collapse navbar-collapse" id="navbar-collapseId">
 
                         <ul className="nav navbar-nav">
-                            <li><Link data-toggle="collapse" data-target="#navbar-collapseId" to="/vcelin">Home</Link>
+                            <li><Link data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"
+                                      to="/vcelin">Home</Link>
                             </li>
-                            <li><Link data-toggle="collapse" data-target="#navbar-collapseId"
+                            <li><Link data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"
                                       to="/vcelin/about">About</Link></li>
-                            <li><Link data-toggle="collapse" data-target="#navbar-collapseId" to="/vcelin/articles">
+                            <li><Link data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"
+                                      to="/vcelin/articles">
                                 Articles</Link></li>
                             {token ? <li>
-                                <Link data-toggle="collapse" data-target="#navbar-collapseId"
+                                <Link data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"
                                       to="/vcelin/createArticle">Create Article</Link>
                             </li> : null}
                             {token ?
-                                <li><Link data-toggle="collapse" data-target="#navbar-collapseId" to="/vcelin/posts">Posts</Link>
+                                <li><Link data-toggle={mobile.matches ? "collapse" : null}
+                                          data-target="#navbar-collapseId" to="/vcelin/posts">Posts</Link>
                                 </li> : null
                             }
                         </ul>
