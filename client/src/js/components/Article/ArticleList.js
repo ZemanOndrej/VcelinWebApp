@@ -44,7 +44,7 @@ export default class ArticleList extends React.Component {
     }
 
     loadArticles() {
-        fetch(`${serverAddress}/vcelin/api/articlesPage/${this.state.page}`, {
+        fetch(`http://${serverAddress}/vcelin/api/articlesPage/${this.state.page}`, {
             method: "GET"
         })
             .then((response) => {

@@ -3,6 +3,4 @@
  */
 
 
-
-
-export const serverAddress = "http://localhost:5513";
+export const serverAddress = "localhost:5513";

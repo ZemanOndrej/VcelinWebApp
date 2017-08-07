@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"github.com/jinzhu/gorm"
 	"time"
+	"encoding/json"
+	"fmt"
 )
 
 type PostModel struct {
@@ -19,6 +21,35 @@ type PostInfo struct {
 	User         db.User
 	CommentCount int `json:"commentCount" binding:"required"`
 }
+
+type WebSocketMessage struct {
+	Message string
+	Token   string
+}
+
+func CreatePostWebSocket(msg []byte) db.Post {
+	context := db.Database()
+	var obj WebSocketMessage
+	defer context.Close()
+	var user db.User
+
+	if err := json.Unmarshal(msg, &obj); err != nil {
+		panic("unexpected json")
+	}
+	err, userId := ValidateToken(obj.Token)
+	fmt.Println(obj.Token)
+	if !err || userId == 0 {
+		panic("bad token")
+	}
+
+	context.Find(&user, userId)
+	post := db.Post{Message: obj.Message, User: user, CommentCount: 0}
+	context.Create(&post)
+	post.User.Password = ""
+	post.User.Email = ""
+	return post
+}
+
 
 func CreatePost(c *gin.Context) {
 	user, err := c.Get("User")

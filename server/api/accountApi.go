@@ -36,7 +36,7 @@ func InitKeys() {
 	Init keys for jwt
 	 */
 	var (
-		err error
+		err         error
 		privKey     *rsa.PrivateKey
 		pubKey      *rsa.PublicKey
 		pubKeyBytes []byte
@@ -59,7 +59,6 @@ func InitKeys() {
 	pem.Encode(privKeyPEMBuffer, privPEMBlock)
 	//done
 	signingKey = privKeyPEMBuffer.Bytes()
-
 
 	// create verificationKey from pubKey. Also in PEM-format
 	pubKeyBytes, err = x509.MarshalPKIXPublicKey(pubKey) //serialize key bytes
@@ -130,12 +129,12 @@ func Login(c *gin.Context) {
 		if foundUser.ID > 0 && err == nil {
 
 			token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-				"exp": time.Now().Add(time.Hour * 24).Unix(),
-				"iat": time.Now().Unix(),
-				"iss":"admin",
-				"alg":"hs256",
-				"userId":fmt.Sprint(foundUser.ID),
-				"role":"Member",
+				"exp":    time.Now().Add(time.Hour * 24).Unix(),
+				"iat":    time.Now().Unix(),
+				"iss":    "admin",
+				"alg":    "hs256",
+				"userId": fmt.Sprint(foundUser.ID),
+				"role":   "Member",
 			})
 
 			tokenString, err := token.SignedString([]byte(signingKey))
@@ -146,12 +145,12 @@ func Login(c *gin.Context) {
 			}
 			foundUser.Password = ""
 
-			c.JSON(http.StatusOK, gin.H{"status": "you are logged in", "user":foundUser, "token":tokenString})
+			c.JSON(http.StatusOK, gin.H{"status": "you are logged in", "user": foundUser, "token": tokenString})
 		} else {
 			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind", "error":i})
+		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind", "error": i})
 		fmt.Println("could not bind   err:" + fmt.Sprint(i))
 	}
 }
@@ -167,18 +166,18 @@ func Register(c *gin.Context) {
 			hashedPw, err := bcrypt.GenerateFromPassword([]byte(registerModel.Password), bcrypt.DefaultCost)
 			if err == nil {
 				user := db.User{
-					Name:registerModel.Name,
-					Email:registerModel.Email,
-					Password:string(hashedPw),
+					Name:     registerModel.Name,
+					Email:    registerModel.Email,
+					Password: string(hashedPw),
 				}
 				context.Create(&user)
-				c.JSON(http.StatusOK, gin.H{"status": "you have been successfully registered", "userEmail":registerModel.Email})
+				c.JSON(http.StatusOK, gin.H{"status": "you have been successfully registered", "userEmail": registerModel.Email})
 			} else {
 				log.Printf("Error hashing: %v\n", err)
 				c.JSON(http.StatusInternalServerError, gin.H{"status": "something went wrong"})
 			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"status": "email is taken", "userEmail":registerModel.Email})
+			c.JSON(http.StatusBadRequest, gin.H{"status": "email is taken", "userEmail": registerModel.Email})
 
 			log.Print("email is already taken")
 		}
@@ -186,6 +185,31 @@ func Register(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "wrong arguments"})
 
 		fmt.Print("could not bind")
+	}
+}
+
+func ValidateToken(raw string) (bool, uint64) {
+	token, err := jwt.Parse(raw, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(signingKey), nil
+	})
+	if err == nil {
+		if token.Valid {
+			claims := token.Claims.(jwt.MapClaims)
+			if userId, ok := strconv.ParseUint(claims["userId"].(string), 10, 32); ok == nil {
+				return true, userId
+
+			} else {
+				return false, 0
+			}
+		} else {
+			return false, 0
+		}
+	} else {
+		return false, 0
+
 	}
 }
 

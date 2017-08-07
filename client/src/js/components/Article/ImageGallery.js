@@ -82,7 +82,7 @@ export default class ImageGallery extends React.Component {
                             (<img id="bigPicture"
                                   src={(images[this.state.selectedImage].data ?
                                       images[this.state.selectedImage].data :
-                                      `${serverAddress}/vcelin/${this.state.url}/${images[this.state.selectedImage].filename}`)
+                                      `http://${serverAddress}/vcelin/${this.state.url}/${images[this.state.selectedImage].filename}`)
                                   }/>) : null}
                     </div>
 

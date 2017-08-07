@@ -32,7 +32,7 @@ export default class ImageInput extends React.Component {
     uploadImage(files, file, index, fileReader) {
         let data = new FormData();
         data.append("image", file);
-        fetch(`${serverAddress}/vcelin/api/uploadImage`, {
+        fetch(`http://${serverAddress}/vcelin/api/uploadImage`, {
             method: 'POST',
             mode: "cors",
             cache: "default",

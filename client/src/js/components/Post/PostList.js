@@ -11,14 +11,30 @@ export default class PostList extends React.Component {
 
     constructor(props) {
         super(props);
-        this.newPostHandler = this.newPostHandler.bind(this);
+        this.newPostSendHandler = this.newPostSendHandler.bind(this);
         this.deletePostHandler = this.deletePostHandler.bind(this);
         this.updatePostHandler = this.updatePostHandler.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.loadPosts = this.loadPosts.bind(this);
-        window.addEventListener("scroll", this.handleScroll);
 
-        this.state = {token: localStorage.getItem("token"), page: 0, data: []};
+
+        this.newPostReceiveHandler = this.newPostReceiveHandler.bind(this);
+        window.addEventListener("scroll", this.handleScroll);
+        const token = localStorage.getItem("token");
+        const socket = new WebSocket(`ws://${serverAddress}/vcelin/postListSocket/${token}`);
+
+        this.state = {
+            token: token,
+            page: 0,
+            data: [],
+            socket: socket
+        };
+
+        this.state.socket.addEventListener('open', function (event) {
+            console.log("opened");
+        });
+
+        this.state.socket.addEventListener('message', this.newPostReceiveHandler);
     }
 
     componentDidMount() {
@@ -34,13 +50,18 @@ export default class PostList extends React.Component {
         }
     }
 
+    newPostReceiveHandler(event) {
+        console.log('Message from server ', JSON.parse(event.data));
+        this.setState({data: [JSON.parse(event.data), ...this.state.data]});
+    }
+
     componentWillUnmount() {
         window.removeEventListener('scroll', this.handleScroll)
     }
 
     loadPosts() {
         if (this.state.token) {
-            fetch(`${serverAddress}/vcelin/api/postsPage/${this.state.page}`, {
+            fetch(`http://${serverAddress}/vcelin/api/postsPage/${this.state.page}`, {
                 method: "GET",
                 headers: {"token": this.state.token}
             })
@@ -76,8 +97,10 @@ export default class PostList extends React.Component {
         }
     }
 
-    newPostHandler(e) {
-        this.setState({data: [e, ...this.state.data]});
+    newPostSendHandler(e) {
+
+        this.state.socket.send(JSON.stringify({token: this.state.token, message: e}));
+
     }
 
     deletePostHandler(postId) {
@@ -119,7 +142,7 @@ export default class PostList extends React.Component {
                 {this.state.postError ?
                     <div className="alert alert-danger"> ERROR: {this.state.postError}</div> : null}
                 <h1 className="heading">Posts</h1>
-                <PostForm newPostHandler={this.newPostHandler}/>
+                <PostForm newPostHandler={this.newPostSendHandler}/>
                 <div id="postList">
                     {posts}
                 </div>

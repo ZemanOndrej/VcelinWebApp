@@ -5,20 +5,43 @@ import (
 	"vcelin/server/api"
 	"gopkg.in/gin-contrib/cors.v1"
 	"time"
+	"gopkg.in/olahol/melody.v1"
+	"encoding/json"
+	"fmt"
 )
 
 func main() {
 	router := gin.Default()
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	m := melody.New()
+	//web socket
+
+	router.GET("/vcelin/postListSocket/:token", func(c *gin.Context) {
+		token := c.Params.ByName("token")
+		err, userId := api.ValidateToken(token)
+		fmt.Println(token)
+		if !err || userId == 0 {
+			c.AbortWithStatus(401)
+		} else {
+			m.HandleRequest(c.Writer, c.Request)
+		}
+	})
+
+	m.HandleMessage(func(s *melody.Session, msg []byte) {
+
+		post := api.CreatePostWebSocket(msg)
+		str, _ := json.Marshal(post)
+		m.Broadcast([]byte(str))
+	})
 
 	router.Use(cors.New(cors.Config{
-		AllowAllOrigins:true,
+		AllowAllOrigins:  true,
 		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE"},
 		AllowHeaders:     []string{"token", "cache-control", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: false,
-		MaxAge: 12 * time.Hour,
+		MaxAge:           12 * time.Hour,
 	}))
 
 	//db.InitDb()
@@ -86,6 +109,3 @@ func main() {
 func index(c *gin.Context) {
 	c.HTML(200, "index.html", gin.H{})
 }
-
-
-

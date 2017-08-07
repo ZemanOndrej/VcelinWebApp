@@ -31,7 +31,7 @@ export default class ArticleDetails extends React.Component {
 
     componentDidMount() {
 
-        fetch(`${serverAddress}/vcelin/api/articles/${this.props.match.params.articleId}`, {
+        fetch(`http://${serverAddress}/vcelin/api/articles/${this.props.match.params.articleId}`, {
             method: "GET"
         })
             .then((response) => {
@@ -61,7 +61,7 @@ export default class ArticleDetails extends React.Component {
     handleArticleDelete(event) {
         event.preventDefault();
 
-        fetch(`${serverAddress}/vcelin/api/articles/${this.state.data.ID}`, {
+        fetch(`http://${serverAddress}/vcelin/api/articles/${this.state.data.ID}`, {
             method: "DELETE",
             mode: "cors",
             cache: "default",
@@ -129,7 +129,7 @@ export default class ArticleDetails extends React.Component {
     handleEditClick() {
 
         if (this.state.isEditing) {
-            fetch(`${serverAddress}/vcelin/api/articles/${this.state.data.ID}`, {
+            fetch(`http://${serverAddress}/vcelin/api/articles/${this.state.data.ID}`, {
                 method: 'PUT',
                 mode: "cors",
                 cache: "default",
@@ -184,7 +184,7 @@ export default class ArticleDetails extends React.Component {
             .map(o => o.filename);
 
         if (imagesToDelete.length > 0) {
-            fetch(`${serverAddress}/vcelin/api/cancelArticle`, {
+            fetch(`http://${serverAddress}/vcelin/api/cancelArticle`, {
                     method: 'DELETE',
                     mode: "cors",
                     cache: "default",

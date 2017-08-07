@@ -18,7 +18,7 @@ export default class UpdateForm extends React.Component {
     handleUpdate(event) {
         event.preventDefault();
         if (this.state.message.length > 0) {
-            fetch(`${serverAddress}/vcelin/api/${this.props.type}s/${this.props.data.ID}`, {
+            fetch(`http://${serverAddress}/vcelin/api/${this.props.type}s/${this.props.data.ID}`, {
                 method: "PUT",
                 mode: "cors",
                 body: JSON.stringify({Message: this.state.message}),
@@ -44,7 +44,7 @@ export default class UpdateForm extends React.Component {
 
     handleDelete(event) {
         event.preventDefault();
-        fetch(`${serverAddress}/vcelin/api/${this.props.type}s/${this.props.data.ID}`, {
+        fetch(`http://${serverAddress}/vcelin/api/${this.props.type}s/${this.props.data.ID}`, {
             method: "DELETE",
             mode: "cors",
             cache: "default",

@@ -1,7 +1,6 @@
 /**
  * Created by zeman on 08-May-17.
  */
-import {serverAddress} from "../../serverConfig";
 import React from "react";
 
 export default class PostForm extends React.Component {
@@ -22,28 +21,8 @@ export default class PostForm extends React.Component {
         event.preventDefault();
 
         if (this.state.message) {
-            let data = JSON.stringify({
-                "Message": this.state.message
-            });
-            fetch(`${serverAddress}/vcelin/api/posts`, {
-                method: "POST",
-                body: data,
-                mode: "cors",
-                cache: "default",
-                headers: {"Content-type": "application/json", "token": this.state.token}
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return response.json().then((json) => {
-                            json.post.Comments = [];
-                            this.props.newPostHandler(json.post);
-                            this.setState({message: "", error: null});
-                        });
-                    } else if (response.status === 401) {
-                        this.setState({token: null});
-                        localStorage.clear();
-                    }
-                });
+            this.props.newPostHandler(this.state.message);
+            this.setState({message: "", error: null});
         } else {
             this.setState({error: "Message is empty"});
         }

@@ -22,7 +22,7 @@ class Login extends React.Component {
 
     componentDidMount() {
         if (this.state.token) {
-            fetch(`${serverAddress}/vcelin/tokenValidation`, {
+            fetch(`http://${serverAddress}/vcelin/tokenValidation`, {
                 method: "POST",
                 mode: "cors",
                 cache: "default",
@@ -54,7 +54,7 @@ class Login extends React.Component {
             "Email": this.state.email
         });
 
-        fetch(`${serverAddress}/vcelin/api/login`, {
+        fetch(`http://${serverAddress}/vcelin/api/login`, {
             method: "POST",
             body: data,
             mode: "cors",
@@ -92,6 +92,8 @@ class Login extends React.Component {
     }
 
     render() {
+        let mobile = window.matchMedia("(max-width: 767px)");
+
         return (
             <div>
                 {this.state.isAuthorized ?
@@ -100,7 +102,7 @@ class Login extends React.Component {
 
                         <li>
                             <button type="submit" className="btn btn-default navbar-btn"
-                                    data-toggle="collapse" data-target="#navbar-collapseId"
+                                    data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"
                                     onClick={this.handleLogoutClick}>
                                 Logout
                             </button>

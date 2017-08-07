@@ -101,12 +101,14 @@
     margin: auto;
     textAlign: center;
     left: 50%;
+    display: inline-block;
     border: #000 solid 1px;
 }
 .aboutContainer h1 {
     color: #fff;
 }
-.aboutIframe {
+
+.aboutStuff {
     float: right;
 }
 .navbar-default.navbar-toggle.icon-bar {

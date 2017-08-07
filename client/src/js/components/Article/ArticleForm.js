@@ -51,7 +51,7 @@ export default class ArticleForm extends React.Component {
 
     handleCreate() {
         if (this.state.title.length > 0) {
-            fetch(`${serverAddress}/vcelin/api/articles`, {
+            fetch(`http://${serverAddress}/vcelin/api/articles`, {
                 method: 'POST',
                 mode: "cors",
                 cache: "default",
@@ -92,7 +92,7 @@ export default class ArticleForm extends React.Component {
     }
 
     handleCancel() {
-        fetch(`${serverAddress}/vcelin/api/cancelArticle`, {
+        fetch(`http://${serverAddress}/vcelin/api/cancelArticle`, {
                 method: 'DELETE',
                 mode: "cors",
                 cache: "default",
