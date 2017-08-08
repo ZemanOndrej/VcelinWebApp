@@ -5,6 +5,8 @@ import (
 	"vcelin/server/db"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"encoding/json"
+	"fmt"
 )
 
 type CommentModel struct {
@@ -15,6 +17,45 @@ type CommentModel struct {
 type UpdateCommentModel struct {
 	Message string `json:"message" binding:"required"`
 }
+
+type WebSocketComment struct {
+	Message string
+	Token   string
+	PostId  uint
+}
+
+func CreateCommentWebSocket(msg []byte) db.Comment {
+	context := db.Database()
+	var obj WebSocketComment
+	defer context.Close()
+	var user db.User
+	var post db.Post
+
+	if err := json.Unmarshal(msg, &obj); err != nil {
+		panic("unexpected json")
+	}
+	err, userId := ValidateToken(obj.Token)
+	fmt.Println(obj.Token)
+	if !err || userId == 0 {
+		panic("bad token")
+	}
+
+	context.Find(&post, obj.PostId)
+	context.Find(&user, userId)
+	if post.ID == 0 || user.ID == 0 {
+		panic("invalid postID or userId")
+	}
+
+	comment := db.Comment{Message: obj.Message, User: user, Post: post}
+	context.Create(&comment)
+	post.CommentCount++
+	context.Save(&post)
+	comment.User.Password = ""
+	comment.User.Email = ""
+	return comment
+}
+
+
 
 func CreateComment(c *gin.Context) {
 	user, err := c.Get("User")

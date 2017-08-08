@@ -8,6 +8,7 @@ import (
 	"gopkg.in/olahol/melody.v1"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 func main() {
@@ -15,8 +16,17 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	m := melody.New()
-	//web socket
+	m2 := melody.New()
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE"},
+		AllowHeaders:     []string{"token", "cache-control", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: false,
+		MaxAge:           12 * time.Hour,
+	}))
 
+	//web sockets
 	router.GET("/vcelin/postListSocket/:token", func(c *gin.Context) {
 		token := c.Params.ByName("token")
 		err, userId := api.ValidateToken(token)
@@ -35,14 +45,27 @@ func main() {
 		m.Broadcast([]byte(str))
 	})
 
-	router.Use(cors.New(cors.Config{
-		AllowAllOrigins:  true,
-		AllowMethods:     []string{"PUT", "POST", "GET", "DELETE"},
-		AllowHeaders:     []string{"token", "cache-control", "Content-Type"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: false,
-		MaxAge:           12 * time.Hour,
-	}))
+	router.GET("/vcelin/postCommentsSocket/:name/$:token", func(c *gin.Context) {
+		token := c.Params.ByName("token")
+		err, userId := api.ValidateToken(token)
+		if !err || userId == 0 {
+			c.AbortWithStatus(401)
+		} else {
+			m2.HandleRequest(c.Writer, c.Request)
+		}
+	})
+
+	m2.HandleMessage(func(s *melody.Session, msg []byte) {
+		comment := api.CreateCommentWebSocket(msg)
+		str, _ := json.Marshal(comment)
+
+		m2.BroadcastFilter([]byte(str), func(q *melody.Session) bool {
+			fmt.Println(strings.Split(q.Request.URL.Path, "$")[0], strings.Split(s.Request.URL.Path, "$")[0])
+			return strings.Split(q.Request.URL.Path, "$")[0] == strings.Split(s.Request.URL.Path, "$")[0]
+		})
+	})
+
+
 
 	//db.InitDb()
 	api.InitKeys()

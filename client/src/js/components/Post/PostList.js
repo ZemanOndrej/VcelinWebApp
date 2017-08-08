@@ -98,9 +98,7 @@ export default class PostList extends React.Component {
     }
 
     newPostSendHandler(e) {
-
         this.state.socket.send(JSON.stringify({token: this.state.token, message: e}));
-
     }
 
     deletePostHandler(postId) {

@@ -2,7 +2,6 @@
  * Created by zeman on 08-May-17.
  */
 import React from "react";
-import {serverAddress} from "../../serverConfig";
 
 export default class CommentForm extends React.Component {
 
@@ -23,28 +22,29 @@ export default class CommentForm extends React.Component {
         event.preventDefault();
 
         if (this.state.message) {
-            let data = JSON.stringify({
-                Message: this.state.message,
-                PostId: this.props.postId
-
-            });
-            fetch(`http://${serverAddress}/vcelin/api/comments`, {
-                method: "POST",
-                body: data,
-                mode: "cors",
-                cache: "default",
-                headers: {"Content-type": "application/json", "token": localStorage.getItem("token")}
-            })
-                .then((response) => {
-                    if (response.ok) {
-                        return response.json().then((json) => {
-                            this.props.newCommentHandler(json.comment);
-                            this.setState({message: "", error: null});
-
-                        });
-                    }
-
-                });
+            this.props.newCommentHandler(this.state.message,);
+            this.setState({message: "", error: null});
+            // let data = JSON.stringify({
+            //     Message: this.state.message,
+            //     PostId: this.props.postId
+            //
+            // });
+            // fetch(`http://${serverAddress}/vcelin/api/comments`, {
+            //     method: "POST",
+            //     body: data,
+            //     mode: "cors",
+            //     cache: "default",
+            //     headers: {"Content-type": "application/json", "token": localStorage.getItem("token")}
+            // })
+            //     .then((response) => {
+            //         if (response.ok) {
+            //             return response.json().then((json) => {
+            //
+            //
+            //             });
+            //         }
+            //
+            //     });
         } else {
             this.setState({error: "Message is empty"});
         }

@@ -19,8 +19,20 @@ export default class CommentList extends React.Component {
         this.updatePostHandler = this.updatePostHandler.bind(this);
         this.handleScroll = this.handleScroll.bind(this);
         this.loadMoreComments = this.loadMoreComments.bind(this);
+        this.newCommentReceiveHandler = this.newCommentReceiveHandler.bind(this);
+        this.newCommentSendHandler = this.newCommentSendHandler.bind(this);
         window.addEventListener("scroll", this.handleScroll);
-        this.state = {data: {}, token: localStorage.getItem("token"), page: 0};
+
+        const token = localStorage.getItem("token");
+        const socket = new WebSocket(`ws://${serverAddress}/vcelin/postCommentsSocket/${this.props.match.params.postId}/$${token}`);
+
+        this.state = {data: {}, token: token, page: 0, socket: socket};
+
+        this.state.socket.addEventListener('open', function (event) {
+            console.log("opened");
+        });
+
+        this.state.socket.addEventListener('message', this.newCommentReceiveHandler);
     }
 
     componentWillUnmount() {
@@ -52,6 +64,28 @@ export default class CommentList extends React.Component {
                     }
                 });
         }
+    }
+
+    newCommentReceiveHandler(event) {
+        console.log(event);
+        let data = this.state.data;
+        data.commentCount++;
+        data.Comments = [JSON.parse(event.data), ...data.Comments];
+        this.setState({data: data});
+
+    }
+
+    newCommentSendHandler(event) {
+        console.log(JSON.stringify({
+            token: this.state.token,
+            message: event,
+            postId: parseInt(this.props.match.params.postId)
+        }));
+        this.state.socket.send(JSON.stringify({
+            token: this.state.token,
+            message: event,
+            postId: parseInt(this.props.match.params.postId)
+        }));
     }
 
     loadMoreComments() {
@@ -156,7 +190,7 @@ export default class CommentList extends React.Component {
                 {post}
 
                 <h2 className="heading">Comments</h2>
-                <CommentForm postId={this.props.match.params.postId} newCommentHandler={this.newCommentHandler}/>
+                <CommentForm postId={this.props.match.params.postId} newCommentHandler={this.newCommentSendHandler}/>
                 {comments}
                 <div>
                     <span className="generalPadding spanInfo">
