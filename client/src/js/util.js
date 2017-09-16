@@ -21,16 +21,16 @@ export function formatTimeSince(time) {
     let secs = Math.floor((Date.now() - date) / 1000);
 
     let timeText = "";
-    if (mins === 0) {
-        timeText = secs + " seconds"
-
-    } else if (mins < 60) {
-        timeText = mins + " minutes"
-    } else if (hrs !== 0) {
-        timeText = hrs + " hours"
-
-    } else if (days !== 0) {
-        timeText = days + " days"
+    if (days > 0) {
+        timeText = days + " days";
+    } else if (hrs > 0) {
+        timeText = hrs + " hours";
+    } else if (mins > 0) {
+        timeText = mins + " minutes";
+    } else if (secs > 0) {
+        timeText = secs + " seconds";
+    } else {
+        timeText = "Invalid Time";
     }
-    return timeText
+    return timeText;
 }

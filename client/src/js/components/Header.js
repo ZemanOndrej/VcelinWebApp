@@ -5,10 +5,33 @@
 import * as React from "react";
 import Link from "react-router-dom/es/Link";
 import Login from "./Login";
+import {serverAddress} from "../serverConfig";
 
 export default class Header extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {token: localStorage.getItem("token"), todayNewPostCount: 0}
+    }
+
+    componentDidMount() {
+        if (this.state.token) {
+            fetch(`http://${serverAddress}/vcelin/api/todayPostsCount`, {
+                method: 'GET',
+                mode: "cors",
+                cache: "default",
+                headers: {
+                    "token": localStorage.getItem("token")
+                }
+            }).then((response) => {
+                    if (response.ok) {
+                        response.json().then(o => {
+                            this.setState({todayNewPostCount: o.todayNewPostCount});
+                        });
+
+                    }
+                }
+            );
+        }
     }
 
     render() {
@@ -45,8 +68,13 @@ export default class Header extends React.Component {
                                       to="/vcelin/createArticle">Create Article</Link>
                             </li> : null}
                             {token ?
-                                <li><Link data-toggle={mobile.matches ? "collapse" : null}
-                                          data-target="#navbar-collapseId" to="/vcelin/posts">Posts</Link>
+                                <li>
+                                    <Link data-toggle={mobile.matches ? "collapse" : null}
+                                          data-target="#navbar-collapseId" to="/vcelin/posts">Posts
+                                        {this.state.todayNewPostCount > 0 ?
+                                            <span
+                                                className="spanNotification">{this.state.todayNewPostCount}</span> : null}
+                                    </Link>
                                 </li> : null
                             }
                         </ul>

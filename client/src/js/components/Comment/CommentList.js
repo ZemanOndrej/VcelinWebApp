@@ -28,10 +28,6 @@ export default class CommentList extends React.Component {
 
         this.state = {data: {}, token: token, page: 0, socket: socket};
 
-        this.state.socket.addEventListener('open', function (event) {
-            console.log("opened");
-        });
-
         this.state.socket.addEventListener('message', this.newCommentReceiveHandler);
     }
 
@@ -67,7 +63,6 @@ export default class CommentList extends React.Component {
     }
 
     newCommentReceiveHandler(event) {
-        console.log(event);
         let data = this.state.data;
         data.commentCount++;
         data.Comments = [JSON.parse(event.data), ...data.Comments];
@@ -76,11 +71,7 @@ export default class CommentList extends React.Component {
     }
 
     newCommentSendHandler(event) {
-        console.log(JSON.stringify({
-            token: this.state.token,
-            message: event,
-            postId: parseInt(this.props.match.params.postId)
-        }));
+
         this.state.socket.send(JSON.stringify({
             token: this.state.token,
             message: event,
@@ -193,9 +184,9 @@ export default class CommentList extends React.Component {
                 <CommentForm postId={this.props.match.params.postId} newCommentHandler={this.newCommentSendHandler}/>
                 {comments}
                 <div>
-                    <span className="generalPadding spanInfo">
+                    <div className="alert alert-info">
                         {this.state.error}
-                    </span>
+                    </div>
                 </div>
             </div>
         )

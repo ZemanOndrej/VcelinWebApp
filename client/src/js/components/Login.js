@@ -1,6 +1,7 @@
 import React from "react";
 import {withRouter} from "react-router-dom";
 import {serverAddress} from "../serverConfig";
+import Link from "react-router-dom/es/Link";
 
 class Login extends React.Component {
     constructor(props) {
@@ -71,6 +72,7 @@ class Login extends React.Component {
                         localStorage.setItem("token", json.token);
                         localStorage.setItem("isAuthorized", true);
                         localStorage.setItem("userName", json.user.name);
+                        localStorage.setItem("userEmail", json.user.email);
                         localStorage.setItem("userId", json.user.ID);
                         localStorage.setItem("expiration", time);
                         this.setState({isAuthorized: true});
@@ -95,11 +97,13 @@ class Login extends React.Component {
         let mobile = window.matchMedia("(max-width: 767px)");
 
         return (
-            <div>
+            <div className="navPersonalSection">
                 {this.state.isAuthorized ?
                     <ul className="nav navbar-nav navbar-right">
                         <li><p className="navbar-text">Logged in as {this.state.username}</p></li>
-
+                        <li><Link data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"
+                                  to="/vcelin/options"><img src="https://i.imgur.com/RU7Nj69.png" width="15"
+                                                            height="15"/> </Link></li>
                         <li>
                             <button type="submit" className="btn btn-default navbar-btn"
                                     data-toggle={mobile.matches ? "collapse" : null} data-target="#navbar-collapseId"

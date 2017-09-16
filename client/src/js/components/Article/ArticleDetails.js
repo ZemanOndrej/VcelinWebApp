@@ -162,10 +162,8 @@ export default class ArticleDetails extends React.Component {
                         this.handleUpdateCancel()
                     }
                 }
-            )
-            ;
-            this
-                .setState({isEditing: false})
+            );
+            this.setState({isEditing: false})
         }
         else {
             this.setState({isEditing: true, text: this.state.data.text})

@@ -7,8 +7,8 @@ import (
 	"time"
 	"gopkg.in/olahol/melody.v1"
 	"encoding/json"
-	"fmt"
 	"strings"
+	"vcelin/server/db"
 )
 
 func main() {
@@ -30,7 +30,6 @@ func main() {
 	router.GET("/vcelin/postListSocket/:token", func(c *gin.Context) {
 		token := c.Params.ByName("token")
 		err, userId := api.ValidateToken(token)
-		fmt.Println(token)
 		if !err || userId == 0 {
 			c.AbortWithStatus(401)
 		} else {
@@ -60,14 +59,11 @@ func main() {
 		str, _ := json.Marshal(comment)
 
 		m2.BroadcastFilter([]byte(str), func(q *melody.Session) bool {
-			fmt.Println(strings.Split(q.Request.URL.Path, "$")[0], strings.Split(s.Request.URL.Path, "$")[0])
 			return strings.Split(q.Request.URL.Path, "$")[0] == strings.Split(s.Request.URL.Path, "$")[0]
 		})
 	})
 
-
-
-	//db.InitDb()
+	db.InitDb()
 	api.InitKeys()
 
 	authorized := router.Group("/vcelin")
@@ -104,6 +100,8 @@ func main() {
 		authorized.DELETE("/api/articles/:id", api.DeleteArticle)
 		authorized.DELETE("/api/images/:id", api.RemoveImageFromArticle)
 		authorized.PUT("/api/articles/:id", api.UpdateArticle)
+
+		authorized.GET("/api/todayPostsCount", api.GetTodayPostsCount)
 
 	}
 

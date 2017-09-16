@@ -8,125 +8,125 @@
 .postForm {
   left: 50vw;
   transform: translate(-50%, 0);
-    display: inline-block;
-    position: relative;
+  display: inline-block;
+  position: relative;
 }
 .postTextArea {
-    position: relative;
-    display: block;
-    resize: none;
-    z-index: auto;
+  position: relative;
+  display: block;
+  resize: none;
+  z-index: auto;
 }
 .postFormButton {
-    position: absolute;
-    bottom: 18px;
-    right: 18px;
-    z-index: 1000;
-    opacity: 0.33;
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  z-index: 1000;
+  opacity: 0.33;
 }
 .postFormButton:hover {
-    opacity: 1;
+  opacity: 1;
 }
 .postTextAlign {
-    text-align: center;
+  text-align: center;
 }
 #homepageBackground {
-    background-image: url("http://i.imgur.com/z4rGyE3.png");
-    filter: brightness(65%);
-    height: 95vh;
-    width: 100%;
-    position: relative;
+  background-image: url("http://i.imgur.com/z4rGyE3.png");
+  filter: brightness(65%);
+  height: 95vh;
+  width: 100%;
+  position: relative;
 }
 #mainHeading {
-    top: 50%;
-    margin: auto;
-    textAlign: center;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    font-size: 100px;
-    color: #fff;
+  top: 50%;
+  margin: auto;
+  textAlign: center;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  font-size: 100px;
+  color: #fff;
 }
 .downArrow {
-    transform: rotate(270deg) translate(-50%, -20%);
-    left: 50%;
-    font-size: 100px;
-    top: 85vh;
+  transform: rotate(270deg) translate(-50%, -20%);
+  left: 50%;
+  font-size: 100px;
+  top: 85vh;
 }
 #aboutLink {
   cursor: pointer;
-    transform: translate(-50%, -50%);
-    left: 50%;
-    font-size: 30px;
-    top: 91vh;
-    position: absolute;
-    opacity: 0;
-    color: #c0c0c0;
-    -webkit-animation: fadeInFromNone 0.5s ease-out;
-    -moz-animation: fadeInFromNone 0.5s ease-out;
-    -o-animation: fadeInFromNone 0.5s ease-out;
-    animation: fadeInFromNone 0.5s ease-out;
+  transform: translate(-50%, -50%);
+  left: 50%;
+  font-size: 30px;
+  top: 91vh;
+  position: absolute;
+  opacity: 0;
+  color: #c0c0c0;
+  -webkit-animation: fadeInFromNone 0.5s ease-out;
+  -moz-animation: fadeInFromNone 0.5s ease-out;
+  -o-animation: fadeInFromNone 0.5s ease-out;
+  animation: fadeInFromNone 0.5s ease-out;
 }
 #aboutLink:hover {
-    opacity: 1;
+  opacity: 1;
 }
 .aboutPage {
   height: 100vh;
-    width: 100%;
-    position: absolute;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    -webkit-filter: blur(5px);
-    -moz-filter: blur(5px);
-    -o-filter: blur(5px);
-    -ms-filter: blur(5px);
-    filter: brightness(50%) blur(5px);
-    background-image: url("https://i.imgur.com/YIl9AUA.jpg");
+  width: 100%;
+  position: absolute;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: brightness(50%) blur(5px);
+  background-image: url("https://i.imgur.com/YIl9AUA.jpg");
 }
 .aboutContainer {
   background-color: #000;
-    color: #fff;
-    max-width: 50%;
-    top: 150%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
-    opacity: 0.7;
-    display: inline-block;
+  color: #fff;
+  max-width: 50%;
+  top: 150%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  position: absolute;
+  opacity: 0.7;
+  display: inline-block;
 }
 .aboutText {
-    top: 50%;
-    margin: auto;
-    textAlign: center;
-    left: 50%;
-    display: inline-block;
-    border: #000 solid 1px;
+  top: 50%;
+  margin: auto;
+  textAlign: center;
+  left: 50%;
+  display: inline-block;
+  border: #000 solid 1px;
 }
 .aboutContainer h1 {
-    color: #fff;
+  color: #fff;
 }
-
 .aboutStuff {
-    float: right;
+  float: right;
 }
 .navbar-default.navbar-toggle.icon-bar {
-    background-color: #000;
+  background-color: #000;
 }
 #navigation {
-    z-index: 900;
+  z-index: 900;
 }
 @media (max-width: 767px) {
-    .navbar-collapse {
-        text-align: center;
-        background: #ff4d4d;
-    }
+  .navbar-collapse {
+    text-align: center;
+    background: #ff4d4d;
+  }
 }
 .articleSection {
   background-color: #f8f8f8;
   border: solid 1px #dcdcdc;
   cursor: pointer;
+  opacity: 0.85;
 }
 .articleSection:hover {
   background-color: #fff;
@@ -137,9 +137,9 @@
 .articleForm {
   position: relative;
   display: block;
-    max-width: 843px;
-    left: 50vw;
-    transform: translate(-50%, 0%);
+  max-width: 843px;
+  left: 50vw;
+  transform: translate(-50%, 0%);
 }
 .buttonMargin {
   margin: 0 10px 0 10px;
@@ -206,22 +206,22 @@
   font-weight: bold;
 }
 .imageInputButton {
-    color: transparent;
-    text-align: center;
-    width: 104px;
-    margin-left: 0;
+  color: transparent;
+  text-align: center;
+  width: 104px;
+  margin-left: 0;
 }
 #imageInputButton {
-    display: inline-block;
+  display: inline-block;
 }
 .commentSection {
-    border: #fff 1px solid;
-    background-color: #f8f8f8;
+  border: #fff 1px solid;
+  background-color: #f8f8f8;
 }
 body html {
-    padding: 0;
-    margin: 0;
-    height: 100%;
+  padding: 0;
+  margin: 0;
+  height: 100%;
 }
 .unselectable {
   -webkit-touch-callout: none;
@@ -236,8 +236,13 @@ body html {
 .generalPadding {
   padding: 10px 20px 10px 20px;
 }
+.mainHeading {
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+}
 .heading {
-    margin-top: 15px;
+  margin-top: 15px;
   text-align: center;
 }
 .formWindow {
@@ -251,64 +256,81 @@ body html {
   width: 40%;
   background-color: #d6d6d6;
   opacity: 1;
-    text-align: center;
+  text-align: center;
 }
 .formComponent {
   position: fixed;
-    z-index: 1000;
+  z-index: 1000;
 }
 .spanInfo {
   margin: 10px 20px 10px 20px;
 }
 .navbar {
-    margin-bottom: 0;
-    height: 5vh;
+  margin-bottom: 0;
+  height: 5vh;
 }
 .imagePreview {
-    height: 100px;
-    width: 100px;
+  height: 100px;
+  width: 100px;
 }
 textarea {
-    resize: none;
+  resize: none;
 }
 .updateFormTextarea {
-    transform: translate(-35%, -5%);
-    left: 50%;
+  transform: translate(-35%, -5%);
+  left: 50%;
 }
 a:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
 #imageOverlayParent {
-    height: 100vh;
-    width: 100vw;
-    position: fixed;
-    top: 0;
-    left: 0;
-    margin: 0;
-    padding: 0;
-    z-index: 999;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+  z-index: 999;
 }
 #imageOverlay {
-    z-index: 1000;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    background-color: #000;
-    opacity: 0.95;
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #000;
+  opacity: 0.95;
 }
 .overlay {
-    z-index: 1000;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    width: 100vw;
-    background-color: #fff;
-    opacity: 0.75;
-    overflow: hidden;
+  z-index: 1000;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: #fff;
+  opacity: 0.75;
+  overflow: hidden;
 }
 .spanClick {
-    cursor: pointer;
+  cursor: pointer;
+}
+.backgroundDiv {
+  height: 100%;
+  width: 100%;
+}
+.spanNotification {
+  color: #fff;
+  background-color: #f00;
+  width: 15px;
+  height: 15px;
+  padding: 3px;
+  border: 1px solid #fff;
+  text-align: center;
+  font: 12px Arial, sans-serif;
+}
+.navPersonalSection {
+  margin-right: 15px;
 }

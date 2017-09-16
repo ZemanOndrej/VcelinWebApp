@@ -11,13 +11,15 @@ import ArticleList from "./components/Article/ArticleList";
 import ArticleDetails from "./components/Article/ArticleDetails";
 import MainPage from "./components/MainPage";
 import ArticleForm from "./components/Article/ArticleForm";
+import Options from "./components/Options";
 
 
 const App = () => (
     <Router>
         <div>
-            <Header />
+            <Header/>
             <Switch>
+                <Route exact path={"/vcelin/options"} component={Options}/>
                 <Route exact path={"/vcelin/createArticle"} component={ArticleForm}/>
                 <Route path={"/vcelin/posts/:postId"} component={CommentList}/>
                 <Route exact path={"/vcelin/posts"} component={PostList}/>
@@ -29,5 +31,5 @@ const App = () => (
     </Router>
 );
 
-ReactDOM.render(<App/>,document.querySelector("#app"));
+ReactDOM.render(<App/>, document.querySelector("#app"));
 

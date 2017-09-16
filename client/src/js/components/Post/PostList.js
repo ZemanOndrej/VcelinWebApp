@@ -30,9 +30,6 @@ export default class PostList extends React.Component {
             socket: socket
         };
 
-        this.state.socket.addEventListener('open', function (event) {
-            console.log("opened");
-        });
 
         this.state.socket.addEventListener('message', this.newPostReceiveHandler);
     }
@@ -51,7 +48,6 @@ export default class PostList extends React.Component {
     }
 
     newPostReceiveHandler(event) {
-        console.log('Message from server ', JSON.parse(event.data));
         this.setState({data: [JSON.parse(event.data), ...this.state.data]});
     }
 
@@ -145,9 +141,12 @@ export default class PostList extends React.Component {
                     {posts}
                 </div>
                 <div>
-                    <span>
-                        {this.state.error}
-                    </span>
+
+                    {this.state.error ?
+                        (<div className="alert alert-info">{this.state.error}</div>)
+                        : null
+                    }
+
                 </div>
             </div>
         )

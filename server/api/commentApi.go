@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"encoding/json"
-	"fmt"
 )
 
 type CommentModel struct {
@@ -35,7 +34,6 @@ func CreateCommentWebSocket(msg []byte) db.Comment {
 		panic("unexpected json")
 	}
 	err, userId := ValidateToken(obj.Token)
-	fmt.Println(obj.Token)
 	if !err || userId == 0 {
 		panic("bad token")
 	}

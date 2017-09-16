@@ -24,27 +24,6 @@ export default class CommentForm extends React.Component {
         if (this.state.message) {
             this.props.newCommentHandler(this.state.message,);
             this.setState({message: "", error: null});
-            // let data = JSON.stringify({
-            //     Message: this.state.message,
-            //     PostId: this.props.postId
-            //
-            // });
-            // fetch(`http://${serverAddress}/vcelin/api/comments`, {
-            //     method: "POST",
-            //     body: data,
-            //     mode: "cors",
-            //     cache: "default",
-            //     headers: {"Content-type": "application/json", "token": localStorage.getItem("token")}
-            // })
-            //     .then((response) => {
-            //         if (response.ok) {
-            //             return response.json().then((json) => {
-            //
-            //
-            //             });
-            //         }
-            //
-            //     });
         } else {
             this.setState({error: "Message is empty"});
         }

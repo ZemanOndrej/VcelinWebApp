@@ -105,11 +105,9 @@ func AuthRequired() gin.HandlerFunc {
 					c.AbortWithError(http.StatusUnauthorized, err)
 				}
 			} else {
-				fmt.Print("Token is not valid \n")
 				c.AbortWithError(http.StatusUnauthorized, err)
 			}
 		} else {
-			fmt.Errorf("Unauthorised access to this resource %s", err)
 			c.AbortWithError(http.StatusUnauthorized, err)
 		}
 	}
@@ -151,7 +149,6 @@ func Login(c *gin.Context) {
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind", "error": i})
-		fmt.Println("could not bind   err:" + fmt.Sprint(i))
 	}
 }
 
@@ -184,7 +181,6 @@ func Register(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "wrong arguments"})
 
-		fmt.Print("could not bind")
 	}
 }
 
@@ -232,12 +228,10 @@ func TokenValidation(c *gin.Context) {
 				c.AbortWithError(http.StatusUnauthorized, err)
 			}
 		} else {
-			fmt.Print("Token is not valid \n")
 			c.AbortWithError(http.StatusUnauthorized, err)
 
 		}
 	} else {
-		fmt.Errorf("Unauthorised access to this resource %s", err)
 		c.AbortWithError(http.StatusUnauthorized, err)
 
 	}

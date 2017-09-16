@@ -14,10 +14,8 @@ export default class Home extends React.Component {
                 <div id="homepageBackground">
                 </div>
                 <div id="mainHeading">
-                    Včelín tím
+                    Včelín team
                 </div>
-
-
                 {/*<div onClick={scroll.scrollToBottom}>*/}
                 {/*<div id="aboutLink"> About</div>*/}
                 {/*<span className="arrow unselectable spanClick downArrow">&#9001;</span>*/}

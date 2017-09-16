@@ -92,20 +92,20 @@ export default class ArticleList extends React.Component {
             })
         }
         return (
-            <div>
+            <div className="backgroundDiv">
 
                 {this.state.articleError ?
                     <div className="alert alert-danger"> ERROR: {this.state.articleError}</div> : null}
-                <div style={{display: "inline-block", width: "100vw", textAlign: "center"}}>
+                <div className="mainHeading">
                     <h1>Articles</h1>
                 </div>
 
                 {articles}
-                <div>
-                    <span>
-                        {this.state.error}
-                    </span>
-                </div>
+
+                {this.state.error ? <div className="alert alert-info">
+                    {this.state.error}
+                </div> : null}
+
             </div>
         )
     }

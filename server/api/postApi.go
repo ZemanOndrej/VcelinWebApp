@@ -8,7 +8,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"time"
 	"encoding/json"
-	"fmt"
 )
 
 type PostModel struct {
@@ -27,6 +26,20 @@ type WebSocketMessage struct {
 	Token   string
 }
 
+func GetTodayPostsCount(c *gin.Context) {
+	var posts []db.Post
+	var count int
+	context := db.Database()
+	defer context.Close()
+	timeStamp := time.Now()
+
+	year, month, day := timeStamp.Date()
+	timeStamp = time.Date(year, month, day, 0, 0, 0, 0, timeStamp.Location())
+
+	context.Where("created_at > ?", timeStamp.Format("20060102150405")).Find(&posts).Count(&count)
+	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "todayNewPostCount": count})
+}
+
 func CreatePostWebSocket(msg []byte) db.Post {
 	context := db.Database()
 	var obj WebSocketMessage
@@ -37,7 +50,6 @@ func CreatePostWebSocket(msg []byte) db.Post {
 		panic("unexpected json")
 	}
 	err, userId := ValidateToken(obj.Token)
-	fmt.Println(obj.Token)
 	if !err || userId == 0 {
 		panic("bad token")
 	}
@@ -49,7 +61,6 @@ func CreatePostWebSocket(msg []byte) db.Post {
 	post.User.Email = ""
 	return post
 }
-
 
 func CreatePost(c *gin.Context) {
 	user, err := c.Get("User")
