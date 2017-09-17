@@ -183,11 +183,13 @@ export default class CommentList extends React.Component {
                 <h2 className="heading">Comments</h2>
                 <CommentForm postId={this.props.match.params.postId} newCommentHandler={this.newCommentSendHandler}/>
                 {comments}
-                <div>
+
+                {this.state.error ? <div>
                     <div className="alert alert-info">
                         {this.state.error}
                     </div>
-                </div>
+                </div> : null}
+
             </div>
         )
     }
