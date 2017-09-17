@@ -47,33 +47,10 @@ func InitDb() {
 	}
 	context.Create(&comment)
 
-	user2 := User{
-		Email:    "Marian@gmail.com",
-		Name:     "Majo",
-		Password: string(hashedPw),
-	}
-	context.Create(&user2)
-
-	user3 := User{
-		Email:    "zdeno@gmail.com",
-		Name:     "Zdeno",
-		Password: string(hashedPw),
-	}
-	context.Create(&user3)
-
-	user4 := User{
-		Email:    "juraj@gmail.com",
-		Name:     "Juro",
-		Password: string(hashedPw),
-	}
-	context.Create(&user4)
-
 	article := Article{
 		User:user,
 		Title:"first Article",
 		Text:"Lorem ipsum dolor sit amet, mei ex tantas accumsan corrumpit. Mel ad detraxit urbanitas pertinacia, nam habemus oporteat instructior ut. Id eam integre conceptam interesset, nisl graece epicuri id eos. No veri consequat democritum sed, ridens discere no sea, an qui detracto interpretaris. Nam illum luptatum ad, et etiam mandamus repudiandae sit, veri falli adolescens in his.",
-
-
 	}
 	context.Create(&article)
 
