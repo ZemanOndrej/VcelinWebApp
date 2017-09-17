@@ -8,7 +8,6 @@ import (
 	"gopkg.in/olahol/melody.v1"
 	"encoding/json"
 	"strings"
-	"vcelin/server/db"
 )
 
 func main() {
@@ -63,7 +62,7 @@ func main() {
 		})
 	})
 
-	db.InitDb()
+	//db.InitDb()
 	api.InitKeys()
 
 	authorized := router.Group("/vcelin")
