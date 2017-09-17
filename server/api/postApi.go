@@ -14,11 +14,11 @@ type PostModel struct {
 	Message string `json:"message" binding:"required"`
 }
 type PostInfo struct {
-	ID           uint `gorm:"primary_key"`
+	ID           uint   `gorm:"primary_key"`
 	CreatedAt    time.Time
 	Message      string `json:"message" binding:"required"`
 	User         db.User
-	CommentCount int `json:"commentCount" binding:"required"`
+	CommentCount int    `json:"commentCount" binding:"required"`
 }
 
 type WebSocketMessage struct {
@@ -37,7 +37,7 @@ func GetTodayPostsCount(c *gin.Context) {
 	timeStamp = time.Date(year, month, day, 0, 0, 0, 0, timeStamp.Location())
 
 	context.Where("created_at > ?", timeStamp.Format("20060102150405")).Find(&posts).Count(&count)
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "todayNewPostCount": count})
+	c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "todayNewPostCount": count})
 }
 
 func CreatePostWebSocket(msg []byte) db.Post {
@@ -149,7 +149,7 @@ func DeletePost(c *gin.Context) {
 			//admin user id is 1 he can delete what he wants
 			if user.(db.User).ID == Post.UserId || user.(db.User).ID == 1 {
 				context.Delete(&Post)
-				c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Post deleted successfully!"})
+				c.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully!"})
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "You cannot delete this post"})
 			}
@@ -207,7 +207,7 @@ func FetchAllPosts(c *gin.Context) {
 			posts[y].User.Email = ""
 		}
 	}
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": posts})
+	c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": posts})
 
 }
 
@@ -226,10 +226,10 @@ func FetchPostsOnPage(c *gin.Context) {
 			posts[y].User.Email = ""
 		}
 		if len(posts) > 0 {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": posts})
+			c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": posts})
 
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "No more posts ;( " })
+			c.JSON(http.StatusOK, gin.H{"message": "No more posts ;( "})
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong page number"})

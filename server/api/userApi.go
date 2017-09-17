@@ -6,7 +6,6 @@ import (
 	"vcelin/server/db"
 	"strconv"
 	"golang.org/x/crypto/bcrypt"
-	"regexp"
 )
 
 type UpdateUserModel struct {
@@ -18,7 +17,37 @@ type UpdateUserModel struct {
 }
 
 func CreateUser(c *gin.Context) {
-	c.JSON(http.StatusBadGateway, gin.H{})
+	var registerModel RegisterModel
+	if c.Bind(&registerModel) == nil {
+		if !ValidateEmail(registerModel.Email) {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "email is invalid"})
+			return
+		}
+		context := db.Database()
+		defer context.Close()
+		var foundUser db.User
+		context.Where("email = ?", registerModel.Email).First(&foundUser)
+		if foundUser.ID <= 0 {
+			hashedPw, err := bcrypt.GenerateFromPassword([]byte(registerModel.Password), bcrypt.DefaultCost)
+			if err == nil {
+				user := db.User{
+					Name:     registerModel.Name,
+					Email:    registerModel.Email,
+					Password: string(hashedPw),
+				}
+				context.Create(&user)
+				user.Password = ""
+				c.JSON(http.StatusOK, gin.H{"message": "you have been successfully registered", "user": user})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong"})
+			}
+		} else {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "email is taken", "userEmail": registerModel.Email})
+		}
+	} else {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong arguments"})
+
+	}
 }
 
 func UpdateUser(c *gin.Context) {
@@ -49,7 +78,7 @@ func UpdateUser(c *gin.Context) {
 								foundUser.Password = string(hashedNew[:])
 
 							}
-							if match, _ := regexp.MatchString(`(.+)@(.+)\.(.+)`, updateUserModel.Email); match {
+							if ValidateEmail(updateUserModel.Email) {
 								foundUser.Email = updateUserModel.Email
 							} else {
 								c.JSON(http.StatusBadRequest, gin.H{"message": "User was not updated, incorrect email address!"})
@@ -99,13 +128,13 @@ func DeleteUser(c *gin.Context) {
 			//only admin can delete other users than himself
 			if wantedUser.ID == currUser.(db.User).ID || currUser.(db.User).ID == 1 {
 				context.Delete(&wantedUser)
-				c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Comment deleted successfully!"})
+				c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully!"})
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "you cannot delete this user"})
 
 			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "wrong user"})
 
 		}
 
@@ -122,9 +151,8 @@ func GetUsers(c *gin.Context) {
 	context.Find(&users)
 	for i := range users {
 		users[i].Password = ""
-		users[i].Email = ""
 	}
-	c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": users})
+	c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": users})
 
 }
 

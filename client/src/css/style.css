@@ -334,3 +334,6 @@ a:hover {
 .navPersonalSection {
   margin-right: 15px;
 }
+.underlined:hover {
+  text-decoration: underline;
+}

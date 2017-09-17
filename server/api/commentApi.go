@@ -162,7 +162,7 @@ func DeleteComment(c *gin.Context) {
 				context.Find(&post, comment.PostId)
 				post.CommentCount--
 				context.Save(&post)
-				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Comment deleted successfully!"})
+				c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully!"})
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"message":"You cannot delete this comment"})
 			}
@@ -207,7 +207,7 @@ func FetchAllComments(c *gin.Context) {
 		comments[y].User.Email = ""
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments})
+	c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments})
 }
 
 func FetchAllCommentsForPost(c *gin.Context) {
@@ -226,7 +226,7 @@ func FetchAllCommentsForPost(c *gin.Context) {
 			comments[y].User.Email = ""
 		}
 
-		c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments, "postId":postId})
+		c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments, "postId": postId})
 	}
 
 }
@@ -250,10 +250,10 @@ func FetchCommentsOnPage(c *gin.Context) {
 			}
 
 			if len(comments) > 0 {
-				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "data" : comments, "postId":postId})
+				c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments, "postId": postId})
 
 			} else {
-				c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message": "No more comments ;( "})
+				c.JSON(http.StatusOK, gin.H{"message": "No more comments ;( "})
 			}
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{"message":"wrong post id"})

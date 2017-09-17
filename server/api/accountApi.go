@@ -15,6 +15,7 @@ import (
 	cryptorand "crypto/rand"
 	"vcelin/server/db"
 	"strconv"
+	"regexp"
 )
 
 type LoginModel struct {
@@ -143,18 +144,22 @@ func Login(c *gin.Context) {
 			}
 			foundUser.Password = ""
 
-			c.JSON(http.StatusOK, gin.H{"status": "you are logged in", "user": foundUser, "token": tokenString})
+			c.JSON(http.StatusOK, gin.H{"message": "you are logged in", "user": foundUser, "token": tokenString})
 		} else {
-			c.JSON(http.StatusUnauthorized, gin.H{"status": "unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "could not bind", "error": i})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "could not bind", "error": i})
 	}
 }
 
 func Register(c *gin.Context) {
 	var registerModel RegisterModel
 	if c.Bind(&registerModel) == nil {
+		if !ValidateEmail(registerModel.Email) {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "email is invalid"})
+			return
+		}
 		context := db.Database()
 		defer context.Close()
 		var foundUser db.User
@@ -168,18 +173,16 @@ func Register(c *gin.Context) {
 					Password: string(hashedPw),
 				}
 				context.Create(&user)
-				c.JSON(http.StatusOK, gin.H{"status": "you have been successfully registered", "userEmail": registerModel.Email})
+				c.JSON(http.StatusOK, gin.H{"message": "you have been successfully registered", "userEmail": registerModel.Email})
 			} else {
 				log.Printf("Error hashing: %v\n", err)
-				c.JSON(http.StatusInternalServerError, gin.H{"status": "something went wrong"})
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "something went wrong"})
 			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"status": "email is taken", "userEmail": registerModel.Email})
-
-			log.Print("email is already taken")
+			c.JSON(http.StatusBadRequest, gin.H{"message": "email is taken", "userEmail": registerModel.Email})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "wrong arguments"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong arguments"})
 
 	}
 }
@@ -222,7 +225,7 @@ func TokenValidation(c *gin.Context) {
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
 			if _, ok := strconv.ParseUint(claims["userId"].(string), 10, 32); ok == nil {
-				c.JSON(http.StatusOK, gin.H{"status": "Token is valid" })
+				c.JSON(http.StatusOK, gin.H{"message": "Token is valid"})
 
 			} else {
 				c.AbortWithError(http.StatusUnauthorized, err)
@@ -236,4 +239,9 @@ func TokenValidation(c *gin.Context) {
 
 	}
 
+}
+
+func ValidateEmail(email string) bool {
+	match, _ := regexp.MatchString(`(.+)@(.+)\.(.+)`, email)
+	return match
 }

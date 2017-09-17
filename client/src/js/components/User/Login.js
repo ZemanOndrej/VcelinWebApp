@@ -1,6 +1,6 @@
 import React from "react";
 import {withRouter} from "react-router-dom";
-import {serverAddress} from "../serverConfig";
+import {serverAddress} from "../../serverConfig";
 import Link from "react-router-dom/es/Link";
 
 class Login extends React.Component {

@@ -11,8 +11,7 @@ import ArticleList from "./components/Article/ArticleList";
 import ArticleDetails from "./components/Article/ArticleDetails";
 import MainPage from "./components/MainPage";
 import ArticleForm from "./components/Article/ArticleForm";
-import Options from "./components/Options";
-
+import Options from "./components/User/Options";
 
 const App = () => (
     <Router>

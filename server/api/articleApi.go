@@ -107,10 +107,10 @@ func FetchArticlesOnPage(c *gin.Context) {
 			articles[y].User.Email = ""
 		}
 		if len(articles) > 0 {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data": articles})
+			c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": articles})
 
 		} else {
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "No more articles ;( " })
+			c.JSON(http.StatusOK, gin.H{"message": "No more articles ;( "})
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong page number"})
@@ -137,7 +137,7 @@ func UploadImage(c *gin.Context) {
 
 	defer body.Close()
 	defer file.Close()
-	c.JSON(http.StatusOK, gin.H{"status": "Image uploaded successfuly", "filename": filename })
+	c.JSON(http.StatusOK, gin.H{"message": "Image uploaded successfuly", "filename": filename})
 
 }
 
@@ -245,7 +245,7 @@ func DeleteArticle(c *gin.Context) {
 			//admin user id is 1 he can delete what he wants
 			if user.(db.User).ID == article.UserId || user.(db.User).ID == 1 {
 				context.Delete(&article)
-				c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "article deleted successfully!"})
+				c.JSON(http.StatusOK, gin.H{"message": "article deleted successfully!"})
 			} else {
 				c.JSON(http.StatusUnauthorized, gin.H{"message": "You cannot delete this article!"})
 			}
@@ -272,7 +272,7 @@ func RemoveImageFromArticle(c *gin.Context) {
 			context.Find(&image, imageId)
 			os.Remove(db.ImagesURI + image.Filename)
 			context.Delete(&image)
-			c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "message": "Image deleted successfully!"})
+			c.JSON(http.StatusOK, gin.H{"message": "Image deleted successfully!"})
 
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{})
