@@ -1,21 +1,22 @@
 package api
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"fmt"
-	"net/http"
-	"golang.org/x/crypto/bcrypt"
-	"time"
-	"log"
-	"github.com/gin-gonic/gin"
-	"crypto/rsa"
-	"encoding/pem"
-	"crypto/x509"
+	"VcelinWebApp/server/db"
 	"bytes"
 	cryptorand "crypto/rand"
-	"vcelin/server/db"
-	"strconv"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
+	"log"
+	"net/http"
 	"regexp"
+	"strconv"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type LoginModel struct {
@@ -35,7 +36,7 @@ func InitKeys() {
 
 	/**
 	Init keys for jwt
-	 */
+	*/
 	var (
 		err         error
 		privKey     *rsa.PrivateKey
@@ -88,7 +89,6 @@ func AuthRequired() gin.HandlerFunc {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 			}
-
 			return []byte(signingKey), nil
 		})
 		if err == nil {
@@ -197,19 +197,13 @@ func ValidateToken(raw string) (bool, uint64) {
 	if err == nil {
 		if token.Valid {
 			claims := token.Claims.(jwt.MapClaims)
-			if userId, ok := strconv.ParseUint(claims["userId"].(string), 10, 32); ok == nil {
-				return true, userId
-
-			} else {
-				return false, 0
+			if userID, ok := strconv.ParseUint(claims["userId"].(string), 10, 32); ok == nil {
+				return true, userID
 			}
-		} else {
-			return false, 0
 		}
-	} else {
-		return false, 0
-
 	}
+	return false, 0
+
 }
 
 func TokenValidation(c *gin.Context) {

@@ -1,16 +1,17 @@
 package api
 
 import (
-	"net/http"
-	"vcelin/server/db"
-	"github.com/gin-gonic/gin"
-	"strconv"
+	"VcelinWebApp/server/db"
 	"encoding/json"
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type CommentModel struct {
 	Message string `json:"message" binding:"required"`
-	PostId  string`json:"postId" binding:"required"`
+	PostID  string `json:"postId" binding:"required"`
 }
 
 type UpdateCommentModel struct {
@@ -20,7 +21,7 @@ type UpdateCommentModel struct {
 type WebSocketComment struct {
 	Message string
 	Token   string
-	PostId  uint
+	PostID  uint
 }
 
 func CreateCommentWebSocket(msg []byte) db.Comment {
@@ -33,13 +34,13 @@ func CreateCommentWebSocket(msg []byte) db.Comment {
 	if err := json.Unmarshal(msg, &obj); err != nil {
 		panic("unexpected json")
 	}
-	err, userId := ValidateToken(obj.Token)
-	if !err || userId == 0 {
+	err, userID := ValidateToken(obj.Token)
+	if !err || userID == 0 {
 		panic("bad token")
 	}
 
-	context.Find(&post, obj.PostId)
-	context.Find(&user, userId)
+	context.Find(&post, obj.PostID)
+	context.Find(&user, userID)
 	if post.ID == 0 || user.ID == 0 {
 		panic("invalid postID or userId")
 	}
@@ -53,8 +54,6 @@ func CreateCommentWebSocket(msg []byte) db.Comment {
 	return comment
 }
 
-
-
 func CreateComment(c *gin.Context) {
 	user, err := c.Get("User")
 	var commentModel CommentModel
@@ -62,8 +61,8 @@ func CreateComment(c *gin.Context) {
 	if err {
 		if c.Bind(&commentModel) == nil {
 
-			if s, ok := strconv.ParseUint(commentModel.PostId, 10, 32); ok == nil {
-				if len(commentModel.Message) > 0 &&s > 0 {
+			if s, ok := strconv.ParseUint(commentModel.PostID, 10, 32); ok == nil {
+				if len(commentModel.Message) > 0 && s > 0 {
 
 					context := db.Database()
 					defer context.Close()
@@ -77,25 +76,25 @@ func CreateComment(c *gin.Context) {
 						context.Save(&post)
 						Comment.User.Email = ""
 						Comment.User.Password = ""
-						c.JSON(http.StatusCreated, gin.H{"message" : "Comment item created successfully!", "comment": Comment})
+						c.JSON(http.StatusCreated, gin.H{"message": "Comment item created successfully!", "comment": Comment})
 					} else {
-						c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created, Post with PostId given doesnt exist"})
+						c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not created, Post with PostId given doesnt exist"})
 					}
 				} else {
-					c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created, Comment message is empty"})
+					c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not created, Comment message is empty"})
 
 				}
 			} else {
-				c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created PostId is not valid"})
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not created PostId is not valid"})
 
 			}
 
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created"})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not created"})
 		}
 
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created. Couldnt find user"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not created. Couldnt find user"})
 	}
 
 }
@@ -105,7 +104,7 @@ func UpdateComment(c *gin.Context) {
 	user, okUser := c.Get("User")
 	var commentModel UpdateCommentModel
 
-	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if commentID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		if okUser {
 			if c.Bind(&commentModel) == nil {
 				if len(commentModel.Message) > 0 {
@@ -113,26 +112,26 @@ func UpdateComment(c *gin.Context) {
 					context := db.Database()
 					defer context.Close()
 					var foundComment db.Comment
-					foundComment.ID = uint(commentId)
+					foundComment.ID = uint(commentID)
 					context.Find(&foundComment)
 					//admin comment edit with admin id 1
 					if foundComment.UserId == user.(db.User).ID || user.(db.User).ID == 1 {
 						foundComment.Message = commentModel.Message
 						context.Save(&foundComment)
-						c.JSON(http.StatusCreated, gin.H{"message" : "Comment updated successfully!", "id": foundComment.ID})
+						c.JSON(http.StatusCreated, gin.H{"message": "Comment updated successfully!", "id": foundComment.ID})
 
 					} else {
-						c.JSON(http.StatusUnauthorized, gin.H{"message" : "Comment was not updated, you cant edit others comment"})
+						c.JSON(http.StatusUnauthorized, gin.H{"message": "Comment was not updated, you cant edit others comment"})
 					}
 
 				} else {
-					c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not updated, Comment message is empty"})
+					c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not updated, Comment message is empty"})
 				}
 			} else {
-				c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not updated"})
+				c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not updated"})
 			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"message" : "Comment was not created. Couldnt find user"})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "Comment was not created. Couldnt find user"})
 		}
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
@@ -146,11 +145,11 @@ func DeleteComment(c *gin.Context) {
 	var comment db.Comment
 	user, okUser := c.Get("User")
 
-	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if commentID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
-		if okUser && commentId > 0 {
+		if okUser && commentID > 0 {
 
-			comment.ID = uint(commentId)
+			comment.ID = uint(commentID)
 			context := db.Database()
 			defer context.Close()
 			context.Find(&comment)
@@ -164,7 +163,7 @@ func DeleteComment(c *gin.Context) {
 				context.Save(&post)
 				c.JSON(http.StatusOK, gin.H{"message": "Comment deleted successfully!"})
 			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{"message":"You cannot delete this comment"})
+				c.JSON(http.StatusUnauthorized, gin.H{"message": "You cannot delete this comment"})
 			}
 		} else {
 			c.JSON(http.StatusBadRequest, gin.H{})
@@ -181,14 +180,14 @@ func FetchSingleComment(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var comment db.Comment
 
-	if commentId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		comment.ID = uint(commentId)
+	if commentID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		comment.ID = uint(commentID)
 		context := db.Database()
 		defer context.Close()
 		context.Find(&comment)
 		comment.User.Email = ""
 		comment.User.Password = ""
-		c.JSON(http.StatusOK, gin.H{"Comment" : comment})
+		c.JSON(http.StatusOK, gin.H{"Comment": comment})
 	} else {
 		c.JSON(http.StatusBadRequest, gin.H{})
 	}
@@ -196,7 +195,7 @@ func FetchSingleComment(c *gin.Context) {
 
 func FetchAllComments(c *gin.Context) {
 
-	var comments [] db.Comment
+	var comments []db.Comment
 
 	context := db.Database()
 	defer context.Close()
@@ -213,20 +212,20 @@ func FetchAllComments(c *gin.Context) {
 func FetchAllCommentsForPost(c *gin.Context) {
 
 	id := c.Params.ByName("id")
-	var comments [] db.Comment
+	var comments []db.Comment
 
-	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if postID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
 		context := db.Database()
 		defer context.Close()
-		context.Where("post_id = ?", postId).Order("created_at desc").Preload("User").Find(&comments)
+		context.Where("post_id = ?", postID).Order("created_at desc").Preload("User").Find(&comments)
 
 		for y := range comments {
 			comments[y].User.Password = ""
 			comments[y].User.Email = ""
 		}
 
-		c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments, "postId": postId})
+		c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments, "postId": postID})
 	}
 
 }
@@ -235,14 +234,14 @@ func FetchCommentsOnPage(c *gin.Context) {
 
 	pagePar := c.Params.ByName("pageId")
 	postPar := c.Params.ByName("id")
-	var comments [] db.Comment
+	var comments []db.Comment
 
 	if pageNum, okPage := strconv.ParseUint(pagePar, 10, 32); okPage == nil {
-		if postId, okPost := strconv.ParseUint(postPar, 10, 32); okPost == nil {
+		if postID, okPost := strconv.ParseUint(postPar, 10, 32); okPost == nil {
 			context := db.Database()
 			defer context.Close()
 			//context.Where("post_id = ?", postId).Order("created_at desc").Preload("User").Find(&comments)
-			context.Where("post_id = ?", postId).Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&comments)
+			context.Where("post_id = ?", postID).Limit(db.PageSize).Offset(db.PageSize * pageNum).Order("created_at desc").Preload("User").Find(&comments)
 
 			for y := range comments {
 				comments[y].User.Password = ""
@@ -250,16 +249,16 @@ func FetchCommentsOnPage(c *gin.Context) {
 			}
 
 			if len(comments) > 0 {
-				c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments, "postId": postId})
+				c.JSON(http.StatusOK, gin.H{"message": http.StatusOK, "data": comments, "postId": postID})
 
 			} else {
 				c.JSON(http.StatusOK, gin.H{"message": "No more comments ;( "})
 			}
 		} else {
-			c.JSON(http.StatusBadRequest, gin.H{"message":"wrong post id"})
+			c.JSON(http.StatusBadRequest, gin.H{"message": "wrong post id"})
 		}
 	} else {
-		c.JSON(http.StatusBadRequest, gin.H{"message":"wrong page number"})
+		c.JSON(http.StatusBadRequest, gin.H{"message": "wrong page number"})
 	}
 
 }

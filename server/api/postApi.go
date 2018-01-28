@@ -1,24 +1,24 @@
 package api
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
-	"vcelin/server/db"
-	"strconv"
-	"github.com/jinzhu/gorm"
-	"time"
+	"VcelinWebApp/server/db"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 type PostModel struct {
 	Message string `json:"message" binding:"required"`
 }
 type PostInfo struct {
-	ID           uint   `gorm:"primary_key"`
+	ID           uint `gorm:"primary_key"`
 	CreatedAt    time.Time
 	Message      string `json:"message" binding:"required"`
 	User         db.User
-	CommentCount int    `json:"commentCount" binding:"required"`
+	CommentCount int `json:"commentCount" binding:"required"`
 }
 
 type WebSocketMessage struct {
@@ -49,12 +49,12 @@ func CreatePostWebSocket(msg []byte) db.Post {
 	if err := json.Unmarshal(msg, &obj); err != nil {
 		panic("unexpected json")
 	}
-	err, userId := ValidateToken(obj.Token)
-	if !err || userId == 0 {
+	err, userID := ValidateToken(obj.Token)
+	if !err || userID == 0 {
 		panic("bad token")
 	}
 
-	context.Find(&user, userId)
+	context.Find(&user, userID)
 	post := db.Post{Message: obj.Message, User: user, CommentCount: 0}
 	context.Create(&post)
 	post.User.Password = ""
@@ -97,7 +97,7 @@ func UpdatePost(c *gin.Context) {
 	user, err := c.Get("User")
 	var postModel PostModel
 
-	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if postID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		if err {
 			if c.Bind(&postModel) == nil {
 				if len(postModel.Message) > 0 {
@@ -105,7 +105,7 @@ func UpdatePost(c *gin.Context) {
 					context := db.Database()
 					defer context.Close()
 					var foundPost db.Post
-					foundPost.ID = uint(postId)
+					foundPost.ID = uint(postID)
 					context.Find(&foundPost)
 					//admin can edit post with id 1
 					if foundPost.UserId == user.(db.User).ID || user.(db.User).ID == 1 {
@@ -140,9 +140,9 @@ func DeletePost(c *gin.Context) {
 	var Post db.Post
 	user, okUser := c.Get("User")
 
-	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if okUser && postId > 0 {
-			Post.ID = uint(postId)
+	if postID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if okUser && postID > 0 {
+			Post.ID = uint(postID)
 			context := db.Database()
 			defer context.Close()
 			context.Find(&Post)
@@ -169,12 +169,12 @@ func FetchSinglePost(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var post db.Post
 
-	if postId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if postID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		context := db.Database()
 		defer context.Close()
 		context.Preload("User").Preload("Comments", func(context *gorm.DB) *gorm.DB {
 			return context.Limit(db.PageSize).Order("comments.created_at desc")
-		}).Preload("Comments.User").First(&post, postId)
+		}).Preload("Comments.User").First(&post, postID)
 		if post.ID != 0 {
 			post.User.Email = ""
 			post.User.Password = ""
@@ -196,7 +196,7 @@ func FetchSinglePost(c *gin.Context) {
 
 func FetchAllPosts(c *gin.Context) {
 
-	var posts [] db.Post
+	var posts []db.Post
 
 	context := db.Database()
 	defer context.Close()
@@ -214,7 +214,7 @@ func FetchAllPosts(c *gin.Context) {
 func FetchPostsOnPage(c *gin.Context) {
 
 	id := c.Params.ByName("id")
-	var posts [] db.Post
+	var posts []db.Post
 
 	if pageNum, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 

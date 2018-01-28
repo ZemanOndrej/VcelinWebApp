@@ -1,35 +1,35 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
-	"vcelin/server/db"
-	"strconv"
-	"net/http"
-	"os"
+	"VcelinWebApp/server/db"
 	"encoding/base64"
-	"time"
-	"math/rand"
-	"strings"
+	"github.com/gin-gonic/gin"
+	"io"
 	"io/ioutil"
 	"log"
-	"io"
+	"math/rand"
+	"net/http"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 )
 
 type ArticleModel struct {
-	Title        string `json:"Title" binding:"required"`
-	Text         string `json:"Text"`
-	NewImages    [] ImageModel `json:"NewImages" binding:"required"`
-	DeleteImages [] string `json:"DeleteImages" binding:"required"`
+	Title        string       `json:"Title" binding:"required"`
+	Text         string       `json:"Text"`
+	NewImages    []ImageModel `json:"NewImages" binding:"required"`
+	DeleteImages []string     `json:"DeleteImages" binding:"required"`
 }
 
 type ImageModel struct {
 	Name     string `json:"Name" binding:"required"`
 	Filename string `json:"Filename" binding:"required"`
-	Position uint `json:"Position" binding:"required"`
+	Position uint   `json:"Position" binding:"required"`
 }
 
 type ArticleCancelModel struct {
-	ImageFilenames [] string `json:"imageFilenames" binding:"required"`
+	ImageFilenames []string `json:"imageFilenames" binding:"required"`
 }
 
 func CreateArticle(c *gin.Context) {
@@ -95,7 +95,7 @@ func CreateArticle(c *gin.Context) {
 func FetchArticlesOnPage(c *gin.Context) {
 
 	id := c.Params.ByName("id")
-	var articles [] db.Article
+	var articles []db.Article
 
 	if pageNum, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
@@ -180,10 +180,10 @@ func FetchArticle(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var article db.Article
 
-	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if articleID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		context := db.Database()
 		defer context.Close()
-		context.Preload("User").Preload("Images").First(&article, articleId)
+		context.Preload("User").Preload("Images").First(&article, articleID)
 
 		if article.ID != 0 {
 			article.User.Email = ""
@@ -202,10 +202,10 @@ func FetchImage(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var img db.Image
 
-	if imageId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if imageID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		context := db.Database()
 		defer context.Close()
-		context.First(&img, imageId)
+		context.First(&img, imageID)
 
 		file, err := ioutil.ReadFile(db.ImagesURI + img.Filename)
 		if err != nil {
@@ -227,9 +227,9 @@ func DeleteArticle(c *gin.Context) {
 	var article db.Article
 	user, okUser := c.Get("User")
 
-	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if okUser && articleId > 0 {
-			article.ID = uint(articleId)
+	if articleID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if okUser && articleID > 0 {
+			article.ID = uint(articleID)
 			context := db.Database()
 			defer context.Close()
 			context.Preload("Images").Find(&article)
@@ -265,11 +265,11 @@ func RemoveImageFromArticle(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var image db.Image
 
-	if imageId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if imageId > 0 {
+	if imageID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if imageID > 0 {
 			context := db.Database()
 			defer context.Close()
-			context.Find(&image, imageId)
+			context.Find(&image, imageID)
 			os.Remove(db.ImagesURI + image.Filename)
 			context.Delete(&image)
 			c.JSON(http.StatusOK, gin.H{"message": "Image deleted successfully!"})
@@ -289,7 +289,7 @@ func UpdateArticle(c *gin.Context) {
 
 	loggedUser, err := c.Get("User")
 	var articleModel ArticleModel
-	if articleId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if articleID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 
 		if err {
 			if c.Bind(&articleModel) == nil {
@@ -300,7 +300,7 @@ func UpdateArticle(c *gin.Context) {
 
 					defer context.Close()
 					var article db.Article
-					article.ID = uint(articleId)
+					article.ID = uint(articleID)
 
 					context.Preload("User").Preload("Images").Find(&article)
 					//admin can edit article with id 1
@@ -329,8 +329,8 @@ func UpdateArticle(c *gin.Context) {
 							if err == nil {
 
 								newImage := db.Image{Name: i.Name,
-									Filename:              i.Filename,
-									Article:               article}
+									Filename: i.Filename,
+									Article:  article}
 								context.Create(&newImage)
 								imgSlice = append(imgSlice, newImage)
 							} else {

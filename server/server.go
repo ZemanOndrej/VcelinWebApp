@@ -1,13 +1,14 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"vcelin/server/api"
-	"gopkg.in/gin-contrib/cors.v1"
-	"time"
-	"gopkg.in/olahol/melody.v1"
+	"VcelinWebApp/server/api"
 	"encoding/json"
 	"strings"
+	"time"
+
+	"github.com/gin-gonic/gin"
+	"gopkg.in/gin-contrib/cors.v1"
+	"gopkg.in/olahol/melody.v1"
 )
 
 func main() {
@@ -28,8 +29,8 @@ func main() {
 	//web sockets
 	router.GET("/vcelin/postListSocket/:token", func(c *gin.Context) {
 		token := c.Params.ByName("token")
-		err, userId := api.ValidateToken(token)
-		if !err || userId == 0 {
+		err, userID := api.ValidateToken(token)
+		if !err || userID == 0 {
 			c.AbortWithStatus(401)
 		} else {
 			m.HandleRequest(c.Writer, c.Request)
@@ -45,8 +46,8 @@ func main() {
 
 	router.GET("/vcelin/postCommentsSocket/:name/$:token", func(c *gin.Context) {
 		token := c.Params.ByName("token")
-		err, userId := api.ValidateToken(token)
-		if !err || userId == 0 {
+		err, userID := api.ValidateToken(token)
+		if !err || userID == 0 {
 			c.AbortWithStatus(401)
 		} else {
 			m2.HandleRequest(c.Writer, c.Request)
@@ -104,7 +105,7 @@ func main() {
 
 	}
 
-	router.LoadHTMLFiles("./client/src/index.html")
+	router.LoadHTMLFiles("client/src/index.html")
 	router.NoRoute(index)
 	r := router.Group("/vcelin")
 	{

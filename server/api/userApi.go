@@ -1,10 +1,10 @@
 package api
 
 import (
-	"github.com/gin-gonic/gin"
+	"VcelinWebApp/server/db"
 	"net/http"
-	"vcelin/server/db"
 	"strconv"
+	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -55,7 +55,7 @@ func UpdateUser(c *gin.Context) {
 	user, err := c.Get("User")
 	var updateUserModel UpdateUserModel
 
-	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if userID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		if err {
 			err := c.BindJSON(&updateUserModel)
 			if err == nil {
@@ -65,7 +65,7 @@ func UpdateUser(c *gin.Context) {
 					context := db.Database()
 					defer context.Close()
 					var foundUser db.User
-					context.Find(&foundUser, userId)
+					context.Find(&foundUser, userID)
 
 					err := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(updateUserModel.OldPassword))
 
@@ -119,9 +119,9 @@ func DeleteUser(c *gin.Context) {
 	var wantedUser db.User
 	currUser, okUser := c.Get("User")
 
-	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
-		if okUser && userId > 0 && userId != 1 {
-			wantedUser.ID = uint(userId)
+	if userID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+		if okUser && userID > 0 && userID != 1 {
+			wantedUser.ID = uint(userID)
 			context := db.Database()
 			defer context.Close()
 			context.Find(&wantedUser)
@@ -144,7 +144,7 @@ func DeleteUser(c *gin.Context) {
 }
 
 func GetUsers(c *gin.Context) {
-	var users [] db.User
+	var users []db.User
 
 	context := db.Database()
 	defer context.Close()
@@ -160,9 +160,9 @@ func GetUser(c *gin.Context) {
 	id := c.Params.ByName("id")
 	var User db.User
 
-	if userId, ok := strconv.ParseUint(id, 10, 32); ok == nil {
+	if userID, ok := strconv.ParseUint(id, 10, 32); ok == nil {
 		if len(User.Email) > 0 {
-			User.ID = uint(userId)
+			User.ID = uint(userID)
 			context := db.Database()
 			defer context.Close()
 			context.Find(&User)
